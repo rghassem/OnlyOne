@@ -13,19 +13,19 @@ export function onLetterPressed(x: number, y: number): Array<BoardEffect> {
 		case Letter.U:
 			return up(x, y);
 		case Letter.D:
-            return down(x, y);
-        default:
-            return itself(x, y);
+			return down(x, y);
+		default:
+			return itself(x, y);
 	}
 	return [];
 }
 
 function itself(x: number, y: number) {
-    return [{
-        x,
-        y,
-        effect: BoardEffectType.Destroy
-    }];
+	return [{
+		x,
+		y,
+		effect: BoardEffectType.Destroy
+	}];
 }
 
 function right(x: number, y: number) {
@@ -36,7 +36,7 @@ function right(x: number, y: number) {
 			effect: BoardEffectType.Destroy
 		}
 	];
-	for (let i = x + 1; x <= rows; ++i) {
+	for (let i = x + 1; i <= rows; ++i) {
 		effects.push({
 			x: i,
 			y,
@@ -54,7 +54,7 @@ function left(x: number, y: number) {
 			effect: BoardEffectType.Destroy
 		}
 	];
-	for (let i = x - 1; x > 0; --i) {
+	for (let i = x - 1; i > 0; --i) {
 		effects.push({
 			x: i,
 			y,
@@ -72,9 +72,9 @@ function up(x: number, y: number) {
 			effect: BoardEffectType.Destroy
 		}
 	];
-	for (let i = y - 1; y >= 0; --i) {
+	for (let i = y - 1; i >= 0; --i) {
 		effects.push({
-            x,
+			x,
 			y: i,
 			effect: BoardEffectType.Destroy
 		});
@@ -90,9 +90,9 @@ function down(x: number, y: number) {
 			effect: BoardEffectType.Destroy
 		}
 	];
-	for (let i = y + 1; y <= rows; ++i) {
+	for (let i = y + 1; i <= rows; ++i) {
 		effects.push({
-            x,
+			x,
 			y: i,
 			effect: BoardEffectType.Destroy
 		});

@@ -20,7 +20,7 @@ for (let r = 0; r < rows; ++r) {
     }
 }
 
-function boardIndex(x: number, y: number) {
+export function boardIndex(x: number, y: number) {
     return x + (cols * y);
 }
 

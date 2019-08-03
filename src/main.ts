@@ -1,5 +1,5 @@
 import { onLetterPressed } from "./letters";
-import { initializeLetters, drawEffects } from "./render";
+import { initializeLetters, drawEffects, events } from "./render";
 import { BoardEffect } from "./boardEffect";
 
 // The application will create a renderer using WebGL, if possible,
@@ -20,10 +20,10 @@ initializeLetters(app);
 
 let pendingEffects = new Array<BoardEffect>();
 
-function getInput() {
-
+events.onLetterClick = (x: number, y: number) => {
+    const effects = onLetterPressed(x, y);
+    drawEffects(app, effects);
 }
-
 //Render changes
 //Also handle consequences (falling, scoring, mines going off, follow up bombs, etc)
 //Also possibly recurse
@@ -34,8 +34,7 @@ function gameLoop() {
     else {
         //const input = getInput() as [number, number];
         // if (input) {
-        //     const effects = onLetterPressed(1, 1);
-        //     drawEffects(app, effects);
+
         // }
     }
 }
