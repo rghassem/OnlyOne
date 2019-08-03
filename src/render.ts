@@ -85,7 +85,7 @@ function setStyle(pixiText: PIXI.Text, letter: Letter) {
     const viz = letterVisuals.get(letter);
 
     const style = new PIXI.TextStyle({
-        fontFamily: 'Arial',
+        fontFamily: 'VT323',
         fontSize: 26,
         fill: viz ? viz.color : '#ffffff',
         stroke: '#4a1850',
