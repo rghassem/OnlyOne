@@ -3,6 +3,7 @@ import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 
 const CellWidth = 30;
 const CellHeight = 30;
+const offset = 250;
 
 export let events: {
     onLetterClick: ((x: number, y: number) => void) | null
@@ -32,7 +33,10 @@ export function drawBoard(app: PIXI.Application) {
     });
     console.log(gameboard);
     for (const entity of gameboard) {
-        setStyle(getPixiLetter(entity.x, entity.y), entity.letter);
+        const pixiLetter = getPixiLetter(entity.x, entity.y);
+        // pixiLetter.x = entity.x * CellWidth;
+        // pixiLetter.y = entity.y * CellHeight;
+        setStyle(pixiLetter, entity.letter);
     }
 }
 
@@ -58,7 +62,7 @@ export function drawEffects(app: PIXI.Application, effects: Array<BoardEffect>) 
 }
 
 function drawLetter(letter: Letter, x: number, y: number, app: PIXI.Application) {
-    const gridx = x * CellWidth;
+    const gridx = offset + x * CellWidth;
     const gridy = y * CellHeight;
 
     const text = new PIXI.Text(' ');
