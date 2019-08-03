@@ -1,0 +1,19 @@
+{
+	// Use IntelliSense to learn about possible Node.js debug attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "2.0.0",
+	"configurations": [
+		{
+			"name": "Launch Chrome Webpack",
+			"type": "chrome",
+			"request": "launch",
+			"runtimeArgs": [
+				"--incognito"
+			],
+			"smartStep": true,
+			"url": "http://localhost:8080",
+			"webRoot": "${workspaceRoot}"
+		}
+	]
+}
