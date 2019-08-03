@@ -1,5 +1,6 @@
 import { Letter, gameboard, maxX, maxY, getLetterEntity, letterVisuals, LetterEntity } from "./board";
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
+import { animate, TweeningFunctions } from "./animation";
 
 const CellWidth = 30;
 const CellHeight = 30;
@@ -35,17 +36,20 @@ export function drawBoard(app: PIXI.Application) {
     }
 }
 
-export function drawEffects(app: PIXI.Application, effects: Array<BoardEffect>) {
+export async function drawEffects(app: PIXI.Application, effects: Array<BoardEffect>) {
+    const promises = new Array<Promise<void>>();
     for (const boardEffect of effects) {
         const letter = getPixiLetter(boardEffect.x, boardEffect.y);
 
         switch (boardEffect.effect) {
             case BoardEffectType.Destroy:
-                // console.log(`destroy letter ${letter.text}, (${boardEffect.x}, ${boardEffect.y})`);
-                // letter.text = ' ';
+                letter.text = ' ';
                 break;
             case BoardEffectType.Fall:
-                //letter.y += CellHeight;
+                const startingY = letter.y;
+                const anim = animate(letter, 'y', letter.y + CellHeight, 0.4, TweeningFunctions.easeOutBounce);
+                anim.then(() => { letter.y = startingY });
+                promises.push(anim);
                 break;
             case BoardEffectType.Move:
                 // const e = boardEffect as MoveEffect;
@@ -54,6 +58,7 @@ export function drawEffects(app: PIXI.Application, effects: Array<BoardEffect>) 
                 break;
         }
     }
+    await Promise.all(promises);
 }
 
 function drawLetter(letter: Letter, x: number, y: number, app: PIXI.Application) {

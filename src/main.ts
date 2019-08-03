@@ -2,6 +2,7 @@ import { onLetterPressed } from "./letters";
 import { initializeLetters, drawEffects, events, drawBoard } from "./render";
 import { BoardEffect } from "./boardEffect";
 import { updateState } from "./gameState";
+import { runAnimations, animate, TweeningFunctions } from "./animation";
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
@@ -12,35 +13,26 @@ const app = new PIXI.Application();
 // can then insert into the DOM.
 document.body.appendChild(app.view);
 
+//Run animation system
 app.ticker.add(() => {
-    gameLoop();
+    runAnimations(app.ticker.elapsedMS / 1000);
 });
 
-//Initialize
 initializeLetters(app);
 
-let pendingEffects = new Array<BoardEffect>();
-let pendingClick: { x: number, y: number } | null = null;
-
+let resolving = false;
 events.onLetterClick = (x: number, y: number) => {
-    if (!pendingClick) {
-        pendingClick = { x, y };
-    }
+    if (resolving) return;
+    resolving = true;
+    resolveMove(x, y).then(() => resolving = false);
 }
 
-function gameLoop() {
-    if (pendingEffects.length > 0) {
-        //drawEffects(app, pendingEffects);
-        pendingEffects = updateState(pendingEffects);
-        drawBoard(app);
+async function resolveMove(x: number, y: number) {
+    let effects = onLetterPressed(x, y);
+    while (effects.length !== 0) {
+        await drawEffects(app, effects);
+        effects = updateState(effects);
     }
-    else {
-        if (pendingClick) {
-            const { x, y } = pendingClick;
-            pendingEffects = onLetterPressed(x, y);
-            pendingClick = null;
-        }
-    }
-    //Otherwise nothing to do
+    drawBoard(app);
 }
 
