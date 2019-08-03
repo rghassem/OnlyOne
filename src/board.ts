@@ -7,6 +7,7 @@ export enum Letter {
     R,
     U,
     D,
+    T,
     Length
 }
 

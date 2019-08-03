@@ -1,6 +1,8 @@
 export enum BoardEffectType {
     Destroy,
-    Fall
+    Fall,
+    Move,
+    Score
 }
 
 export interface BoardEffect {

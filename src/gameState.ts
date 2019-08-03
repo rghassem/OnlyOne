@@ -1,5 +1,5 @@
-import { BoardEffect, BoardEffectType } from "./boardEffect";
-import { getLetter, setLetter, Letter } from "./board";
+import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
+import { getLetter, setLetter, Letter, cols, rows } from "./board";
 
 export function updateState(changes: Array<BoardEffect>) {
     let result = new Array<BoardEffect>();
@@ -12,9 +12,23 @@ export function updateState(changes: Array<BoardEffect>) {
 
             case BoardEffectType.Fall:
                 break;
+            
+            case BoardEffectType.Move:
+                const e = change as MoveEffect;
+                move(e.x, e.y, e.toX, e.toY);
+                break;
         }
     }
     return result;
+}
+
+function move(x: number, y: number, toX: number, toY: number) {
+    if (toX >= 0 && toX < cols && toY >= 0 && toY > rows) {
+        const letter = getLetter(x, y);
+        setLetter(toX, toY, letter);
+        console.log(`Setting letter at x=${toX} y=${toY} to ${letter}`)
+    }
+    return [];
 }
 
 function destroy(x: number, y: number) {

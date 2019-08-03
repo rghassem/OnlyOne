@@ -1,5 +1,5 @@
 import { Letter, rows, cols, getLetter, boardIndex } from "./board";
-import { BoardEffect, BoardEffectType } from "./boardEffect";
+import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 
 const CellWidth = 30;
 const CellHeight = 30;
@@ -39,6 +39,11 @@ export function drawEffects(app: PIXI.Application, effects: Array<BoardEffect>) 
                 break;
             case BoardEffectType.Fall:
                 letter.y += CellHeight;
+                break;
+            case BoardEffectType.Move:
+                const e = boardEffect as MoveEffect;
+                letter.x = e.toX * CellWidth;
+                letter.y = e.toY * CellHeight;
                 break;
         }
     }
@@ -88,6 +93,7 @@ function letterToCharacter(letter: Letter): string {
         case Letter.R: return 'R';
         case Letter.U: return 'U';
         case Letter.D: return 'D';
+        case Letter.T: return 'T';
         default: return ' ';
     }
 }
