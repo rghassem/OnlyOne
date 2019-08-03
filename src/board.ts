@@ -18,9 +18,12 @@ const gameboard = new Array<Letter>();
 
 for (let r = 0; r < rows; ++r) {
     for (let c = 0; c < cols; ++c) {
-        const randomLetter = Math.floor(Math.random() * (Letter.Length - 1)) + 1;
-        gameboard[boardIndex(c, r)] = randomLetter;
+        gameboard[boardIndex(c, r)] = randomLetter();
     }
+}
+
+export function randomLetter() {
+    return Math.floor(Math.random() * (Letter.Length - 1)) + 1;
 }
 
 export function boardIndex(x: number, y: number) {

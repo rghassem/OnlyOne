@@ -1,5 +1,5 @@
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
-import { getLetter, setLetter, Letter, cols, rows } from "./board";
+import { getLetter, setLetter, Letter, cols, rows, randomLetter } from "./board";
 
 export function updateState(changes: Array<BoardEffect>) {
     let result = new Array<BoardEffect>();
@@ -11,8 +11,9 @@ export function updateState(changes: Array<BoardEffect>) {
                 break;
 
             case BoardEffectType.Fall:
+                result = result.concat(fall(change.x, change.y));
                 break;
-            
+
             case BoardEffectType.Move:
                 const e = change as MoveEffect;
                 move(e.x, e.y, e.toX, e.toY);
@@ -45,4 +46,17 @@ function destroy(x: number, y: number) {
         });
     }
     return result;
+}
+
+function fall(x: number, y: number) {
+    let letter;
+    if (y > 0) {
+        letter = getLetter(x, y - 1);
+    }
+    else {
+        letter = randomLetter();
+    }
+
+    setLetter(x, y, letter);
+    return [];
 }
