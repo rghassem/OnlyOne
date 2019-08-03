@@ -10,6 +10,8 @@ export enum Letter {
     // T,
     W,
     I,
+    C,
+    X,
     Length
 }
 
@@ -31,6 +33,8 @@ letterVisuals.set(Letter.U, new LetterVisual('U', 'Up '));
 letterVisuals.set(Letter.D, new LetterVisual('D', 'Down'));
 letterVisuals.set(Letter.W, new LetterVisual('W', 'Wall'));
 letterVisuals.set(Letter.I, new LetterVisual('I', 'Invisible'));
+letterVisuals.set(Letter.C, new LetterVisual('C', 'Cross'));
+letterVisuals.set(Letter.X, new LetterVisual('X', 'X'));
 // letterVisuals.set(Letter.T, new LetterVisual('T', 'Twist'));
 
 

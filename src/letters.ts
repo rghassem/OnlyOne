@@ -1,5 +1,6 @@
 import { Letter, getLetterEntity, maxY, maxX } from "./board";
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
+import { createBrotliCompress } from "zlib";
 
 type LetterEffect = (x: number, y: number) => Array<BoardEffect>;
 
@@ -19,6 +20,10 @@ export function onLetterPressed(x: number, y: number): Array<BoardEffect> {
 		// 	return twist(x, y);
 		case Letter.I:
 			return [];
+		case Letter.C:
+			return cross(x, y);
+		case Letter.X:
+			return diagonal(x, y);
 		default:
 			return itself(x, y);
 	}
@@ -30,6 +35,84 @@ function itself(x: number, y: number) {
 		y,
 		effect: BoardEffectType.Destroy
 	}];
+}
+
+function cross(x: number, y: number) {
+	const effects = [
+		{
+			x,
+			y,
+			effect: BoardEffectType.Destroy
+		}
+	];
+
+	const cardinal = [
+		{
+			x,
+			y: y - 1
+		},
+		{
+			x: x + 1,
+			y
+		},
+		{
+			x,
+			y: y + 1
+		},
+		{
+			x: x - 1,
+			y
+		}
+	];
+
+	for (let position of cardinal) {
+		effects.push({
+			x: position.x,
+			y: position.y,
+			effect: BoardEffectType.Destroy
+		});
+	}
+
+	return effects;
+}
+
+function diagonal(x: number, y: number) {
+	const effects = [
+		{
+			x,
+			y,
+			effect: BoardEffectType.Destroy
+		}
+	];
+
+	const diagonal = [
+		{
+			x: x - 1,
+			y: y - 1
+		},
+		{
+			x: x + 1,
+			y: y - 1
+		},
+		{
+			x: x - 1,
+			y: y + 1
+		},
+		{
+			x: x + 1,
+			y: y + 1
+		}
+	];
+
+	for (let position of diagonal) {
+		effects.push({
+			x: position.x,
+			y: position.y,
+			effect: BoardEffectType.Destroy
+		});
+	}
+
+	return effects;
 }
 
 function right(x: number, y: number) {
