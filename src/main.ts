@@ -32,7 +32,7 @@ function gameLoop() {
     if (pendingEffects.length > 0) {
         //drawEffects(app, pendingEffects);
         pendingEffects = updateState(pendingEffects);
-        drawBoard();
+        drawBoard(app);
     }
     else {
         if (pendingClick) {

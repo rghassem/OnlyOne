@@ -1,12 +1,13 @@
-import { Letter, getLetter, rows, cols } from "./board";
+import { Letter, getLetterEntity, maxY, maxX } from "./board";
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 import { updateState } from "./gameState";
 
 type LetterEffect = (x: number, y: number) => Array<BoardEffect>;
 
 export function onLetterPressed(x: number, y: number): Array<BoardEffect> {
-	const letter = getLetter(x, y);
-	switch (letter) {
+	const entity = getLetterEntity(x, y);
+	if (!entity) return [];
+	switch (entity.letter) {
 		case Letter.L:
 			return left(x, y);
 		case Letter.R:
@@ -39,7 +40,7 @@ function right(x: number, y: number) {
 			effect: BoardEffectType.Destroy
 		}
 	];
-	for (let i = x + 1; i < cols; ++i) {
+	for (let i = x + 1; i < maxX; ++i) {
 		effects.push({
 			x: i,
 			y,
@@ -93,7 +94,7 @@ function down(x: number, y: number) {
 			effect: BoardEffectType.Destroy
 		}
 	];
-	for (let i = y + 1; i < rows; ++i) {
+	for (let i = y + 1; i < maxY; ++i) {
 		effects.push({
 			x,
 			y: i,
@@ -118,7 +119,7 @@ function neighbors(x: number, y: number): Array<Position> {
 		// Top Right
 		{
 			x: x + 1,
-			y: y - 1 
+			y: y - 1
 		},
 		// Right
 		{
@@ -148,7 +149,7 @@ function neighbors(x: number, y: number): Array<Position> {
 	];
 }
 
-type Position = {x: number, y: number};
+type Position = { x: number, y: number };
 
 function twist(x: number, y: number) {
 	const letters = neighbors(x, y);
@@ -167,6 +168,5 @@ function twist(x: number, y: number) {
 		} as MoveEffect);
 	}
 
-	updateState(effects);
 	return effects;
 }

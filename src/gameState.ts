@@ -1,5 +1,5 @@
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
-import { getLetter, setLetter, Letter, cols, rows } from "./board";
+import { getLetterEntity, Letter, maxX, maxY, removeLetterEntity } from "./board";
 
 export function updateState(changes: Array<BoardEffect>) {
     let result = new Array<BoardEffect>();
@@ -24,9 +24,12 @@ export function updateState(changes: Array<BoardEffect>) {
 }
 
 function move(x: number, y: number, toX: number, toY: number) {
-    if (toX >= 0 && toX < cols && toY >= 0 && toY > rows) {
-        const letter = getLetter(x, y);
-        setLetter(toX, toY, letter);
+    if (toX >= 0 && toX < maxX && toY >= 0 && toY < maxY) {
+        const letter = getLetterEntity(x, y);
+        if (letter) {
+            letter.x = toX;
+            letter.y = toY;
+        }
         console.log(`Setting letter at x=${toX} y=${toY} to ${letter}`)
     }
     return [];
@@ -34,7 +37,10 @@ function move(x: number, y: number, toX: number, toY: number) {
 
 function destroy(x: number, y: number) {
     //Destroy the letter
-    setLetter(x, y, Letter.Blank);
+    const entity = getLetterEntity(x, y);
+    if (entity) {
+        removeLetterEntity(entity);
+    }
 
     //Everything above it falls
     const result = new Array<BoardEffect>();
@@ -49,7 +55,10 @@ function destroy(x: number, y: number) {
 }
 
 function fall(x: number, y: number) {
-    const letter = getLetter(x, y);
-    setLetter(x, y + 1, letter);
+    const letter = getLetterEntity(x, y);
+    if (letter) {
+        letter.x = x;
+        letter.y = y + 1;
+    }
     return [];
 }

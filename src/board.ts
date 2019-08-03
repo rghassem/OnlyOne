@@ -11,29 +11,37 @@ export enum Letter {
     Length
 }
 
-export const rows = 16;
-export const cols = 16
+export class LetterEntity {
+    constructor(
+        public letter: Letter,
+        public x: number,
+        public y: number
+    ) { }
+}
 
-const gameboard = new Array<Letter>();
+export const maxY = 16;
+export const maxX = 16
 
-for (let r = 0; r < rows; ++r) {
-    for (let c = 0; c < cols; ++c) {
-        gameboard[boardIndex(c, r)] = randomLetter();
+export const gameboard = new Array<LetterEntity>();
+
+for (let y = 0; y < maxY; ++y) {
+    for (let x = 0; x < maxX; ++x) {
+        addLetter(randomLetter(), x, y);
     }
 }
 
-export function randomLetter() {
+function randomLetter() {
     return Math.floor(Math.random() * (Letter.Length - 1)) + 1;
 }
 
-export function boardIndex(x: number, y: number) {
-    return x + (cols * y);
+export function addLetter(letter: Letter, x: number, y: number) {
+    gameboard.push(new LetterEntity(letter, x, y));
 }
 
-export function getLetter(x: number, y: number) {
-    return gameboard[boardIndex(x, y)];
+export function removeLetterEntity(entity: LetterEntity) {
+    gameboard.splice(gameboard.indexOf(entity), 1);
 }
 
-export function setLetter(x: number, y: number, val: Letter) {
-    gameboard[boardIndex(x, y)] = val;
+export function getLetterEntity(x: number, y: number) {
+    return gameboard.find(entity => entity.x === x && entity.y === y);
 }

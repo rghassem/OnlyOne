@@ -1,4 +1,4 @@
-import { Letter, rows, cols, getLetter, boardIndex } from "./board";
+import { Letter, gameboard, maxX, maxY, getLetterEntity } from "./board";
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 
 const CellWidth = 30;
@@ -10,56 +10,56 @@ export let events: {
     onLetterClick: null
 };
 
-const pixiLetters = new Array<PIXI.Text>();
+let pixiLetters = new Array<PIXI.Text>();
+
+function getPixiLetter(x: number, y: number) {
+    return pixiLetters[x + (maxX * y)];
+}
 
 export function initializeLetters(app: PIXI.Application) {
-    for (let r = 0; r < rows; ++r) {
-        for (let c = 0; c < cols; ++c) {
-            const letter = getLetter(c, r);
-
-            const newLetter = drawLetter(letterToCharacter(letter), r, c, app);
+    for (let y = 0; y < maxY; ++y) {
+        for (let x = 0; x < maxX; ++x) {
+            const entity = getLetterEntity(x, y)!; //guaranteed a letter at every coordinated
+            const newLetter = drawLetter(letterToCharacter(entity.letter), entity.x, entity.y, app);
             pixiLetters.push(newLetter);
         }
     }
 }
 
+export function drawBoard(app: PIXI.Application) {
+    pixiLetters.forEach(pixiLetter => {
+        app.stage.removeChild(pixiLetter);
+        pixiLetter.destroy()
+    });
+    pixiLetters = [];
+    for (const entity of gameboard) {
+        const newLetter = drawLetter(letterToCharacter(entity.letter), entity.x, entity.y, app);
+        pixiLetters.push(newLetter);
+    }
+}
+
 export function drawEffects(app: PIXI.Application, effects: Array<BoardEffect>) {
-    console.log("entering drawEffect");
     for (const boardEffect of effects) {
-        const index = boardIndex(boardEffect.x, boardEffect.y);
-        if (index > pixiLetters.length) {
-            console.log(`tried access index (${boardEffect.x}, ${boardEffect.y}) = ${index}`);
-        }
-        const letter = pixiLetters[index];
+        const letter = getPixiLetter(boardEffect.x, boardEffect.y);
 
         switch (boardEffect.effect) {
             case BoardEffectType.Destroy:
-                console.log(`destroy letter ${letter.text}, (${boardEffect.x}, ${boardEffect.y}) = ${index}`);
-                letter.text = ' ';
+                // console.log(`destroy letter ${letter.text}, (${boardEffect.x}, ${boardEffect.y})`);
+                // letter.text = ' ';
                 break;
             case BoardEffectType.Fall:
-                letter.y += CellHeight;
+                //letter.y += CellHeight;
                 break;
             case BoardEffectType.Move:
-                const e = boardEffect as MoveEffect;
-                letter.x = e.toX * CellWidth;
-                letter.y = e.toY * CellHeight;
+                // const e = boardEffect as MoveEffect;
+                // letter.x = e.toX * CellWidth;
+                // letter.y = e.toY * CellHeight;
                 break;
         }
     }
 }
 
-export function drawBoard() {
-    for (let y = 0; y < rows; ++y) {
-        for (let x = 0; x < cols; ++x) {
-            const letter = getLetter(x, y);
-            const index = boardIndex(x, y);
-            pixiLetters[index].text = letterToCharacter(letter);
-        }
-    }
-}
-
-function drawLetter(letter: string, row: number, col: number, app: PIXI.Application) {
+function drawLetter(letter: string, x: number, y: number, app: PIXI.Application) {
 
     const style = new PIXI.TextStyle({
         fontFamily: 'Arial',
@@ -76,18 +76,18 @@ function drawLetter(letter: string, row: number, col: number, app: PIXI.Applicat
         wordWrapWidth: 440,
     });
 
-    const x = col * CellWidth;
-    const y = row * CellHeight;
+    const gridx = x * CellWidth;
+    const gridy = y * CellHeight;
 
     const text = new PIXI.Text(letter, style);
-    text.x = x;
-    text.y = y;
+    text.x = gridx;
+    text.y = gridy;
 
     text.interactive = true;
     text.buttonMode = true;
     text.on('pointerover', () => text.style.fill = '#FF0000')
         .on('pointerout', () => text.style.fill = '#ffffff')
-        .on('pointerdown', () => events.onLetterClick && events.onLetterClick(col, row));
+        .on('pointerdown', () => events.onLetterClick && events.onLetterClick(x, y));
 
 
     app.stage.addChild(text);
