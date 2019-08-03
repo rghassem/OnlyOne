@@ -1,6 +1,7 @@
 import { onLetterPressed } from "./letters";
 import { initializeLetters, drawEffects, events } from "./render";
 import { BoardEffect } from "./boardEffect";
+import { updateState } from "./gameState";
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
@@ -19,23 +20,26 @@ app.ticker.add(() => {
 initializeLetters(app);
 
 let pendingEffects = new Array<BoardEffect>();
+let pendingClick: { x: number, y: number } | null = null;
 
 events.onLetterClick = (x: number, y: number) => {
-    const effects = onLetterPressed(x, y);
-    drawEffects(app, effects);
+    if (!pendingClick) {
+        pendingClick = { x, y };
+    }
 }
-//Render changes
-//Also handle consequences (falling, scoring, mines going off, follow up bombs, etc)
-//Also possibly recurse
+
 function gameLoop() {
     if (pendingEffects.length > 0) {
-        //falling letters and things?
+        drawEffects(app, pendingEffects);
+        pendingEffects = updateState(pendingEffects);
     }
     else {
-        //const input = getInput() as [number, number];
-        // if (input) {
-
-        // }
+        if (pendingClick) {
+            const { x, y } = pendingClick;
+            pendingEffects = onLetterPressed(x, y);
+            pendingClick = null;
+        }
     }
+    //Otherwise nothing to do
 }
 

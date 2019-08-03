@@ -1,8 +1,8 @@
 import { Letter, rows, cols, getLetter, boardIndex } from "./board";
 import { BoardEffect, BoardEffectType } from "./boardEffect";
 
-const CellWidth = 50;
-const CellHeight = 50;
+const CellWidth = 30;
+const CellHeight = 30;
 
 export let events: {
     onLetterClick: ((x: number, y: number) => void) | null
@@ -15,7 +15,7 @@ const pixiLetters = new Array<PIXI.Text>();
 export function initializeLetters(app: PIXI.Application) {
     for (let r = 0; r < rows; ++r) {
         for (let c = 0; c < cols; ++c) {
-            const letter = getLetter(r, c);
+            const letter = getLetter(c, r);
 
             const newLetter = drawLetter(letterToCharacter(letter), r, c, app);
             pixiLetters.push(newLetter);
@@ -24,12 +24,22 @@ export function initializeLetters(app: PIXI.Application) {
 }
 
 export function drawEffects(app: PIXI.Application, effects: Array<BoardEffect>) {
+    console.log("entering drawEffect");
     for (const boardEffect of effects) {
+        const index = boardIndex(boardEffect.x, boardEffect.y);
+        if (index > pixiLetters.length) {
+            console.log(`tried access index (${boardEffect.x}, ${boardEffect.y}) = ${index}`);
+        }
+        const letter = pixiLetters[index];
+
         switch (boardEffect.effect) {
             case BoardEffectType.Destroy:
-                const letter = pixiLetters[boardIndex(boardEffect.x, boardEffect.y)]
+                console.log(`destroy letter ${letter.text}, (${boardEffect.x}, ${boardEffect.y}) = ${index}`);
                 letter.text = ' ';
                 break;
+            // case BoardEffectType.Fall:
+            //     letter.y += CellHeight;
+            //     break;
         }
     }
 }
@@ -51,8 +61,8 @@ function drawLetter(letter: string, row: number, col: number, app: PIXI.Applicat
         wordWrapWidth: 440,
     });
 
-    const x = row * CellWidth;
-    const y = col * CellHeight;
+    const x = col * CellWidth;
+    const y = row * CellHeight;
 
     const text = new PIXI.Text(letter, style);
     text.x = x;
@@ -62,7 +72,7 @@ function drawLetter(letter: string, row: number, col: number, app: PIXI.Applicat
     text.buttonMode = true;
     text.on('pointerover', () => text.style.fill = '#FF0000')
         .on('pointerout', () => text.style.fill = '#ffffff')
-        .on('pointerdown', () => events.onLetterClick && events.onLetterClick(row, col));
+        .on('pointerdown', () => events.onLetterClick && events.onLetterClick(col, row));
 
 
     app.stage.addChild(text);

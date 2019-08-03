@@ -36,7 +36,7 @@ function right(x: number, y: number) {
 			effect: BoardEffectType.Destroy
 		}
 	];
-	for (let i = x + 1; i <= rows; ++i) {
+	for (let i = x + 1; i < cols; ++i) {
 		effects.push({
 			x: i,
 			y,
@@ -54,7 +54,7 @@ function left(x: number, y: number) {
 			effect: BoardEffectType.Destroy
 		}
 	];
-	for (let i = x - 1; i > 0; --i) {
+	for (let i = x - 1; i >= 0; --i) {
 		effects.push({
 			x: i,
 			y,
@@ -90,7 +90,7 @@ function down(x: number, y: number) {
 			effect: BoardEffectType.Destroy
 		}
 	];
-	for (let i = y + 1; i <= rows; ++i) {
+	for (let i = y + 1; i < rows; ++i) {
 		effects.push({
 			x,
 			y: i,

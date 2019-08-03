@@ -1,5 +1,6 @@
 export enum BoardEffectType {
-    Destroy
+    Destroy,
+    Fall
 }
 
 export interface BoardEffect {
@@ -12,4 +13,3 @@ export interface MoveEffect extends BoardEffect {
     toX: number,
     toY: number
 }
-
