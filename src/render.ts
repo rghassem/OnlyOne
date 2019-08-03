@@ -49,6 +49,16 @@ export function drawEffects(app: PIXI.Application, effects: Array<BoardEffect>) 
     }
 }
 
+export function drawBoard() {
+    for (let y = 0; y < rows; ++y) {
+        for (let x = 0; x < cols; ++x) {
+            const letter = getLetter(x, y);
+            const index = boardIndex(x, y);
+            pixiLetters[index].text = letterToCharacter(letter);
+        }
+    }
+}
+
 function drawLetter(letter: string, row: number, col: number, app: PIXI.Application) {
 
     const style = new PIXI.TextStyle({

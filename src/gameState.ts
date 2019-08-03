@@ -1,5 +1,5 @@
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
-import { getLetter, setLetter, Letter, cols, rows, randomLetter } from "./board";
+import { getLetter, setLetter, Letter, cols, rows } from "./board";
 
 export function updateState(changes: Array<BoardEffect>) {
     let result = new Array<BoardEffect>();
@@ -38,7 +38,7 @@ function destroy(x: number, y: number) {
 
     //Everything above it falls
     const result = new Array<BoardEffect>();
-    for (let i = 0; i < y; ++i) {
+    for (let i = y - 1; i > 0; --i) {
         result.push({
             x: x,
             y: i,
@@ -49,14 +49,7 @@ function destroy(x: number, y: number) {
 }
 
 function fall(x: number, y: number) {
-    let letter;
-    if (y > 0) {
-        letter = getLetter(x, y - 1);
-    }
-    else {
-        letter = randomLetter();
-    }
-
-    setLetter(x, y, letter);
+    const letter = getLetter(x, y);
+    setLetter(x, y + 1, letter);
     return [];
 }

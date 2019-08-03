@@ -1,5 +1,5 @@
 import { onLetterPressed } from "./letters";
-import { initializeLetters, drawEffects, events } from "./render";
+import { initializeLetters, drawEffects, events, drawBoard } from "./render";
 import { BoardEffect } from "./boardEffect";
 import { updateState } from "./gameState";
 
@@ -30,8 +30,9 @@ events.onLetterClick = (x: number, y: number) => {
 
 function gameLoop() {
     if (pendingEffects.length > 0) {
-        drawEffects(app, pendingEffects);
+        //drawEffects(app, pendingEffects);
         pendingEffects = updateState(pendingEffects);
+        drawBoard();
     }
     else {
         if (pendingClick) {
