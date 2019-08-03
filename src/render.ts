@@ -37,9 +37,9 @@ export function drawEffects(app: PIXI.Application, effects: Array<BoardEffect>) 
                 console.log(`destroy letter ${letter.text}, (${boardEffect.x}, ${boardEffect.y}) = ${index}`);
                 letter.text = ' ';
                 break;
-            // case BoardEffectType.Fall:
-            //     letter.y += CellHeight;
-            //     break;
+            case BoardEffectType.Fall:
+                letter.y += CellHeight;
+                break;
         }
     }
 }

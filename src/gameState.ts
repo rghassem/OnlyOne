@@ -2,12 +2,12 @@ import { BoardEffect, BoardEffectType } from "./boardEffect";
 import { getLetter, setLetter, Letter } from "./board";
 
 export function updateState(changes: Array<BoardEffect>) {
-    const result = new Array<BoardEffect>();
+    let result = new Array<BoardEffect>();
 
     for (const change of changes) {
         switch (change.effect) {
             case BoardEffectType.Destroy:
-                result.concat(destroy(change.x, change.y));
+                result = result.concat(destroy(change.x, change.y));
                 break;
 
             case BoardEffectType.Fall:
