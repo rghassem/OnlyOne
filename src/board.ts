@@ -11,6 +11,25 @@ export enum Letter {
     Length
 }
 
+class LetterVisual {
+    constructor(
+        public char: string,
+        public name = '',
+        public color = "#ffffff"
+    ) { }
+}
+export const letterVisuals = new Map<Letter, LetterVisual>();
+letterVisuals.set(Letter.Blank, new LetterVisual(' '));
+letterVisuals.set(Letter.O, new LetterVisual('O', undefined, '#FFFF00'));
+letterVisuals.set(Letter.N, new LetterVisual('N', undefined, '#FFFF00'));
+letterVisuals.set(Letter.E, new LetterVisual('E', undefined, '#FFFF00'));
+letterVisuals.set(Letter.L, new LetterVisual('L', 'Left'));
+letterVisuals.set(Letter.R, new LetterVisual('R', 'Right'));
+letterVisuals.set(Letter.U, new LetterVisual('U', 'Up '));
+letterVisuals.set(Letter.D, new LetterVisual('D', 'Down'));
+letterVisuals.set(Letter.T, new LetterVisual('T', 'Twist'));
+
+
 export class LetterEntity {
     constructor(
         public letter: Letter,
@@ -21,7 +40,6 @@ export class LetterEntity {
 
 export const maxY = 16;
 export const maxX = 16
-
 export const gameboard = new Array<LetterEntity>();
 
 for (let y = 0; y < maxY; ++y) {

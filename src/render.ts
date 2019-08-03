@@ -1,4 +1,4 @@
-import { Letter, gameboard, maxX, maxY, getLetterEntity } from "./board";
+import { Letter, gameboard, maxX, maxY, getLetterEntity, letterVisuals, LetterEntity } from "./board";
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 
 const CellWidth = 30;
@@ -20,7 +20,7 @@ export function initializeLetters(app: PIXI.Application) {
     for (let y = 0; y < maxY; ++y) {
         for (let x = 0; x < maxX; ++x) {
             const entity = getLetterEntity(x, y)!; //guaranteed a letter at every coordinated
-            const newLetter = drawLetter(letterToCharacter(entity.letter), entity.x, entity.y, app);
+            const newLetter = drawLetter(entity.letter, entity.x, entity.y, app);
             pixiLetters.push(newLetter);
         }
     }
@@ -28,13 +28,10 @@ export function initializeLetters(app: PIXI.Application) {
 
 export function drawBoard(app: PIXI.Application) {
     pixiLetters.forEach(pixiLetter => {
-        app.stage.removeChild(pixiLetter);
-        pixiLetter.destroy()
+        pixiLetter.text = ' ';
     });
-    pixiLetters = [];
     for (const entity of gameboard) {
-        const newLetter = drawLetter(letterToCharacter(entity.letter), entity.x, entity.y, app);
-        pixiLetters.push(newLetter);
+        setStyle(getPixiLetter(entity.x, entity.y), entity.letter);
     }
 }
 
@@ -59,27 +56,12 @@ export function drawEffects(app: PIXI.Application, effects: Array<BoardEffect>) 
     }
 }
 
-function drawLetter(letter: string, x: number, y: number, app: PIXI.Application) {
-
-    const style = new PIXI.TextStyle({
-        fontFamily: 'Arial',
-        fontSize: 26,
-        fill: '#ffffff', // gradient
-        stroke: '#4a1850',
-        strokeThickness: 5,
-        dropShadow: true,
-        // dropShadowColor: '#000000',
-        // dropShadowBlur: 4,
-        // dropShadowAngle: Math.PI / 6,
-        // dropShadowDistance: 6,
-        wordWrap: true,
-        wordWrapWidth: 440,
-    });
-
+function drawLetter(letter: Letter, x: number, y: number, app: PIXI.Application) {
     const gridx = x * CellWidth;
     const gridy = y * CellHeight;
 
-    const text = new PIXI.Text(letter, style);
+    const text = new PIXI.Text(' ');
+    setStyle(text, letter);
     text.x = gridx;
     text.y = gridy;
 
@@ -94,16 +76,24 @@ function drawLetter(letter: string, x: number, y: number, app: PIXI.Application)
     return text;
 }
 
-function letterToCharacter(letter: Letter): string {
-    switch (letter) {
-        case Letter.O: return 'O';
-        case Letter.N: return 'N';
-        case Letter.E: return 'E';
-        case Letter.L: return 'L';
-        case Letter.R: return 'R';
-        case Letter.U: return 'U';
-        case Letter.D: return 'D';
-        case Letter.T: return 'T';
-        default: return ' ';
-    }
+function setStyle(pixiText: PIXI.Text, letter: Letter) {
+    const viz = letterVisuals.get(letter);
+
+    const style = new PIXI.TextStyle({
+        fontFamily: 'Arial',
+        fontSize: 26,
+        fill: viz ? viz.color : '#ffffff',
+        stroke: '#4a1850',
+        strokeThickness: 5,
+        dropShadow: true,
+        // dropShadowColor: '#000000',
+        // dropShadowBlur: 4,
+        // dropShadowAngle: Math.PI / 6,
+        // dropShadowDistance: 6,
+        wordWrap: true,
+        wordWrapWidth: 440,
+    });
+
+    pixiText.text = viz ? viz.char : ' ';
+    pixiText.style = style;
 }
