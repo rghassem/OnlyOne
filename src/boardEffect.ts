@@ -8,3 +8,8 @@ export interface BoardEffect {
     effect: BoardEffectType;
 }
 
+export interface MoveEffect extends BoardEffect {
+    toX: number,
+    toY: number
+}
+
