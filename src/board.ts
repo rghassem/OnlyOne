@@ -11,6 +11,7 @@ export enum Letter {
 
 export const rows = 16;
 export const cols = 16
+
 const gameboard = new Array<Letter>();
 
 for (let r = 0; r < rows; ++r) {
