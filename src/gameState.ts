@@ -44,7 +44,7 @@ function destroy(x: number, y: number) {
 
     //Everything above it falls
     const result = new Array<BoardEffect>();
-    for (let i = y - 1; i > 0; --i) {
+    for (let i = y - 1; i >= 0; --i) {
         result.push({
             x: x,
             y: i,
