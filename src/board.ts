@@ -38,8 +38,8 @@ export class LetterEntity {
     ) { }
 }
 
-export const maxY = 16;
-export const maxX = 16
+export const maxY = 6;
+export const maxX = 6;
 export const gameboard = new Array<LetterEntity>();
 
 for (let y = 0; y < maxY; ++y) {

@@ -1,6 +1,5 @@
 import { Letter, getLetterEntity, maxY, maxX } from "./board";
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
-import { updateState } from "./gameState";
 
 type LetterEffect = (x: number, y: number) => Array<BoardEffect>;
 

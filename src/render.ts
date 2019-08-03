@@ -30,6 +30,7 @@ export function drawBoard(app: PIXI.Application) {
     pixiLetters.forEach(pixiLetter => {
         pixiLetter.text = ' ';
     });
+    console.log(gameboard);
     for (const entity of gameboard) {
         setStyle(getPixiLetter(entity.x, entity.y), entity.letter);
     }
@@ -48,9 +49,9 @@ export function drawEffects(app: PIXI.Application, effects: Array<BoardEffect>) 
                 //letter.y += CellHeight;
                 break;
             case BoardEffectType.Move:
-                // const e = boardEffect as MoveEffect;
-                // letter.x = e.toX * CellWidth;
-                // letter.y = e.toY * CellHeight;
+                const e = boardEffect as MoveEffect;
+                letter.x = e.toX * CellWidth;
+                letter.y = e.toY * CellHeight;
                 break;
         }
     }
