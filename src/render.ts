@@ -77,8 +77,11 @@ function drawLetter(letter: Letter, x: number, y: number, app: PIXI.Application)
 
     text.interactive = true;
     text.buttonMode = true;
+
+    const vis = letterVisuals.get(letter)!;
+
     text.on('pointerover', () => text.style.fill = '#FF0000')
-        .on('pointerout', () => text.style.fill = '#ffffff')
+        .on('pointerout', () => text.style.fill = vis.color || '#ffffff')
         .on('pointerdown', () => events.onLetterClick && events.onLetterClick(x, y));
 
 
