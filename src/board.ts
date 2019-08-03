@@ -7,7 +7,9 @@ export enum Letter {
     R,
     U,
     D,
-    T,
+    // T,
+    W,
+    I,
     Length
 }
 
@@ -27,7 +29,9 @@ letterVisuals.set(Letter.L, new LetterVisual('L', 'Left'));
 letterVisuals.set(Letter.R, new LetterVisual('R', 'Right'));
 letterVisuals.set(Letter.U, new LetterVisual('U', 'Up '));
 letterVisuals.set(Letter.D, new LetterVisual('D', 'Down'));
-letterVisuals.set(Letter.T, new LetterVisual('T', 'Twist'));
+letterVisuals.set(Letter.W, new LetterVisual('W', 'Wall'));
+letterVisuals.set(Letter.I, new LetterVisual('I', 'Invisible'));
+// letterVisuals.set(Letter.T, new LetterVisual('T', 'Twist'));
 
 
 export class LetterEntity {
@@ -38,8 +42,8 @@ export class LetterEntity {
     ) { }
 }
 
-export const maxY = 16;
-export const maxX = 16
+export const maxY = 18;
+export const maxX = 10;
 export const gameboard = new Array<LetterEntity>();
 
 for (let y = 0; y < maxY; ++y) {

@@ -1,6 +1,5 @@
 import { Letter, getLetterEntity, maxY, maxX } from "./board";
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
-import { updateState } from "./gameState";
 
 type LetterEffect = (x: number, y: number) => Array<BoardEffect>;
 
@@ -16,12 +15,13 @@ export function onLetterPressed(x: number, y: number): Array<BoardEffect> {
 			return up(x, y);
 		case Letter.D:
 			return down(x, y);
-		case Letter.T:
-			return twist(x, y);
+		// case Letter.T:
+		// 	return twist(x, y);
+		case Letter.I:
+			return [];
 		default:
 			return itself(x, y);
 	}
-	return [];
 }
 
 function itself(x: number, y: number) {
@@ -41,6 +41,9 @@ function right(x: number, y: number) {
 		}
 	];
 	for (let i = x + 1; i < maxX; ++i) {
+		if (getLetterEntity(i, y)!.letter === Letter.W) {
+			break;
+		}
 		effects.push({
 			x: i,
 			y,
@@ -59,6 +62,9 @@ function left(x: number, y: number) {
 		}
 	];
 	for (let i = x - 1; i >= 0; --i) {
+		if (getLetterEntity(i, y)!.letter === Letter.W) {
+			break;
+		}
 		effects.push({
 			x: i,
 			y,
@@ -77,6 +83,9 @@ function up(x: number, y: number) {
 		}
 	];
 	for (let i = y - 1; i >= 0; --i) {
+		if (getLetterEntity(i, y)!.letter === Letter.W) {
+			break;
+		}
 		effects.push({
 			x,
 			y: i,
@@ -95,6 +104,9 @@ function down(x: number, y: number) {
 		}
 	];
 	for (let i = y + 1; i < maxY; ++i) {
+		if (getLetterEntity(i, y)!.letter === Letter.W) {
+			break;
+		}
 		effects.push({
 			x,
 			y: i,

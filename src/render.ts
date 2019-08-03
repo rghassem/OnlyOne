@@ -4,6 +4,7 @@ import { animate, TweeningFunctions } from "./animation";
 
 const CellWidth = 30;
 const CellHeight = 30;
+const offset = 250;
 
 export let events: {
     onLetterClick: ((x: number, y: number) => void) | null
@@ -31,8 +32,12 @@ export function drawBoard(app: PIXI.Application) {
     pixiLetters.forEach(pixiLetter => {
         pixiLetter.text = ' ';
     });
+    console.log(gameboard);
     for (const entity of gameboard) {
-        setStyle(getPixiLetter(entity.x, entity.y), entity.letter);
+        const pixiLetter = getPixiLetter(entity.x, entity.y);
+        // pixiLetter.x = entity.x * CellWidth;
+        // pixiLetter.y = entity.y * CellHeight;
+        setStyle(pixiLetter, entity.letter);
     }
 }
 
@@ -52,9 +57,9 @@ export async function drawEffects(app: PIXI.Application, effects: Array<BoardEff
                 promises.push(anim);
                 break;
             case BoardEffectType.Move:
-                // const e = boardEffect as MoveEffect;
-                // letter.x = e.toX * CellWidth;
-                // letter.y = e.toY * CellHeight;
+                const e = boardEffect as MoveEffect;
+                letter.x = e.toX * CellWidth;
+                letter.y = e.toY * CellHeight;
                 break;
         }
     }
@@ -62,7 +67,7 @@ export async function drawEffects(app: PIXI.Application, effects: Array<BoardEff
 }
 
 function drawLetter(letter: Letter, x: number, y: number, app: PIXI.Application) {
-    const gridx = x * CellWidth;
+    const gridx = offset + x * CellWidth;
     const gridy = y * CellHeight;
 
     const text = new PIXI.Text(' ');
