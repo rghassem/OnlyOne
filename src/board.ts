@@ -3,8 +3,8 @@ export enum Letter {
     O,
     N,
     E,
+    R, //lol
     L,
-    R,
     U,
     D,
     // T,
@@ -12,6 +12,8 @@ export enum Letter {
     I,
     C,
     // X,
+    Y,
+    F,
     Length
 }
 
@@ -25,27 +27,31 @@ class LetterVisual {
 }
 export const letterVisuals = new Map<Letter, LetterVisual>();
 letterVisuals.set(Letter.Blank, new LetterVisual(' '));
-letterVisuals.set(Letter.O, new LetterVisual('O', 'O', 'Get this to the bottom row!', '#FFFF00'));
-letterVisuals.set(Letter.N, new LetterVisual('N', 'N', 'Get this to the bottom row!', '#FFFF00'));
-letterVisuals.set(Letter.E, new LetterVisual('E', 'E', 'Get this to the bottom row!', '#FFFF00'));
-letterVisuals.set(Letter.L, new LetterVisual('L', 'Left', 'Destroys all letters to the left. Blocked by walls.'));
+letterVisuals.set(Letter.O, new LetterVisual('O', 'Get to the bottom!', 'Get this to the bottom row!', '#FFFF00'));
+letterVisuals.set(Letter.N, new LetterVisual('N', 'Get to the bottom!', 'Get this to the bottom row!', '#FFFF00'));
+letterVisuals.set(Letter.E, new LetterVisual('E', 'Get to the bottom!', 'Get this to the bottom row!', '#FFFF00'));
 letterVisuals.set(Letter.R, new LetterVisual('R', 'Right', 'Destroys all letters to the right. Blocked by walls.'));
+letterVisuals.set(Letter.L, new LetterVisual('L', 'Left', 'Destroys all letters to the left. Blocked by walls.'));
 letterVisuals.set(Letter.U, new LetterVisual('U', 'Up', 'Destroys all letters above it. Blocked by walls.'));
 letterVisuals.set(Letter.D, new LetterVisual('D', 'Down', 'Destroys all letters below it. Blocked by walls.'));
 letterVisuals.set(Letter.W, new LetterVisual('W', 'Wall', 'Blocks all letter destruction effects. Can be destroyed normally.', '#83A0A8'));
 letterVisuals.set(Letter.I, new LetterVisual('I', 'Invisible', 'Can only be destroyed by letter abilities.', '#4FA4E4'));
 letterVisuals.set(Letter.C, new LetterVisual('C', 'Cross', 'Destroys one block in each cardinal direction.'));
+letterVisuals.set(Letter.Y, new LetterVisual('Y', 'Y Bomb', 'We kinda just liked the pattern.', '#931f1d'));
+letterVisuals.set(Letter.Y, new LetterVisual('F', 'F Bomb', 'You kiss your mother with that mouth?', '#931f1d'));
 // letterVisuals.set(Letter.X, new LetterVisual('X', 'X'));
 // letterVisuals.set(Letter.T, new LetterVisual('T', 'Twist'));
 
 export const letterFrequency = new Map<Letter, number>();
-letterFrequency.set(Letter.L, 16);
-letterFrequency.set(Letter.R, 16);
-letterFrequency.set(Letter.U, 5);
-letterFrequency.set(Letter.D, 15);
-letterFrequency.set(Letter.W, 19);
-letterFrequency.set(Letter.I, 14);
-letterFrequency.set(Letter.C, 15);
+letterFrequency.set(Letter.L, 11);
+letterFrequency.set(Letter.R, 11);
+letterFrequency.set(Letter.U, 11);
+letterFrequency.set(Letter.D, 11);
+letterFrequency.set(Letter.W, 11);
+letterFrequency.set(Letter.I, 11);
+letterFrequency.set(Letter.C, 11);
+letterFrequency.set(Letter.Y, 11);
+letterFrequency.set(Letter.F, 11);
 
 export function getRandomLetter() {
     let rand = Math.random() * 100;
