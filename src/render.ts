@@ -84,7 +84,6 @@ function drawLetter(letter: Letter, x: number, y: number, app: PIXI.Application)
         .on('pointerout', () => text.style.fill = vis.color || '#ffffff')
         .on('pointerdown', () => events.onLetterClick && events.onLetterClick(x, y));
 
-
     app.stage.addChild(text);
     return text;
 }
