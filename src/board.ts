@@ -53,7 +53,7 @@ letterFrequency.set(Letter.W, 11);
 letterFrequency.set(Letter.I, 11);
 letterFrequency.set(Letter.C, 11);
 letterFrequency.set(Letter.Y, 11);
-letterFrequency.set(Letter.F, 11);
+letterFrequency.set(Letter.F, 12);
 
 export function getRandomLetter() {
     let rand = Math.random() * 100;
