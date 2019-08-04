@@ -37,6 +37,27 @@ letterVisuals.set(Letter.C, new LetterVisual('C', 'Cross'));
 // letterVisuals.set(Letter.X, new LetterVisual('X', 'X'));
 // letterVisuals.set(Letter.T, new LetterVisual('T', 'Twist'));
 
+export const letterFrequency = new Map<Letter, number>();
+letterFrequency.set(Letter.L, 16);
+letterFrequency.set(Letter.R, 16);
+letterFrequency.set(Letter.U, 5);
+letterFrequency.set(Letter.D, 15);
+letterFrequency.set(Letter.W, 19);
+letterFrequency.set(Letter.I, 14);
+letterFrequency.set(Letter.C, 15);
+
+export function getRandomLetter() {
+    let rand = Math.random() * 100;
+    console.log(`rand=${rand}`)
+    let sum = 0;
+    for (let key of letterFrequency.keys()) {
+        sum += letterFrequency.get(key)!;
+        if (rand <= sum) {
+            return key;
+        }
+    }
+    return Letter.Blank;
+}
 
 export class LetterEntity {
     constructor(
@@ -54,14 +75,14 @@ export function resetBoard() {
     gameboard = [];
     for (let y = 0; y < maxY; ++y) {
         for (let x = 0; x < maxX; ++x) {
-            addLetter(randomLetter(), x, y);
+            addLetter(getRandomLetter(), x, y);
         }
     }
-}
-
-
-function randomLetter() {
-    return Math.floor(Math.random() * (Letter.Length - 1)) + 1;
+    //This is super confusing but it sets the O, N, and E somewhere at the top.
+    const topArea = 50;
+    for (let i = Letter.O; i <= Letter.E; ++i) {
+        gameboard[Math.floor(Math.random() * topArea)].letter = i;
+    }
 }
 
 export function addLetter(letter: Letter, x: number, y: number) {
