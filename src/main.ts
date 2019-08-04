@@ -4,7 +4,7 @@ import { updateState, checkWinAndResetOneScore } from "./gameState";
 import { runAnimations, wait } from "./animation";
 import { resetBoard, maxY, maxX, gameboard, Letter } from "./board";
 import { makeButton } from "./button";
-import { shootSound, bonusSound } from "./sounds";
+import { shootSound, bonusSound, bgmusic } from "./sounds";
 import { levels, winScreen } from "./levels";
 import { BoardEffectType, BoardEffect } from "./boardEffect";
 
@@ -18,6 +18,7 @@ const app = new PIXI.Application();
 // The application will create a canvas element for you that you
 // can then insert into the DOM.
 document.body.appendChild(app.view);
+
 
 // // Load them google fonts before starting...!
 (<any>window).WebFontConfig = {
@@ -90,6 +91,7 @@ function start() {
 
     let resolving = false;
     events.onLetterClick = (x: number, y: number) => {
+        bgmusic();
         if (resolving) return;
         resolving = true;
         resolveMove(x, y).then(() => resolving = false);

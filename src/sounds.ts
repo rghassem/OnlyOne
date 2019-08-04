@@ -7,8 +7,9 @@ const volume = 0.5;
 
 const explosion = "assets/explosion.wav";
 const bounce = "assets/bounce.wav";
+const music = "assets/PerituneMaterial_Mealtime_Rag.mp3";
 
-sounds.load([explosion, bounce]);
+sounds.load([explosion, bounce, music]);
 
 export function shootSound() {
     soundEffect(
@@ -53,3 +54,9 @@ export function bonusSound() {
     soundEffect(1174.66, 0, 0.3, "square", volume, 0, 0.2);
 }
 
+export function bgmusic() {
+    if (!sounds[music].playing) {
+        sounds[music].play();
+        sounds[music].loop = true;
+    } 
+}

@@ -239,7 +239,6 @@ function drawLetter(letter: Letter, x: number, y: number, stage: PIXI.Container)
     text.on('pointerover', () => {
         const letter = letterVisuals.get(getLetterEntity(posX, posY)!.letter)!;
         text.style.fill = '#FF0000';
-        updateTooltip(`${letter.name}`);
     })
         .on('pointerout', () => {
             const letter = letterVisuals.get(getLetterEntity(posX, posY)!.letter)!;

@@ -3,14 +3,15 @@ High Priority
 - Put win on screen and reset level <DONE>
 - Tutorial <DONE MINIMUM>
 * Win screen jingle <DONE> 
+* Win screen jingle <DONE> 
 * Actually scale window to fit different resolutions. <Reza>
 * New letters drop in. <Reza>
 * Golden scoring line <Reza>
+* Play music better <Reza>
 
-* Reduce vertical height and add word name on top. Stays after press. <Mark>
-* Find and add music <Mark>
 * Y Letter + ability <Mark>
 * Bomb chain <Mark>
+* Add Credits (Include Peritune for music)
 * Win streak counter <Mark>
 * Same font in reset button <Mark>
 
