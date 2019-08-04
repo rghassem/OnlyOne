@@ -40,7 +40,7 @@ letterVisuals.set(Letter.W, new LetterVisual('W', 'Wall', 'Blocks all letter des
 letterVisuals.set(Letter.I, new LetterVisual('I', 'Invisible', 'Can only be destroyed by letter abilities.', '#4FA4E4'));
 letterVisuals.set(Letter.C, new LetterVisual('C', 'Cross', 'Destroys one block in each cardinal direction.'));
 letterVisuals.set(Letter.Y, new LetterVisual('Y', 'Y Bomb', 'We kinda just liked the pattern.', '#931f1d'));
-letterVisuals.set(Letter.Y, new LetterVisual('F', 'F Bomb', 'You kiss your mother with that mouth?', '#931f1d'));
+letterVisuals.set(Letter.F, new LetterVisual('F', 'F Bomb', 'You kiss your mother with that mouth?', '#931f1d'));
 // letterVisuals.set(Letter.X, new LetterVisual('X', 'X'));
 // letterVisuals.set(Letter.T, new LetterVisual('T', 'Twist'));
 
