@@ -83,7 +83,13 @@ function fall(x: number, y: number, toY: number) {
 }
 
 function score(x: number, y: number) {
-    const entity = getLetterEntity(x, y);
+    const entity = getLetterEntity(x, y)!;
+    letterOScored = letterOScored || entity.letter === Letter.O;
+    letterNScored = letterNScored || entity.letter === Letter.N;
+    letterEScored = letterEScored || entity.letter === Letter.E;
+    if (letterOScored && letterNScored && letterEScored) {
+        console.log("You Win!")
+    }
     return [
         {
             x,
