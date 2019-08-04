@@ -1,4 +1,4 @@
-export function makeButton(stage: PIXI.Container, x: number, y: number, width: number, height: number, buttonText: string, onClick: () => void) {
+export function makeButton(stage: PIXI.Container, width: number, height: number, buttonText: string, onClick: () => void) {
     const button = new PIXI.Graphics();
     //Border
     const borderWidth = 2;
@@ -10,8 +10,6 @@ export function makeButton(stage: PIXI.Container, x: number, y: number, width: n
     text.x = button.width / 2;
     text.y = button.height / 2;
     stage.addChild(button);
-    button.x = x;
-    button.y = y;
     button.interactive = true;
     button
         .on('pointerover', () => {
@@ -23,6 +21,7 @@ export function makeButton(stage: PIXI.Container, x: number, y: number, width: n
             draw(button, width, height, borderWidth, 0x330303, 0x660303);
         })
         .on('pointerdown', () => onClick());
+    return button;
 }
 
 function draw(button: PIXI.Graphics, width: number, height: number, borderWidth: number, color: number, borderColor: number) {

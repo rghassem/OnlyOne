@@ -1,8 +1,8 @@
 import { onLetterPressed } from "./letters";
-import { drawEffects, events, drawBoard, resetScreen, CellHeight } from "./render";
+import { drawEffects, events, drawBoard, resetScreen, CellHeight, CellWidth } from "./render";
 import { updateState } from "./gameState";
 import { runAnimations } from "./animation";
-import { resetBoard, maxY } from "./board";
+import { resetBoard, maxY, maxX } from "./board";
 import { makeButton } from "./button";
 
 // The application will create a renderer using WebGL, if possible,
@@ -10,15 +10,34 @@ import { makeButton } from "./button";
 // and the root stage PIXI.Container.
 const app = new PIXI.Application();
 
+//Letter stage
 const letterStage = new PIXI.Container();
-letterStage.x = 220;
 letterStage.y = 10;
 app.stage.addChild(letterStage);
 
 //Reset button
-const resetButtonX = letterStage.x * 3;
-const resetButtonY = maxY * CellHeight + letterStage.y - 50;
-makeButton(app.stage, resetButtonX, resetButtonY, 100, 50, "Reset", () => reset());
+const button = makeButton(app.stage, 100, 50, "Reset", () => reset());
+
+
+function resize() {
+    app.renderer.view.style.position = "absolute";
+    app.renderer.view.style.display = "block";
+    app.renderer.autoResize = true;
+
+    app.renderer.resize(window.innerWidth, window.innerHeight);
+    const letterStageWidth = CellWidth * maxX;
+    const letterStageHeight = CellHeight * maxY;
+    letterStage.x = window.innerWidth / 2 - letterStageWidth / 2;
+    letterStage.y = window.innerHeight / 2 - letterStageHeight / 2;
+
+    button.x = letterStage.x + letterStageWidth + 100;
+    button.y = letterStage.y + letterStageHeight - 50;
+
+    letterStage.scale.set(1);
+}
+
+resize();
+window.onresize = resize;
 
 // The application will create a canvas element for you that you
 // can then insert into the DOM.
