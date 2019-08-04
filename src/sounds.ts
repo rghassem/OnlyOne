@@ -56,7 +56,8 @@ export function bonusSound() {
 
 export function bgmusic() {
     if (!sounds[music].playing) {
+        sounds[music].volume = 0.3;
         sounds[music].play();
         sounds[music].loop = true;
-    } 
+    }
 }
