@@ -100,15 +100,24 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
 
 function drawScore(stage: PIXI.Container) {
 
+    const scoringLine = new PIXI.Graphics();
+    scoringLine.lineStyle(3, 0xffff00);
+    scoringLine.moveTo(-CellWidth / 2, 0);
+    scoringLine.lineTo(maxX * CellWidth, 0);
+    scoringLine.x = 0;
+    scoringLine.y = maxY * CellHeight;
+    stage.addChild(scoringLine);
+
+    const yPadding = 15;
 
     textO.x = (maxX * CellWidth) / 2 - 32 - 64;
-    textO.y = maxY * CellHeight + 10;
+    textO.y = maxY * CellHeight + yPadding;
 
     textN.x = (maxX * CellWidth) / 2 - 32;
-    textN.y = maxY * CellHeight + 10;
+    textN.y = maxY * CellHeight + yPadding;
 
     textE.x = (maxX * CellWidth) / 2 - 32 + 64;
-    textE.y = maxY * CellHeight + 10;
+    textE.y = maxY * CellHeight + yPadding;
     textO.style = new PIXI.TextStyle({
         fontFamily: 'VT323',
         fontSize: 64,
