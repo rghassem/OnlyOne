@@ -1,6 +1,6 @@
 import { maxX, maxY } from "./board";
 
-export const levels = [levelOne, levelTwo, levelThree];
+export const levels = [levelOne, levelTwo, levelThree, levelFour, levelFive];
 
 export function winScreen() {
     return ' '
@@ -13,32 +13,58 @@ function levelOne() {
     return ' '
         .repeat(maxX * (maxY - 2))
         + '   ONE    '
-        + 'RIIWIIIIIL';
+        + 'IIIWIIIIIL';
 }
 
 function levelTwo() {
     const result = ' '
-        .repeat(maxX * (maxY - 7))
+        .repeat(maxX * (maxY - 5))
         + 'IMUSIC BYI'
         + 'IPERITUNEI'
-        + 'IIIIIIIIII'
-        + 'IIIOIIIIII'
-        + 'IIIWNIIIII'
-        + 'IIIIDEIIII'
-        + 'IIIUIICIII';
+        + 'IIDIIIIIDI'
+        + 'IIIIONIIII'
+        + 'RIIIIIIIII'
+
     return result;
 }
 
 function levelThree() {
     const result = ' '
-        .repeat(maxX * (maxY - 8))
+        .repeat(maxX * (maxY - 6))
         + 'BY  REZA G'
         + 'AND MARK D'
-        + 'IIIIIIIIII'
-        + 'IIIIIIIIII'
-        + 'IIIOIIIIII'
-        + 'IIIYNIIIII'
-        + 'RIIIYEIIII'
-        + 'IICIIICIII';
+        + 'OIIOIIIIII'
+        + 'DIIWNIIIIW'
+        + 'IIIIDEIIII'
+        + 'WIIUIICIIU';
+    return result;
+}
+
+function levelFour() {
+    const result = ' '
+        .repeat(maxX * (maxY - 7))
+        + 'IIIIIIINII'
+        + 'IIIIIIIINI'
+        + 'IIIIIIICII'
+        + 'IIIIIIIIYI'
+        + 'RIOIIIRCII'
+        + 'IIYIDEIIIC'
+        + 'RIIUIICWWW';
+    return result;
+}
+
+function levelFive() {
+    const result = ' '
+        .repeat(maxX * (maxY - 10))
+        + '**OINIE****'
+        + 'NIIIIIOIINI'
+        + 'IIIEIIICII'
+        + '**********'
+        + '**********'
+        + '**********'
+        + '**********'
+        + '**********'
+        + '**********'
+        + '**********';
     return result;
 }
