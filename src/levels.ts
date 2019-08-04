@@ -30,8 +30,9 @@ function levelTwo() {
 
 function levelThree() {
     const result = ' '
-        .repeat(maxX * (maxY - 5))
-        + 'IIIIIIIIII'
+        .repeat(maxX * (maxY - 6))
+        + 'BY  REZA G'
+        + 'AND MARK D'
         + 'OIIOIIIIII'
         + 'DIIWNIIIIW'
         + 'IIIIDEIIII'
@@ -67,3 +68,17 @@ function levelFive() {
         + '**********';
     return result;
 }
+
+// function levelThree() {
+//     const result = ' '
+//         .repeat(maxX * (maxY - 8))
+//         + 'BY  REZA G'
+//         + 'AND MARK D'
+//         + 'IIIIIIIIII'
+//         + 'IIIIIIIIII'
+//         + 'IIIOIIIIII'
+//         + 'IIIWNIIIII'
+//         + 'IIIIDEIIII'
+//         + 'IIIUIICIII';
+//     return result;
+// }

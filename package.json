@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "build": "webpack --config webpack.config.js",
+    "prod": "webpack -p --optimize-minimize --config webpack.config.js",
     "watch": "webpack-dev-server",
     "start": "run-p build watch",
     "test": "echo \"Error: no test specified\" && exit 1"

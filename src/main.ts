@@ -21,7 +21,9 @@ app.stage.addChild(letterStage);
 
 
 //Reset button
-let button: PIXI.Graphics
+let button: PIXI.Graphics;
+
+let skipButton: PIXI.Graphics;
 
 
 function resize() {
@@ -36,8 +38,13 @@ function resize() {
     letterStage.y = window.innerHeight / 2 - letterStageHeight / 2;
 
     if (button) {
-        button.x = letterStage.x + letterStageWidth + 100;
-        button.y = letterStage.y + letterStageHeight - 50;
+        button.x = letterStage.x + 70;
+        button.y = letterStage.y + letterStageHeight + 75;
+    }
+
+    if (skipButton) {
+        skipButton.x = letterStage.x + 170;
+        skipButton.y = letterStage.y + letterStageHeight + 75;
     }
 
 }
@@ -86,9 +93,15 @@ function start() {
 
     reset(levels[currentLevel]());
 
-    button = makeButton(app.stage, 100, 50, "Reset", () => {
+    button = makeButton(app.stage, 80, 28, "Reset", () => {
         shootSound();
         reset(currentLevel < levels.length ? levels[currentLevel]() : undefined);
+    });
+
+    skipButton = makeButton(app.stage, 80, 28, "Skip", () => {
+        shootSound();
+        currentLevel = 300;
+        reset();
     });
 
     resize();
