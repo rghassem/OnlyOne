@@ -168,7 +168,7 @@ function up(x: number, y: number) {
 		}
 	];
 	for (let i = y - 1; i >= 0; --i) {
-		const entity = getLetterEntity(i, y);
+		const entity = getLetterEntity(x, i);
 		if (entity && entity.letter === Letter.W) {
 			break;
 		}
@@ -190,7 +190,7 @@ function down(x: number, y: number) {
 		}
 	];
 	for (let i = y + 1; i < maxY; ++i) {
-		const entity = getLetterEntity(i, y);
+		const entity = getLetterEntity(x, i);
 		if (entity && entity.letter === Letter.W) {
 			break;
 		}

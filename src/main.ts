@@ -15,26 +15,52 @@ app.stage.addChild(letterStage);
 // can then insert into the DOM.
 document.body.appendChild(app.view);
 
-//Run animation system
-app.ticker.add(() => {
-    runAnimations(app.ticker.elapsedMS / 1000);
-});
+// // Load them google fonts before starting...!
+(<any>window).WebFontConfig = {
+    google: {
+        families: ['VT323'],
+    },
 
-initializeLetters(letterStage);
+    active() {
+        start();
+    },
+};
 
-let resolving = false;
-events.onLetterClick = (x: number, y: number) => {
-    if (resolving) return;
-    resolving = true;
-    resolveMove(x, y).then(() => resolving = false);
-}
-
-async function resolveMove(x: number, y: number) {
-    let effects = onLetterPressed(x, y);
-    while (effects.length !== 0) {
-        await drawEffects(letterStage, effects);
-        effects = updateState(effects);
+/* eslint-disable */
+// include the web-font loader script
+(function () {
+    const wf = document.createElement('script');
+    wf.src = `${document.location.protocol === 'https:' ? 'https' : 'http'
+        }://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js`;
+    wf.type = 'text/javascript';
+    wf.async = true;
+    const s = document.getElementsByTagName('script')[0];
+    if (s.parentNode) {
+        s.parentNode.insertBefore(wf, s);
     }
-    drawBoard(letterStage);
-}
+}());
+/* eslint-enabled */
 
+function start() {
+    //Run animation system
+    app.ticker.add(() => {
+        runAnimations(app.ticker.elapsedMS / 1000);
+    });
+    initializeLetters(letterStage);
+
+    let resolving = false;
+    events.onLetterClick = (x: number, y: number) => {
+        if (resolving) return;
+        resolving = true;
+        resolveMove(x, y).then(() => resolving = false);
+    }
+
+    async function resolveMove(x: number, y: number) {
+        let effects = onLetterPressed(x, y);
+        while (effects.length !== 0) {
+            await drawEffects(letterStage, effects);
+            effects = updateState(effects);
+        }
+        drawBoard(letterStage);
+    }
+}
