@@ -8,7 +8,7 @@ import { runAnimations } from "./animation";
 // and the root stage PIXI.Container.
 const app = new PIXI.Application();
 const letterStage = new PIXI.Container();
-letterStage.x = 250;
+letterStage.x = 220;
 letterStage.y = 10;
 app.stage.addChild(letterStage);
 
