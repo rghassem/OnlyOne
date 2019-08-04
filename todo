@@ -1,17 +1,12 @@
 
 High Priority
-<<<<<<< HEAD
 - Put win on screen and reset level <DONE>
 - Tutorial <DONE MINIMUM>
-* Win screen jingle <DONE> 
-* Win screen jingle <DONE> 
-=======
-* Win screen jingle <Reza> 
->>>>>>> afbac3035f27fa40591288ddcbc9b9b191af8b6b
-* Actually scale window to fit different resolutions. <Reza>
-* New letters drop in. <Reza>
-* Golden scoring line <Reza>
-* Play music better <Reza>
+- Win screen jingle <DONE> 
+- New letters drop in. <DONE>
+- Golden scoring line <DONE>
+- Play music better <Reza> seems fine?
+- Actually scale window to fit different resolutions. <TOO LAZY>
 
 * Bomb chain <Mark>
 * Win streak counter <Mark>
