@@ -2,6 +2,7 @@ import { Letter, gameboard, maxX, maxY, getLetterEntity, letterVisuals, LetterEn
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 import { animate, TweeningFunctions } from "./animation";
 import { letterOScored, letterNScored, letterEScored } from "./gameState";
+import { PublicKeyInput } from "crypto";
 
 export const CellWidth = 35;
 export const CellHeight = CellWidth;
@@ -37,6 +38,8 @@ export function resetScreen(stage: PIXI.Container) {
         }
     }
     drawScore(stage);
+    drawDescription(stage);
+    drawTooltip(stage);
 }
 
 export function drawBoard(stage: PIXI.Container) {
@@ -161,6 +164,50 @@ function updateScoredLetters() {
     }
 }
 
+export const description = new PIXI.Text("Get O/N/E to the bottom row! \nDestroy them and it's game over!");
+
+function drawDescription(stage: PIXI.Container) {
+    description.style = new PIXI.TextStyle({
+        fontFamily: 'VT323',
+        fontSize: 24,
+        fill: '#ffffff',
+        stroke: '#4a1850',
+        strokeThickness: 5,
+        dropShadow: true,
+        wordWrap: true,
+        wordWrapWidth: 200,
+    });
+    
+    description.x = 400;
+    description.y = 100;
+    
+    stage.addChild(description);
+}
+
+export const tooltip = new PIXI.Text('');
+
+function drawTooltip(stage: PIXI.Container) {
+    tooltip.style = new PIXI.TextStyle({
+        fontFamily: 'VT323',
+        fontSize: 24,
+        fill: '#ffffff',
+        stroke: '#4a1850',
+        strokeThickness: 5,
+        dropShadow: true,
+        wordWrap: true,
+        wordWrapWidth: 200,
+    });
+    
+    tooltip.x = 400;
+    tooltip.y = 300;
+    
+    stage.addChild(tooltip);
+}
+
+function updateTooltip(text: string) {
+    tooltip.text = text;
+}
+
 function drawLetter(letter: Letter, x: number, y: number, stage: PIXI.Container) {
     const gridx = x * CellWidth;
     const gridy = y * CellHeight;
@@ -175,8 +222,19 @@ function drawLetter(letter: Letter, x: number, y: number, stage: PIXI.Container)
 
     const vis = letterVisuals.get(letter)!;
 
-    text.on('pointerover', () => text.style.fill = '#FF0000')
-        .on('pointerout', () => text.style.fill = vis.color || '#ffffff')
+    const posX = x;
+    const posY = y;
+
+    text.on('pointerover', () => {
+            const letter = letterVisuals.get(getLetterEntity(posX, posY)!.letter)!;
+            text.style.fill = '#FF0000';
+            updateTooltip(`-${letter.name}-\n${letter.description}`);
+        })
+        .on('pointerout', () => {
+            const letter = letterVisuals.get(getLetterEntity(posX, posY)!.letter)!;
+            text.style.fill = letter.color || "#FFFFFF";
+            updateTooltip('');
+        })
         .on('pointerdown', () => events.onLetterClick && events.onLetterClick(x, y));
 
     stage.addChild(text);
