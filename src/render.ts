@@ -1,6 +1,7 @@
 import { Letter, gameboard, maxX, maxY, getLetterEntity, letterVisuals, LetterEntity } from "./board";
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 import { animate, TweeningFunctions } from "./animation";
+import { resolve } from "url";
 
 const CellWidth = 30;
 const CellHeight = 30;
@@ -48,6 +49,7 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
         switch (boardEffect.effect) {
             case BoardEffectType.Destroy:
                 letter.text = ' ';
+                await ghettoAssExplosion(stage, boardEffect, 100);
                 break;
             case BoardEffectType.Fall:
                 const fallEffect = boardEffect as MoveEffect;
@@ -108,4 +110,44 @@ function setStyle(pixiText: PIXI.Text, letter: Letter) {
 
     pixiText.text = viz ? viz.char : ' ';
     pixiText.style = style;
+}
+
+async function ghettoAssExplosion(stage: PIXI.Container, boardEffect: BoardEffect, durationMS: number) {
+    return new Promise<void>((resolve, reject) => {
+        const explosion = new PIXI.Graphics();
+        stage.addChild(explosion);
+        explosion.x = (boardEffect.x * CellWidth) + CellWidth / 4;
+        explosion.y = (boardEffect.y * CellHeight) + CellHeight / 4;
+        const time = durationMS;
+        let elapsed = 0;
+        let previous: number;
+        const startingRadius = 0.01;
+        const endingRadius = 15;
+        const frame = (now: number) => {
+            let delta: number
+            if (previous) {
+                delta = now - previous;
+            }
+            else {
+                delta = 0;
+            }
+            previous = now;
+            elapsed += delta;
+            let progress = (elapsed / time);
+            const radius = startingRadius + (endingRadius - startingRadius) * progress;
+            explosion.clear();
+            explosion.beginFill(0xE25822);
+            explosion.drawCircle(0, 0, radius);
+            explosion.endFill();
+            if (elapsed < time) {
+                requestAnimationFrame(frame);
+            }
+            else {
+                stage.removeChild(explosion);
+                explosion.destroy();
+                resolve();
+            }
+        }
+        requestAnimationFrame(frame);
+    });
 }
