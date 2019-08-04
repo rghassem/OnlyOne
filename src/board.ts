@@ -7,7 +7,7 @@ export enum Letter {
     R,
     U,
     D,
-    // T,
+    T,
     W,
     I,
     C,
@@ -35,7 +35,7 @@ letterVisuals.set(Letter.W, new LetterVisual('W', 'Wall', '#83A0A8'));
 letterVisuals.set(Letter.I, new LetterVisual('I', 'Invisible', '#4FA4E4'));
 letterVisuals.set(Letter.C, new LetterVisual('C', 'Cross'));
 letterVisuals.set(Letter.X, new LetterVisual('X', 'X'));
-// letterVisuals.set(Letter.T, new LetterVisual('T', 'Twist'));
+letterVisuals.set(Letter.T, new LetterVisual('T', 'Twist'));
 
 
 export class LetterEntity {

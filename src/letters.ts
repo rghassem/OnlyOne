@@ -16,8 +16,8 @@ export function onLetterPressed(x: number, y: number): Array<BoardEffect> {
 			return up(x, y);
 		case Letter.D:
 			return down(x, y);
-		// case Letter.T:
-		// 	return twist(x, y);
+		case Letter.T:
+			return twist(x, y);
 		case Letter.I:
 			return [];
 		case Letter.C:
@@ -124,7 +124,8 @@ function right(x: number, y: number) {
 		}
 	];
 	for (let i = x + 1; i < maxX; ++i) {
-		if (getLetterEntity(i, y)!.letter === Letter.W) {
+		const entity = getLetterEntity(i, y);
+		if (entity && entity.letter === Letter.W) {
 			break;
 		}
 		effects.push({
@@ -145,7 +146,8 @@ function left(x: number, y: number) {
 		}
 	];
 	for (let i = x - 1; i >= 0; --i) {
-		if (getLetterEntity(i, y)!.letter === Letter.W) {
+		const entity = getLetterEntity(i, y);
+		if (entity && entity.letter === Letter.W) {
 			break;
 		}
 		effects.push({
@@ -166,7 +168,8 @@ function up(x: number, y: number) {
 		}
 	];
 	for (let i = y - 1; i >= 0; --i) {
-		if (getLetterEntity(i, y)!.letter === Letter.W) {
+		const entity = getLetterEntity(i, y);
+		if (entity && entity.letter === Letter.W) {
 			break;
 		}
 		effects.push({
@@ -187,7 +190,8 @@ function down(x: number, y: number) {
 		}
 	];
 	for (let i = y + 1; i < maxY; ++i) {
-		if (getLetterEntity(i, y)!.letter === Letter.W) {
+		const entity = getLetterEntity(i, y);
+		if (entity && entity.letter === Letter.W) {
 			break;
 		}
 		effects.push({
@@ -248,7 +252,7 @@ type Position = { x: number, y: number };
 
 function twist(x: number, y: number) {
 	const letters = neighbors(x, y);
-	const effects = [];
+	const effects = itself(x, y);
 
 	for (let i = 0; i < letters.length; ++i) {
 		const letter = letters[i];

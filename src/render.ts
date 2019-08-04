@@ -4,7 +4,6 @@ import { animate, TweeningFunctions } from "./animation";
 
 const CellWidth = 30;
 const CellHeight = 30;
-const offset = 250;
 
 export let events: {
     onLetterClick: ((x: number, y: number) => void) | null
@@ -18,17 +17,17 @@ function getPixiLetter(x: number, y: number) {
     return pixiLetters[x + (maxX * y)];
 }
 
-export function initializeLetters(app: PIXI.Application) {
+export function initializeLetters(stage: PIXI.Container) {
     for (let y = 0; y < maxY; ++y) {
         for (let x = 0; x < maxX; ++x) {
             const entity = getLetterEntity(x, y)!; //guaranteed a letter at every coordinated
-            const newLetter = drawLetter(entity.letter, entity.x, entity.y, app);
+            const newLetter = drawLetter(entity.letter, entity.x, entity.y, stage);
             pixiLetters.push(newLetter);
         }
     }
 }
 
-export function drawBoard(app: PIXI.Application) {
+export function drawBoard(stage: PIXI.Container) {
     pixiLetters.forEach(pixiLetter => {
         pixiLetter.text = ' ';
     });
@@ -41,7 +40,7 @@ export function drawBoard(app: PIXI.Application) {
     }
 }
 
-export async function drawEffects(app: PIXI.Application, effects: Array<BoardEffect>) {
+export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEffect>) {
     const promises = new Array<Promise<void>>();
     for (const boardEffect of effects) {
         const letter = getPixiLetter(boardEffect.x, boardEffect.y);
@@ -66,8 +65,8 @@ export async function drawEffects(app: PIXI.Application, effects: Array<BoardEff
     await Promise.all(promises);
 }
 
-function drawLetter(letter: Letter, x: number, y: number, app: PIXI.Application) {
-    const gridx = offset + x * CellWidth;
+function drawLetter(letter: Letter, x: number, y: number, stage: PIXI.Container) {
+    const gridx = x * CellWidth;
     const gridy = y * CellHeight;
 
     const text = new PIXI.Text(' ');
@@ -85,7 +84,7 @@ function drawLetter(letter: Letter, x: number, y: number, app: PIXI.Application)
         .on('pointerdown', () => events.onLetterClick && events.onLetterClick(x, y));
 
 
-    app.stage.addChild(text);
+    stage.addChild(text);
     return text;
 }
 
