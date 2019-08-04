@@ -7,6 +7,8 @@ export function onLetterPressed(x: number, y: number): Array<BoardEffect> {
 	const entity = getLetterEntity(x, y);
 	if (!entity) return [];
 	switch (entity.letter) {
+		case Letter.Blank:
+			return [];
 		case Letter.L:
 			return left(x, y);
 		case Letter.R:
