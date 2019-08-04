@@ -22,6 +22,7 @@ export enum Letter {
     S,
     P,
     T,
+    G,
     Length
 }
 
@@ -54,6 +55,7 @@ letterVisuals.set(Letter.K, new LetterVisual('K', 'K'));
 letterVisuals.set(Letter.S, new LetterVisual('S', 'S'));
 letterVisuals.set(Letter.P, new LetterVisual('P', 'P'));
 letterVisuals.set(Letter.T, new LetterVisual('T', 'T'));
+letterVisuals.set(Letter.G, new LetterVisual('G', 'G'));
 
 export const letterFrequency = new Map<Letter, number>();
 letterFrequency.set(Letter.L, 15);

@@ -1,6 +1,6 @@
 import { maxX, maxY } from "./board";
 
-export const levels = [levelOne, levelTwo];
+export const levels = [levelOne, levelTwo, levelThree];
 
 export function winScreen() {
     return ' '
@@ -21,6 +21,20 @@ function levelTwo() {
         .repeat(maxX * (maxY - 7))
         + 'IMUSIC BYI'
         + 'IPERITUNEI'
+        + 'IIIIIIIIII'
+        + 'IIIOIIIIII'
+        + 'IIIWNIIIII'
+        + 'IIIIDEIIII'
+        + 'IIIUIICIII';
+    return result;
+}
+
+function levelThree() {
+    const result = ' '
+        .repeat(maxX * (maxY - 8))
+        + 'BY  REZA G'
+        + 'AND MARK D'
+        + 'IIIIIIIIII'
         + 'IIIIIIIIII'
         + 'IIIOIIIIII'
         + 'IIIWNIIIII'
