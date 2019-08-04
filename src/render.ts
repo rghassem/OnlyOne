@@ -233,9 +233,12 @@ function drawLetter(letter: Letter, x: number, y: number, stage: PIXI.Container)
         .on('pointerout', () => {
             const letter = letterVisuals.get(getLetterEntity(posX, posY)!.letter)!;
             text.style.fill = letter.color || "#FFFFFF";
-            updateTooltip('');
         })
-        .on('pointerdown', () => events.onLetterClick && events.onLetterClick(x, y));
+        .on('pointerdown', () => {
+            events.onLetterClick && events.onLetterClick(x, y);
+            const letter = letterVisuals.get(getLetterEntity(posX, posY)!.letter)!;
+            updateTooltip(`-${letter.name}-\n${letter.description}`);
+        });
 
     stage.addChild(text);
     return text;
