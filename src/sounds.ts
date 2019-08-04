@@ -7,7 +7,7 @@ const volume = 0.5;
 
 const explosion = "assets/explosion.wav";
 const bounce = "assets/bounce.wav";
-const music = "assets/PerituneMaterial_Mealtime_Rag.mp3";
+const music = "assets/PerituneMaterial_Ramble.mp3";
 
 sounds.load([explosion, bounce, music]);
 

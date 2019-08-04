@@ -44,6 +44,7 @@ export async function resetScreen(stage: PIXI.Container) {
     drawScore(stage);
     drawDescription(stage);
     drawTooltip(stage);
+    updateTooltip('');
     await Promise.all(entrances);
 }
 
