@@ -15,8 +15,6 @@ export function onLetterPressed(x: number, y: number): Array<BoardEffect> {
 			return up(x, y);
 		case Letter.D:
 			return down(x, y);
-		// case Letter.T:
-		// 	return twist(x, y);
 		case Letter.I:
 		case Letter.O:
 		case Letter.N:
@@ -238,72 +236,5 @@ function down(x: number, y: number) {
 			effect: BoardEffectType.Destroy
 		});
 	}
-	return effects;
-}
-
-function neighbors(x: number, y: number): Array<Position> {
-	return [
-		// Top Left
-		{
-			x: x - 1,
-			y: y - 1
-		},
-		// Top
-		{
-			x: x,
-			y: y - 1
-		},
-		// Top Right
-		{
-			x: x + 1,
-			y: y - 1
-		},
-		// Right
-		{
-			x: x + 1,
-			y
-		},
-		// Bottom Right
-		{
-			x: x + 1,
-			y: y + 1
-		},
-		// Bottom
-		{
-			x,
-			y: y + 1
-		},
-		// Bottom Left
-		{
-			x: x - 1,
-			y: y + 1
-		},
-		// Left
-		{
-			x: x - 1,
-			y
-		},
-	];
-}
-
-type Position = { x: number, y: number };
-
-function twist(x: number, y: number) {
-	const letters = neighbors(x, y);
-	const effects = itself(x, y);
-
-	for (let i = 0; i < letters.length; ++i) {
-		const letter = letters[i];
-		const newPosition = i + 1 < letters.length ? letters[i + 1] : letters[0];
-
-		effects.push({
-			x: letter.x,
-			y: letter.y,
-			effect: BoardEffectType.Move,
-			toX: newPosition.x,
-			toY: newPosition.y
-		} as MoveEffect);
-	}
-
 	return effects;
 }

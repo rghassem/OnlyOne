@@ -18,15 +18,16 @@ function levelOne() {
 
 function levelTwo() {
     const result = ' '
-        .repeat(maxX * (maxY - 4))
+        .repeat(maxX * (maxY - 7))
+        + 'IMUSIC BYI'
+        + 'IPERITUNEI'
+        + 'IIIIIIIIII'
         + 'IIIOIIIIII'
         + 'IIIWNIIIII'
         + 'IIIIDEIIII'
         + 'IIIUIICIII';
     return result;
 }
-
-
 
 function makePreset(text: string, line = 0) {
     const lines = 1 + Math.floor(text.length / maxX);
