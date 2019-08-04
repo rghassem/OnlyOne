@@ -1,10 +1,9 @@
 import { Letter, gameboard, maxX, maxY, getLetterEntity, letterVisuals, LetterEntity } from "./board";
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 import { animate, TweeningFunctions } from "./animation";
-import { resolve } from "url";
 
-const CellWidth = 30;
-const CellHeight = 30;
+const CellWidth = 35;
+const CellHeight = CellWidth;
 
 export let events: {
     onLetterClick: ((x: number, y: number) => void) | null
@@ -48,6 +47,7 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
 
         switch (boardEffect.effect) {
             case BoardEffectType.Destroy:
+            case BoardEffectType.ScoreDestroy:
                 letter.text = ' ';
                 await ghettoAssExplosion(stage, boardEffect, 100);
                 break;
@@ -95,7 +95,7 @@ function setStyle(pixiText: PIXI.Text, letter: Letter) {
 
     const style = new PIXI.TextStyle({
         fontFamily: 'VT323',
-        fontSize: 26,
+        fontSize: 36,
         fill: viz ? viz.color : '#ffffff',
         stroke: '#4a1850',
         strokeThickness: 5,

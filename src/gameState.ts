@@ -5,13 +5,14 @@ export let letterOScored = false;
 export let letterNScored = false;
 export let letterEScored = false;
 
-export function updateState(effects: Array<BoardEffect>) {
-    const changes = effects;
+export function updateState(changes: Array<BoardEffect>) {
+    let result = new Array<BoardEffect>();
     const gaps = new Array<{ x: number, y: number }>();
     for (let i = 0; i < changes.length; ++i) {
         const change = changes[i];
         switch (change.effect) {
             case BoardEffectType.Destroy:
+            case BoardEffectType.ScoreDestroy:
                 gaps.push(change);
                 destroy(change.x, change.y);
                 break;
@@ -19,9 +20,7 @@ export function updateState(effects: Array<BoardEffect>) {
             case BoardEffectType.Fall:
                 const fallEffect = change as MoveEffect;
                 console.log(`changes.length=${changes.length}`)
-                fall(fallEffect.x, fallEffect.y, fallEffect.toY).forEach(event => {
-                    changes.push(event);
-                });
+                result = result.concat(fall(fallEffect.x, fallEffect.y, fallEffect.toY));
                 console.log(`changes.length=${changes.length}`)
                 break;
 
@@ -32,14 +31,12 @@ export function updateState(effects: Array<BoardEffect>) {
 
             case BoardEffectType.Score:
                 console.log("Score Event")
-                score(change.x, change.y).forEach(event => {
-                    changes.push(event);
-                })
+                result = result.concat(score(change.x, change.y));
                 break;
         }
     }
 
-    let result = fillGaps(gaps);
+    result = result.concat(fillGaps(gaps));
     return result;
 }
 
@@ -94,7 +91,7 @@ function score(x: number, y: number) {
         {
             x,
             y,
-            effect: BoardEffectType.Destroy
+            effect: BoardEffectType.ScoreDestroy
         }
     ]
 }

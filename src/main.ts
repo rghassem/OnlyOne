@@ -61,7 +61,7 @@ function start() {
         while (effects.length !== 0) {
             await drawEffects(letterStage, effects);
             effects = updateState(effects);
+            drawBoard(letterStage);
         }
-        drawBoard(letterStage);
     }
 }
