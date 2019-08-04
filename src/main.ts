@@ -15,7 +15,6 @@ const app = new PIXI.Application();
 
 //Letter stage
 const letterStage = new PIXI.Container();
-letterStage.y = 20;
 app.stage.addChild(letterStage);
 
 

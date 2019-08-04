@@ -37,8 +37,8 @@ function levelThree() {
         + 'IIIIIIIIII'
         + 'IIIIIIIIII'
         + 'IIIOIIIIII'
-        + 'IIIWNIIIII'
-        + 'IIIIDEIIII'
-        + 'IIIUIICIII';
+        + 'IIIYNIIIII'
+        + 'RIIIYEIIII'
+        + 'IICIIICIII';
     return result;
 }
