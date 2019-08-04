@@ -5,6 +5,16 @@ export function makeButton(stage: PIXI.Container, width: number, height: number,
     draw(button, width, height, borderWidth, 0x330303, 0x660303);
 
     const text = new PIXI.Text(buttonText);
+    text.style = new PIXI.TextStyle({
+        fontFamily: 'VT323',
+        fontSize: 32,
+        fill: '#ffffff',
+        stroke: '#4a1850',
+        strokeThickness: 5,
+        wordWrap: true,
+        wordWrapWidth: 200,
+    });
+
     text.anchor.set(1);
     button.addChild(text);
     text.x = button.width / 2;

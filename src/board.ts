@@ -9,12 +9,19 @@ export enum Letter {
     L,
     U,
     D,
-    // T,
     W,
     I,
     C,
     // X,
     Y,
+    B,
+    M,
+    Z,
+    A,
+    K,
+    S,
+    P,
+    T,
     Length
 }
 
@@ -39,18 +46,24 @@ letterVisuals.set(Letter.W, new LetterVisual('W', 'Wall', 'Blocks all letter des
 letterVisuals.set(Letter.I, new LetterVisual('I', 'Invisible', 'Can only be destroyed by letter abilities.', '#4FA4E4'));
 letterVisuals.set(Letter.C, new LetterVisual('C', 'Cross', 'Destroys one block in each cardinal direction.'));
 letterVisuals.set(Letter.Y, new LetterVisual('Y', 'Y Bomb', 'We kinda just liked the pattern.', '#931f1d'));
-// letterVisuals.set(Letter.X, new LetterVisual('X', 'X'));
-// letterVisuals.set(Letter.T, new LetterVisual('T', 'Twist'));
+letterVisuals.set(Letter.B, new LetterVisual('B', 'B', 'We kinda just liked the pattern.'));
+letterVisuals.set(Letter.M, new LetterVisual('M', 'M', 'We kinda just liked the pattern.'));
+letterVisuals.set(Letter.Z, new LetterVisual('Z', 'Z', 'We kinda just liked the pattern.'));
+letterVisuals.set(Letter.A, new LetterVisual('A', 'A', 'We kinda just liked the pattern.'));
+letterVisuals.set(Letter.K, new LetterVisual('K', 'K', 'We kinda just liked the pattern.'));
+letterVisuals.set(Letter.S, new LetterVisual('S', 'S', 'We kinda just liked the pattern.'));
+letterVisuals.set(Letter.P, new LetterVisual('P', 'P', 'We kinda just liked the pattern.'));
+letterVisuals.set(Letter.T, new LetterVisual('T', 'T', 'We kinda just liked the pattern.'));
 
 export const letterFrequency = new Map<Letter, number>();
-letterFrequency.set(Letter.L, 11);
-letterFrequency.set(Letter.R, 11);
-letterFrequency.set(Letter.U, 11);
-letterFrequency.set(Letter.D, 11);
-letterFrequency.set(Letter.W, 11);
-letterFrequency.set(Letter.I, 11);
-letterFrequency.set(Letter.C, 11);
-letterFrequency.set(Letter.Y, 11);
+letterFrequency.set(Letter.L, 14);
+letterFrequency.set(Letter.R, 14);
+letterFrequency.set(Letter.U, 14);
+letterFrequency.set(Letter.D, 14);
+letterFrequency.set(Letter.W, 14);
+letterFrequency.set(Letter.I, 14);
+letterFrequency.set(Letter.C, 14);
+letterFrequency.set(Letter.Y, 14);
 
 export function getRandomLetter() {
     let rand = Math.random() * 100;

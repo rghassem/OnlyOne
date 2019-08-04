@@ -56,6 +56,7 @@ document.body.appendChild(app.view);
     },
 
     active() {
+        resize()
         start();
     },
 };

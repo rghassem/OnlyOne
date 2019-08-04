@@ -20,9 +20,7 @@ export function updateState(changes: Array<BoardEffect>) {
 
             case BoardEffectType.Fall:
                 const fallEffect = change as MoveEffect;
-                console.log(`changes.length=${changes.length}`)
                 result = result.concat(fall(fallEffect.x, fallEffect.y, fallEffect.toY));
-                console.log(`changes.length=${changes.length}`)
                 break;
 
             case BoardEffectType.Move:
@@ -31,7 +29,6 @@ export function updateState(changes: Array<BoardEffect>) {
                 break;
 
             case BoardEffectType.Score:
-                console.log("Score Event")
                 result = result.concat(score(change.x, change.y));
                 break;
         }
@@ -58,7 +55,6 @@ function move(x: number, y: number, toX: number, toY: number) {
             letter.x = toX;
             letter.y = toY;
         }
-        console.log(`Setting letter at x=${toX} y=${toY} to ${letter}`)
     }
     return [];
 }
@@ -78,7 +74,6 @@ function fall(x: number, y: number, toY: number) {
         letter.y = toY;
     }
     if (letter && (letter.letter === Letter.O || letter.letter === Letter.N || letter.letter === Letter.E) && toY === maxY - 1) {
-        console.log("Score")
         return [
             {
                 x: letter.x,
