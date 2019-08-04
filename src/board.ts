@@ -15,7 +15,6 @@ export enum Letter {
     C,
     // X,
     Y,
-    F,
     Length
 }
 
@@ -40,7 +39,6 @@ letterVisuals.set(Letter.W, new LetterVisual('W', 'Wall', 'Blocks all letter des
 letterVisuals.set(Letter.I, new LetterVisual('I', 'Invisible', 'Can only be destroyed by letter abilities.', '#4FA4E4'));
 letterVisuals.set(Letter.C, new LetterVisual('C', 'Cross', 'Destroys one block in each cardinal direction.'));
 letterVisuals.set(Letter.Y, new LetterVisual('Y', 'Y Bomb', 'We kinda just liked the pattern.', '#931f1d'));
-letterVisuals.set(Letter.F, new LetterVisual('F', 'F Bomb', 'You kiss your mother with that mouth?', '#931f1d'));
 // letterVisuals.set(Letter.X, new LetterVisual('X', 'X'));
 // letterVisuals.set(Letter.T, new LetterVisual('T', 'Twist'));
 
@@ -53,11 +51,9 @@ letterFrequency.set(Letter.W, 11);
 letterFrequency.set(Letter.I, 11);
 letterFrequency.set(Letter.C, 11);
 letterFrequency.set(Letter.Y, 11);
-letterFrequency.set(Letter.F, 12);
 
 export function getRandomLetter() {
     let rand = Math.random() * 100;
-    console.log(`rand=${rand}`)
     let sum = 0;
     for (let key of letterFrequency.keys()) {
         sum += letterFrequency.get(key)!;
@@ -102,8 +98,15 @@ export function resetBoard(preset?: string) {
     if (!preset) {
         //This is super confusing but it sets the O, N, and E somewhere at the top.
         const topArea = 50;
+        const used: Array<number> = [];
+        let idx = Math.floor(Math.random() * topArea);
+        used.push(idx);
         for (let i = Letter.O; i <= Letter.E; ++i) {
-            gameboard[Math.floor(Math.random() * topArea)].letter = i;
+            gameboard[idx].letter = i;
+            idx = Math.floor(Math.random() * topArea);
+            while (used.indexOf(idx) > 0) {
+               idx = Math.floor(Math.random() * topArea);
+            }
         }
     }
 }

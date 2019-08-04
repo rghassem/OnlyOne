@@ -26,8 +26,6 @@ export function onLetterPressed(x: number, y: number): Array<BoardEffect> {
 			return cross(x, y);
 		case Letter.Y:
 			return ybomb(x, y);
-		case Letter.F:
-			return fbomb(x, y);
 		// case Letter.X:
 		// 	return diagonal(x, y);
 		default:
@@ -56,49 +54,6 @@ function ybomb(x: number, y: number) {
 		},
 		{
 			x: x,
-			y: y + 1
-		}
-	];
-	for (let pattern of patterns) {
-		const entity = getLetterEntity(pattern.x, pattern.y);
-		if (!entity || entity.letter === Letter.W) {
-			continue;
-		} else {
-			effects.push({
-				x: pattern.x,
-				y: pattern.y,
-				effect: BoardEffectType.Destroy
-			});
-		}
-	}
-	return effects;
-}
-
-function fbomb(x: number, y: number) {
-	const effects = [];
-	const patterns = [
-		{
-			x: x - 1,
-			y: y - 1
-		},
-		{
-			x: x,
-			y: y - 1,
-		},
-		{
-			x: x + 1,
-			y: y - 1,
-		},
-		{
-			x: x - 1,
-			y: y,
-		},
-		{
-			x: x,
-			y: y,
-		},
-		{
-			x: x - 1,
 			y: y + 1
 		}
 	];

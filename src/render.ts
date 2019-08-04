@@ -46,7 +46,6 @@ export function drawBoard(stage: PIXI.Container) {
     pixiLetters.forEach(pixiLetter => {
         pixiLetter.text = ' ';
     });
-    console.log(gameboard);
     for (const entity of gameboard) {
         const pixiLetter = getPixiLetter(entity.x, entity.y);
         // pixiLetter.x = entity.x * CellWidth;
@@ -157,17 +156,14 @@ function drawScore(stage: PIXI.Container) {
 
 function updateScoredLetters() {
     if (letterOScored) {
-        console.log("O Scored")
         textO.style.fill = '#FFFF00';
         textO.style.stroke = '#4a1850';
     }
     if (letterNScored) {
-        console.log("N Scored")
         textN.style.fill = '#FFFF00';
         textN.style.stroke = '#4a1850';
     }
     if (letterEScored) {
-        console.log("E Scored")
         textE.style.fill = '#FFFF00';
         textE.style.stroke = '#4a1850';
     }
