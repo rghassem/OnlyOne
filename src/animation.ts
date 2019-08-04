@@ -34,7 +34,7 @@ export function animate(object: any, property: string, targetValue: number, dura
 }
 
 export function wait(durationSeconds: number) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         setTimeout(() => {
             resolve();
         }, durationSeconds * 1000);
@@ -56,6 +56,10 @@ export function runAnimations(delta: number) {
         }
     }
     animations = animations.filter(anim => !anim.stop);
+}
+
+export function clearAnimations() {
+    animations = [];
 }
 
 //reference: https://gist.github.com/gre/1650294

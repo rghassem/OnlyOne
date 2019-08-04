@@ -1,7 +1,7 @@
 import { onLetterPressed } from "./letters";
 import { drawEffects, events, drawBoard, resetScreen, CellHeight, CellWidth } from "./render";
 import { updateState, checkWinAndResetOneScore } from "./gameState";
-import { runAnimations, wait } from "./animation";
+import { runAnimations, wait, clearAnimations } from "./animation";
 import { resetBoard, maxY, maxX, gameboard, Letter } from "./board";
 import { makeButton } from "./button";
 import { shootSound, bonusSound, bgmusic } from "./sounds";
@@ -39,6 +39,7 @@ function resize() {
         button.x = letterStage.x + letterStageWidth + 100;
         button.y = letterStage.y + letterStageHeight - 50;
     }
+
 }
 
 resize();
@@ -80,10 +81,14 @@ function start() {
     let currentLevel = 0;
 
     //Iniitalize letter stage
+    let resolving = false;;
+    let resetting = Promise.resolve();
+
     reset(levels[currentLevel]());
+
     button = makeButton(app.stage, 100, 50, "Reset", () => {
         shootSound();
-        reset()
+        reset();
     });
 
     resize();
@@ -93,7 +98,6 @@ function start() {
         runAnimations(app.ticker.elapsedMS / 1000);
     });
 
-    let resolving = false;
     events.onLetterClick = (x: number, y: number) => {
         bgmusic();
         if (resolving) return;
@@ -115,7 +119,7 @@ function start() {
     }
 
     async function changeLevel(level: number) {
-        reset(winScreen());
+        await reset(winScreen());
         drawBoard(letterStage);
         bonusSound();
         await wait(0.7);
@@ -129,15 +133,15 @@ function start() {
             })
             .filter(effect => effect !== null) as BoardEffect[];
         await drawEffects(letterStage, destroyWinLetters);
-        reset(level < levels.length ? levels[level]() : undefined);
+        await reset(level < levels.length ? levels[level]() : undefined);
     }
 
+
+    async function reset(preset?: string) {
+        await resetting;
+        clearAnimations();
+        resetBoard(preset);
+        resetting = resetScreen(letterStage);
+        await resetting;
+    }
 }
-
-function reset(preset?: string) {
-    resetBoard(preset);
-    resetScreen(letterStage);
-}
-
-
-

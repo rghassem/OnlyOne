@@ -1,4 +1,4 @@
-type LetterChar = 'O' | 'N' | 'E' | 'L' | 'R' | 'U' | 'D' | 'W' | 'I' | 'C' | 'Blank' | ' ';
+type LetterChar = 'O' | 'N' | 'E' | 'L' | 'R' | 'U' | 'D' | 'W' | 'I' | 'C' | 'Y' | 'Blank' | ' ';
 
 export enum Letter {
     Blank,
@@ -118,7 +118,7 @@ export function resetBoard(preset?: string) {
             gameboard[idx].letter = i;
             idx = Math.floor(Math.random() * topArea);
             while (used.indexOf(idx) > 0) {
-               idx = Math.floor(Math.random() * topArea);
+                idx = Math.floor(Math.random() * topArea);
             }
         }
     }

@@ -22,24 +22,29 @@ function getPixiLetter(x: number, y: number) {
     return pixiLetters[x + (maxX * y)];
 }
 
-export function resetScreen(stage: PIXI.Container) {
+export async function resetScreen(stage: PIXI.Container) {
     if (pixiLetters) {
         for (const letter of pixiLetters) {
             stage.removeChild(letter);
             letter.destroy();
         }
     }
+    const entrances = new Array<Promise<void>>();
     pixiLetters = []
     for (let y = 0; y < maxY; ++y) {
         for (let x = 0; x < maxX; ++x) {
             const entity = getLetterEntity(x, y)!; //guaranteed a letter at every coordinated
             const newLetter = drawLetter(entity.letter, entity.x, entity.y, stage);
+            newLetter.y -= maxY * CellHeight;
+            const duration = 1.5 + ((x / maxX) * 0.2);
+            entrances.push(animate(newLetter, 'y', entity.y * CellHeight, duration, TweeningFunctions.easeOutBounce));
             pixiLetters.push(newLetter);
         }
     }
     drawScore(stage);
     drawDescription(stage);
     drawTooltip(stage);
+    await Promise.all(entrances);
 }
 
 export function drawBoard(stage: PIXI.Container) {
@@ -233,16 +238,22 @@ function drawLetter(letter: Letter, x: number, y: number, stage: PIXI.Container)
     const posY = y;
 
     text.on('pointerover', () => {
-        const letter = letterVisuals.get(getLetterEntity(posX, posY)!.letter)!;
+        //const letter = letterVisuals.get(getLetterEntity(posX, posY)!.letter)!;
         text.style.fill = '#FF0000';
     })
         .on('pointerout', () => {
-            const letter = letterVisuals.get(getLetterEntity(posX, posY)!.letter)!;
+            const letterEntity = getLetterEntity(posX, posY);
+            if (!letterEntity) return;
+            const letter = letterVisuals.get(letterEntity.letter);
+            if (!letter) return;
             text.style.fill = letter.color || "#FFFFFF";
         })
         .on('pointerdown', () => {
             events.onLetterClick && events.onLetterClick(x, y);
-            const letter = letterVisuals.get(getLetterEntity(posX, posY)!.letter)!;
+            const letterEntity = getLetterEntity(posX, posY);
+            if (!letterEntity) return;
+            const letter = letterVisuals.get(letterEntity.letter);
+            if (!letter) return;
             updateTooltip(`${letter.name}`);
         });
 
