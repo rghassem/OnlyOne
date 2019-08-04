@@ -325,7 +325,7 @@ async function ghettoAssExplosion(stage: PIXI.Container, boardEffect: BoardEffec
             else {
                 stage.removeChild(explosion);
                 explosion.destroy();
-                resolve();
+                wait(0.01).then(() => resolve());
             }
         }
         requestAnimationFrame(frame);
