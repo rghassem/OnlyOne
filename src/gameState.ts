@@ -1,9 +1,15 @@
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
-import { getLetterEntity, Letter, maxX, maxY, removeLetterEntity, LetterEntity } from "./board";
+import { getLetterEntity, Letter, maxX, maxY, removeLetterEntity, LetterEntity, letterVisuals } from "./board";
 
-export function updateState(changes: Array<BoardEffect>) {
+export let letterOScored = false;
+export let letterNScored = false;
+export let letterEScored = false;
+
+export function updateState(effects: Array<BoardEffect>) {
+    const changes = effects;
     const gaps = new Array<{ x: number, y: number }>();
-    for (const change of changes) {
+    for (let i = 0; i < changes.length; ++i) {
+        const change = changes[i];
         switch (change.effect) {
             case BoardEffectType.Destroy:
                 gaps.push(change);
@@ -12,12 +18,23 @@ export function updateState(changes: Array<BoardEffect>) {
 
             case BoardEffectType.Fall:
                 const fallEffect = change as MoveEffect;
-                fall(fallEffect.x, fallEffect.y, fallEffect.toY);
+                console.log(`changes.length=${changes.length}`)
+                fall(fallEffect.x, fallEffect.y, fallEffect.toY).forEach(event => {
+                    changes.push(event);
+                });
+                console.log(`changes.length=${changes.length}`)
                 break;
 
             case BoardEffectType.Move:
                 const e = change as MoveEffect;
                 move(e.x, e.y, e.toX, e.toY);
+                break;
+
+            case BoardEffectType.Score:
+                console.log("Score Event")
+                score(change.x, change.y).forEach(event => {
+                    changes.push(event);
+                })
                 break;
         }
     }
@@ -52,7 +69,28 @@ function fall(x: number, y: number, toY: number) {
         letter.x = x;
         letter.y = toY;
     }
+    if (letter && (letter.letter === Letter.O || letter.letter === Letter.N || letter.letter === Letter.E) && toY === maxY - 1) {
+        console.log("Score")
+        return [
+            {
+                x: letter.x,
+                y: letter.y,
+                effect: BoardEffectType.Score
+            }
+        ]
+    }
     return [];
+}
+
+function score(x: number, y: number) {
+    const entity = getLetterEntity(x, y);
+    return [
+        {
+            x,
+            y,
+            effect: BoardEffectType.Destroy
+        }
+    ]
 }
 
 function fillGaps(gaps: Array<{ x: number, y: number }>) {

@@ -9,6 +9,7 @@ import { runAnimations } from "./animation";
 const app = new PIXI.Application();
 const letterStage = new PIXI.Container();
 letterStage.x = 250;
+letterStage.y = 10;
 app.stage.addChild(letterStage);
 
 // The application will create a canvas element for you that you

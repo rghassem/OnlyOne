@@ -15,8 +15,8 @@ export function onLetterPressed(x: number, y: number): Array<BoardEffect> {
 			return up(x, y);
 		case Letter.D:
 			return down(x, y);
-		case Letter.T:
-			return twist(x, y);
+		// case Letter.T:
+		// 	return twist(x, y);
 		case Letter.I:
 		case Letter.O:
 		case Letter.N:
@@ -24,8 +24,8 @@ export function onLetterPressed(x: number, y: number): Array<BoardEffect> {
 			return [];
 		case Letter.C:
 			return cross(x, y);
-		case Letter.X:
-			return diagonal(x, y);
+		// case Letter.X:
+		// 	return diagonal(x, y);
 		default:
 			return itself(x, y);
 	}
@@ -68,16 +68,18 @@ function cross(x: number, y: number) {
 	];
 
 	for (let position of cardinal) {
-		if (getLetterEntity(position.x, position.y)!.letter === Letter.W) {
+		const entity = getLetterEntity(position.x, position.y);
+		if (!entity || entity.letter === Letter.W) {
 			continue;
+		} else {
+			effects.push({
+				x: position.x,
+				y: position.y,
+				effect: BoardEffectType.Destroy
+			});
 		}
-		effects.push({
-			x: position.x,
-			y: position.y,
-			effect: BoardEffectType.Destroy
-		});
-	}
 
+	}
 	return effects;
 }
 
@@ -110,14 +112,16 @@ function diagonal(x: number, y: number) {
 	];
 
 	for (let position of diagonal) {
-		if (getLetterEntity(position.x, position.y)!.letter === Letter.W) {
+		const entity = getLetterEntity(position.x, position.y);
+		if (!entity || entity.letter === Letter.W) {
 			continue;
+		} else {
+			effects.push({
+				x: position.x,
+				y: position.y,
+				effect: BoardEffectType.Destroy
+			});
 		}
-		effects.push({
-			x: position.x,
-			y: position.y,
-			effect: BoardEffectType.Destroy
-		});
 	}
 
 	return effects;
