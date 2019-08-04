@@ -51,9 +51,9 @@ letterVisuals.set(Letter.M, new LetterVisual('M', 'M', 'We kinda just liked the 
 letterVisuals.set(Letter.Z, new LetterVisual('Z', 'Z', 'We kinda just liked the pattern.'));
 letterVisuals.set(Letter.A, new LetterVisual('A', 'A', 'We kinda just liked the pattern.'));
 letterVisuals.set(Letter.K, new LetterVisual('K', 'K', 'We kinda just liked the pattern.'));
-letterVisuals.set(Letter.S, new LetterVisual('S', 'K', 'We kinda just liked the pattern.'));
-letterVisuals.set(Letter.P, new LetterVisual('P', 'K', 'We kinda just liked the pattern.'));
-letterVisuals.set(Letter.T, new LetterVisual('T', 'K', 'We kinda just liked the pattern.'));
+letterVisuals.set(Letter.S, new LetterVisual('S', 'S', 'We kinda just liked the pattern.'));
+letterVisuals.set(Letter.P, new LetterVisual('P', 'P', 'We kinda just liked the pattern.'));
+letterVisuals.set(Letter.T, new LetterVisual('T', 'T', 'We kinda just liked the pattern.'));
 
 export const letterFrequency = new Map<Letter, number>();
 letterFrequency.set(Letter.L, 14);
