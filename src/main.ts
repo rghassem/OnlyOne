@@ -4,6 +4,7 @@ import { updateState } from "./gameState";
 import { runAnimations } from "./animation";
 import { resetBoard, maxY, maxX } from "./board";
 import { makeButton } from "./button";
+import { explosionSound, bonusSound, shootSound } from "./sounds";
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
@@ -16,7 +17,10 @@ letterStage.y = 10;
 app.stage.addChild(letterStage);
 
 //Reset button
-const button = makeButton(app.stage, 100, 50, "Reset", () => reset());
+const button = makeButton(app.stage, 100, 50, "Reset", () => {
+    shootSound();
+    reset()
+});
 
 
 function resize() {
@@ -98,3 +102,4 @@ function reset() {
     resetBoard();
     resetScreen(letterStage);
 }
+

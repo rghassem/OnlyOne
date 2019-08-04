@@ -2,6 +2,7 @@ import { Letter, gameboard, maxX, maxY, getLetterEntity, letterVisuals, LetterEn
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 import { animate, TweeningFunctions } from "./animation";
 import { letterOScored, letterNScored, letterEScored } from "./gameState";
+import { bonusSound, explosionSound, bounceSound } from "./sounds";
 
 export const CellWidth = 35;
 export const CellHeight = CellWidth;
@@ -54,21 +55,27 @@ export function drawBoard(stage: PIXI.Container) {
 
 export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEffect>) {
     const promises = new Array<Promise<void>>();
+    let playBounce = false;
     for (const boardEffect of effects) {
         const letter = getPixiLetter(boardEffect.x, boardEffect.y);
 
         switch (boardEffect.effect) {
             case BoardEffectType.ScoreDestroy:
                 updateScoredLetters();
+                bonusSound();
             case BoardEffectType.Destroy:
                 letter.text = ' ';
+                explosionSound();
                 await ghettoAssExplosion(stage, boardEffect, 100);
                 break;
             case BoardEffectType.Fall:
                 const fallEffect = boardEffect as MoveEffect;
                 const startingY = letter.y;
+                playBounce = true;
                 const anim = animate(letter, 'y', fallEffect.toY * CellHeight, 0.4, TweeningFunctions.easeOutBounce);
-                anim.then(() => { letter.y = startingY });
+                anim.then(() => {
+                    letter.y = startingY
+                });
                 promises.push(anim);
                 break;
             case BoardEffectType.Move:
@@ -79,6 +86,8 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
             case BoardEffectType.Score:
         }
     }
+
+    if (playBounce) bounceSound(0.2);
     await Promise.all(promises);
 }
 
