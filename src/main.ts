@@ -13,36 +13,7 @@ import { BoardEffectType, BoardEffect } from "./boardEffect";
 // and the root stage PIXI.Container.
 const app = new PIXI.Application();
 
-//Letter stage
-const letterStage = new PIXI.Container();
-letterStage.y = 20;
-app.stage.addChild(letterStage);
 
-//Reset button
-const button = makeButton(app.stage, 100, 50, "Reset", () => {
-    shootSound();
-    reset()
-});
-
-function resize() {
-    app.renderer.view.style.position = "absolute";
-    app.renderer.view.style.display = "block";
-    app.renderer.autoResize = true;
-
-    app.renderer.resize(window.innerWidth, window.innerHeight);
-    const letterStageWidth = CellWidth * maxX;
-    const letterStageHeight = CellHeight * maxY;
-    letterStage.x = window.innerWidth / 2 - letterStageWidth / 2;
-    letterStage.y = window.innerHeight / 2 - letterStageHeight / 2;
-
-    button.x = letterStage.x + letterStageWidth + 100;
-    button.y = letterStage.y + letterStageHeight - 50;
-
-    letterStage.scale.set(1);
-}
-
-resize();
-window.onresize = resize;
 
 // The application will create a canvas element for you that you
 // can then insert into the DOM.
@@ -77,12 +48,45 @@ document.body.appendChild(app.view);
 function start() {
     let currentLevel = 0;
 
+    //Letter stage
+    const letterStage = new PIXI.Container();
+    letterStage.y = 20;
+    app.stage.addChild(letterStage);
+
+    //Iniitalize letter stage
+    reset(levels[currentLevel]());
+
+    //Reset button
+    const button = makeButton(app.stage, 100, 50, "Reset", () => {
+        shootSound();
+        reset()
+    });
+
+    function resize() {
+        app.renderer.view.style.position = "absolute";
+        app.renderer.view.style.display = "block";
+        app.renderer.autoResize = true;
+
+        app.renderer.resize(window.innerWidth, window.innerHeight);
+        const letterStageWidth = CellWidth * maxX;
+        const letterStageHeight = CellHeight * maxY;
+        letterStage.x = window.innerWidth / 2 - letterStageWidth / 2;
+        letterStage.y = window.innerHeight / 2 - letterStageHeight / 2;
+
+        button.x = letterStage.x + letterStageWidth + 100;
+        button.y = letterStage.y + letterStageHeight - 50;
+
+        console.log(JSON.stringify(letterStage.getBounds()));
+        letterStage.scale.set(1);
+    }
+
+    resize();
+    window.onresize = resize;
+
     //Run animation system
     app.ticker.add(() => {
         runAnimations(app.ticker.elapsedMS / 1000);
     });
-
-    reset(levels[currentLevel]());
 
     let resolving = false;
     events.onLetterClick = (x: number, y: number) => {
@@ -121,10 +125,12 @@ function start() {
         await drawEffects(letterStage, destroyWinLetters);
         reset(level < levels.length ? levels[level]() : undefined);
     }
+
+    function reset(preset?: string) {
+        resetBoard(preset);
+        resetScreen(letterStage);
+    }
 }
 
-function reset(preset?: string) {
-    resetBoard(preset);
-    resetScreen(letterStage);
-}
+
 
