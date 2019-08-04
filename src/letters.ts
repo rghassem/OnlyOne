@@ -1,6 +1,5 @@
 import { Letter, getLetterEntity, maxY, maxX } from "./board";
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
-import { createBrotliCompress } from "zlib";
 
 type LetterEffect = (x: number, y: number) => Array<BoardEffect>;
 
@@ -19,6 +18,9 @@ export function onLetterPressed(x: number, y: number): Array<BoardEffect> {
 		case Letter.T:
 			return twist(x, y);
 		case Letter.I:
+		case Letter.O:
+		case Letter.N:
+		case Letter.E:
 			return [];
 		case Letter.C:
 			return cross(x, y);
@@ -66,6 +68,9 @@ function cross(x: number, y: number) {
 	];
 
 	for (let position of cardinal) {
+		if (getLetterEntity(position.x, position.y)!.letter === Letter.W) {
+			continue;
+		}
 		effects.push({
 			x: position.x,
 			y: position.y,
@@ -105,6 +110,9 @@ function diagonal(x: number, y: number) {
 	];
 
 	for (let position of diagonal) {
+		if (getLetterEntity(position.x, position.y)!.letter === Letter.W) {
+			continue;
+		}
 		effects.push({
 			x: position.x,
 			y: position.y,

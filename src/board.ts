@@ -24,9 +24,9 @@ class LetterVisual {
 }
 export const letterVisuals = new Map<Letter, LetterVisual>();
 letterVisuals.set(Letter.Blank, new LetterVisual(' '));
-letterVisuals.set(Letter.O, new LetterVisual('O', undefined, '#FFFF00'));
-letterVisuals.set(Letter.N, new LetterVisual('N', undefined, '#FFFF00'));
-letterVisuals.set(Letter.E, new LetterVisual('E', undefined, '#FFFF00'));
+letterVisuals.set(Letter.O, new LetterVisual('O', 'Get this to the bottom row!', '#FFFF00'));
+letterVisuals.set(Letter.N, new LetterVisual('N', 'Get this to the bottom row!', '#FFFF00'));
+letterVisuals.set(Letter.E, new LetterVisual('E', 'Get this to the bottom row!', '#FFFF00'));
 letterVisuals.set(Letter.L, new LetterVisual('L', 'Left'));
 letterVisuals.set(Letter.R, new LetterVisual('R', 'Right'));
 letterVisuals.set(Letter.U, new LetterVisual('U', 'Up '));
