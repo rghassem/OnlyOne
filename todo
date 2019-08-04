@@ -1,16 +1,18 @@
-MVP
-- Scoring & Scoring Display - Mark Done
-- Reset Board after scoring + reset button - Reza Done
-* Show description of letter effect - Mark In progress
-- Letter probability rate & ONE guarantee - Mark Done
-- Window Scale - Reza Done
 
 High Priority
-- Sound effects - Reza Done
-* Other UI Elements (borders, etc)
-* Y Letter + ability
-* Tutorial
-* Mobile Support
-* Music
-* Win streak counter
-* More advanced window scaling 
+* Put win on screen and reset level <Reza>
+* Tutorial <Reza>
+* Win screen jingle <Reza> 
+* Actually scale window to fit different resolutions. <Reza>
+* New letters drop in. <Reza>
+* Golden scoring line <Reza>
+
+* Reduce vertical height and add word name on top. Stays after press. <Mark>
+* Find and add music <Mark>
+* Y Letter + ability <Mark>
+* Bomb chain <Mark>
+* Win streak counter <Mark>
+* Same font in reset button <Mark>
+
+* Remove CDN dependencies
+* Do proper webpack production release with minjs etc.
