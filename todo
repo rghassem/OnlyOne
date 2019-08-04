@@ -1,9 +1,9 @@
 MVP
-* Scoring & Scoring Display - Mark Done
+- Scoring & Scoring Display - Mark Done
 - Reset Board after scoring + reset button - Reza Done
 * Show description of letter effect - Mark In progress
-* Letter probability rate & ONE guarantee - Mark Done
-* Window Scale - Reza in progress
+- Letter probability rate & ONE guarantee - Mark Done
+- Window Scale - Reza Done
 
 High Priority
 * Sound effects
@@ -13,3 +13,4 @@ High Priority
 * Mobile Support
 * Music
 * Win streak counter
+* More advanced window scaling 
