@@ -50,8 +50,9 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
                 letter.text = ' ';
                 break;
             case BoardEffectType.Fall:
+                const fallEffect = boardEffect as MoveEffect;
                 const startingY = letter.y;
-                const anim = animate(letter, 'y', letter.y + CellHeight, 0.4, TweeningFunctions.easeOutBounce);
+                const anim = animate(letter, 'y', fallEffect.toY * CellHeight, 0.4, TweeningFunctions.easeOutBounce);
                 anim.then(() => { letter.y = startingY });
                 promises.push(anim);
                 break;

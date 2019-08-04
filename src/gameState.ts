@@ -1,17 +1,18 @@
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
-import { getLetterEntity, Letter, maxX, maxY, removeLetterEntity } from "./board";
+import { getLetterEntity, Letter, maxX, maxY, removeLetterEntity, LetterEntity } from "./board";
 
 export function updateState(changes: Array<BoardEffect>) {
-    let result = new Array<BoardEffect>();
-
+    const gaps = new Array<{ x: number, y: number }>();
     for (const change of changes) {
         switch (change.effect) {
             case BoardEffectType.Destroy:
-                result = result.concat(destroy(change.x, change.y));
+                gaps.push(change);
+                destroy(change.x, change.y);
                 break;
 
             case BoardEffectType.Fall:
-                result = result.concat(fall(change.x, change.y));
+                const fallEffect = change as MoveEffect;
+                fall(fallEffect.x, fallEffect.y, fallEffect.toY);
                 break;
 
             case BoardEffectType.Move:
@@ -20,6 +21,8 @@ export function updateState(changes: Array<BoardEffect>) {
                 break;
         }
     }
+
+    let result = fillGaps(gaps);
     return result;
 }
 
@@ -41,24 +44,44 @@ function destroy(x: number, y: number) {
     if (entity) {
         removeLetterEntity(entity);
     }
-
-    //Everything above it falls
-    const result = new Array<BoardEffect>();
-    for (let i = y - 1; i >= 0; --i) {
-        result.push({
-            x: x,
-            y: i,
-            effect: BoardEffectType.Fall
-        });
-    }
-    return result;
 }
 
-function fall(x: number, y: number) {
+function fall(x: number, y: number, toY: number) {
     const letter = getLetterEntity(x, y);
     if (letter) {
         letter.x = x;
-        letter.y = y + 1;
+        letter.y = toY;
     }
     return [];
+}
+
+function fillGaps(gaps: Array<{ x: number, y: number }>) {
+    let results = new Array<MoveEffect>();
+    while (gaps.length > 0) {
+        const gap = gaps.pop()!;
+        const extended = gaps.filter(other => other.x === gap.x && other.y !== gap.y);
+        extended.forEach(piece => gaps.splice(gaps.indexOf(piece), 1));
+        const minY = extended.concat(gap).reduce((pieceA, pieceB) => pieceA.y > pieceB.y ? pieceA : pieceB);
+        const coelescedGap = { x: gap.x, y: minY.y, distance: 1 + extended.length };
+        results = results.concat(fillGap(coelescedGap));
+    }
+    return results;
+}
+
+function fillGap(gap: { x: number, y: number, distance: number }) {
+    //Find nearest vertical neighbor
+    const results = new Array<MoveEffect>();
+    const nearestY = gap.y - gap.distance;
+    for (let y = nearestY; y >= 0; --y) {
+        const above = getLetterEntity(gap.x, y);
+        if (above) {
+            results.push({
+                x: above.x, y: above.y,
+                toX: gap.x, toY: above.y + gap.distance,
+                effect: BoardEffectType.Fall
+            });
+        }
+    }
+    return results;
+    //gap.x, y = (0 - gap.distance) will be empty, and will need gap.distance new letters
 }
