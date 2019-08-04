@@ -27,7 +27,7 @@ export function makeButton(stage: PIXI.Container, width: number, height: number,
             draw(button, width, height, borderWidth, 0x330303, 0xffff00);
         })
         .on('pointerout', () => {
-            text.style.fill = '#000000';
+            text.style.fill = '#FFFFFF';
             draw(button, width, height, borderWidth, 0x330303, 0x660303);
         })
         .on('pointerdown', () => onClick());

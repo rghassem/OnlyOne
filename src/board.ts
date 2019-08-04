@@ -1,3 +1,5 @@
+import { UV_UDP_REUSEADDR } from "constants";
+
 type LetterChar = 'O' | 'N' | 'E' | 'L' | 'R' | 'U' | 'D' | 'W' | 'I' | 'C' | 'Blank' | ' ';
 
 export enum Letter {
@@ -42,28 +44,28 @@ letterVisuals.set(Letter.R, new LetterVisual('R', 'Right', 'Destroys all letters
 letterVisuals.set(Letter.L, new LetterVisual('L', 'Left', 'Destroys all letters to the left. Blocked by walls.'));
 letterVisuals.set(Letter.U, new LetterVisual('U', 'Up', 'Destroys all letters above it. Blocked by walls.'));
 letterVisuals.set(Letter.D, new LetterVisual('D', 'Down', 'Destroys all letters below it. Blocked by walls.'));
-letterVisuals.set(Letter.W, new LetterVisual('W', 'Wall', 'Blocks all letter destruction effects. Can be destroyed normally.', '#83A0A8'));
+letterVisuals.set(Letter.W, new LetterVisual('W', 'Wall', 'Blocks all letter destruction effects. Can be destroyed normally.', '#55B560'));
 letterVisuals.set(Letter.I, new LetterVisual('I', 'Invisible', 'Can only be destroyed by letter abilities.', '#4FA4E4'));
 letterVisuals.set(Letter.C, new LetterVisual('C', 'Cross', 'Destroys one block in each cardinal direction.'));
-letterVisuals.set(Letter.Y, new LetterVisual('Y', 'Y Bomb', 'We kinda just liked the pattern.', '#931f1d'));
-letterVisuals.set(Letter.B, new LetterVisual('B', 'B', 'We kinda just liked the pattern.'));
-letterVisuals.set(Letter.M, new LetterVisual('M', 'M', 'We kinda just liked the pattern.'));
-letterVisuals.set(Letter.Z, new LetterVisual('Z', 'Z', 'We kinda just liked the pattern.'));
-letterVisuals.set(Letter.A, new LetterVisual('A', 'A', 'We kinda just liked the pattern.'));
-letterVisuals.set(Letter.K, new LetterVisual('K', 'K', 'We kinda just liked the pattern.'));
-letterVisuals.set(Letter.S, new LetterVisual('S', 'S', 'We kinda just liked the pattern.'));
-letterVisuals.set(Letter.P, new LetterVisual('P', 'P', 'We kinda just liked the pattern.'));
-letterVisuals.set(Letter.T, new LetterVisual('T', 'T', 'We kinda just liked the pattern.'));
+letterVisuals.set(Letter.Y, new LetterVisual('Y', 'Yttrium Bomb', 'We kinda just liked the pattern.', '#99041D'));
+letterVisuals.set(Letter.B, new LetterVisual('B', 'B'));
+letterVisuals.set(Letter.M, new LetterVisual('M', 'M'));
+letterVisuals.set(Letter.Z, new LetterVisual('Z', 'Z'));
+letterVisuals.set(Letter.A, new LetterVisual('A', 'A'));
+letterVisuals.set(Letter.K, new LetterVisual('K', 'K'));
+letterVisuals.set(Letter.S, new LetterVisual('S', 'S'));
+letterVisuals.set(Letter.P, new LetterVisual('P', 'P'));
+letterVisuals.set(Letter.T, new LetterVisual('T', 'T'));
 
 export const letterFrequency = new Map<Letter, number>();
-letterFrequency.set(Letter.L, 14);
-letterFrequency.set(Letter.R, 14);
-letterFrequency.set(Letter.U, 14);
-letterFrequency.set(Letter.D, 14);
+letterFrequency.set(Letter.L, 15);
+letterFrequency.set(Letter.R, 15);
+letterFrequency.set(Letter.U, 10);
+letterFrequency.set(Letter.D, 5);
 letterFrequency.set(Letter.W, 14);
 letterFrequency.set(Letter.I, 14);
 letterFrequency.set(Letter.C, 14);
-letterFrequency.set(Letter.Y, 14);
+letterFrequency.set(Letter.Y, 13);
 
 export function getRandomLetter() {
     let rand = Math.random() * 100;
@@ -109,18 +111,19 @@ export function resetBoard(preset?: string) {
     }
 
     if (!preset) {
-        //This is super confusing but it sets the O, N, and E somewhere at the top.
         const topArea = 50;
-        const used: Array<number> = [];
-        let idx = Math.floor(Math.random() * topArea);
-        used.push(idx);
-        for (let i = Letter.O; i <= Letter.E; ++i) {
-            gameboard[idx].letter = i;
-            idx = Math.floor(Math.random() * topArea);
-            while (used.indexOf(idx) > 0) {
-               idx = Math.floor(Math.random() * topArea);
+        const used: Array<number> = [Math.floor(Math.random() * topArea)];
+        for (let i = 0; i <= 3; ++i) {
+            let idx = Math.floor(Math.random() * topArea);
+            while (used.indexOf(idx) >= 0) {
+                idx = Math.floor(Math.random() * topArea);
             }
+            used.push(idx);
         }
+
+        gameboard[used[0]].letter = Letter.O;
+        gameboard[used[1]].letter = Letter.N;
+        gameboard[used[2]].letter = Letter.E;
     }
 }
 
