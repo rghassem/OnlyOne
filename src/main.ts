@@ -4,7 +4,7 @@ import { updateState } from "./gameState";
 import { runAnimations } from "./animation";
 import { resetBoard, maxY, maxX } from "./board";
 import { makeButton } from "./button";
-import { explosionSound, bonusSound, shootSound } from "./sounds";
+import { explosionSound, bonusSound, shootSound, bgmusic } from "./sounds";
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
@@ -46,6 +46,7 @@ window.onresize = resize;
 // can then insert into the DOM.
 document.body.appendChild(app.view);
 
+
 // // Load them google fonts before starting...!
 (<any>window).WebFontConfig = {
     google: {
@@ -82,6 +83,7 @@ function start() {
 
     let resolving = false;
     events.onLetterClick = (x: number, y: number) => {
+        bgmusic();
         if (resolving) return;
         resolving = true;
         resolveMove(x, y).then(() => resolving = false);
