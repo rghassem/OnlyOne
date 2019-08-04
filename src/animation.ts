@@ -33,6 +33,14 @@ export function animate(object: any, property: string, targetValue: number, dura
     });
 }
 
+export function wait(durationSeconds: number) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve();
+        }, durationSeconds * 1000);
+    });
+}
+
 export function runAnimations(delta: number) {
     for (const anim of animations) {
         anim.progress += (delta / anim.duration);

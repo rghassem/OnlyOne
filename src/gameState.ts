@@ -1,9 +1,10 @@
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
-import { getLetterEntity, Letter, maxX, maxY, removeLetterEntity, LetterEntity, letterVisuals } from "./board";
+import { getLetterEntity, Letter, maxX, maxY, removeLetterEntity, LetterEntity, letterVisuals, resetBoard } from "./board";
 
 export let letterOScored = false;
 export let letterNScored = false;
 export let letterEScored = false;
+
 
 export function updateState(changes: Array<BoardEffect>) {
     let result = new Array<BoardEffect>();
@@ -38,6 +39,16 @@ export function updateState(changes: Array<BoardEffect>) {
 
     result = result.concat(fillGaps(gaps));
     return result;
+}
+
+export function checkWinAndResetOneScore() {
+    if (letterOScored && letterNScored && letterEScored) {
+        letterOScored = false;
+        letterNScored = false;
+        letterEScored = false;
+        return true;
+    }
+    else return false;
 }
 
 function move(x: number, y: number, toX: number, toY: number) {
@@ -84,16 +95,21 @@ function score(x: number, y: number) {
     letterOScored = letterOScored || entity.letter === Letter.O;
     letterNScored = letterNScored || entity.letter === Letter.N;
     letterEScored = letterEScored || entity.letter === Letter.E;
-    if (letterOScored && letterNScored && letterEScored) {
-        console.log("You Win!")
-    }
-    return [
+    const results = [
         {
             x,
             y,
             effect: BoardEffectType.ScoreDestroy
         }
     ]
+    if (letterOScored && letterNScored && letterEScored) {
+        // results.push({
+        //     x,
+        //     y,
+        //     effect: BoardEffectType.Victory
+        // })
+    }
+    return results;
 }
 
 function fillGaps(gaps: Array<{ x: number, y: number }>) {
