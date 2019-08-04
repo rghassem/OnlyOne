@@ -48,13 +48,17 @@ export class LetterEntity {
 
 export const maxY = 15;
 export const maxX = 10;
-export const gameboard = new Array<LetterEntity>();
+export let gameboard: Array<LetterEntity>;
 
-for (let y = 0; y < maxY; ++y) {
-    for (let x = 0; x < maxX; ++x) {
-        addLetter(randomLetter(), x, y);
+export function resetBoard() {
+    gameboard = [];
+    for (let y = 0; y < maxY; ++y) {
+        for (let x = 0; x < maxX; ++x) {
+            addLetter(randomLetter(), x, y);
+        }
     }
 }
+
 
 function randomLetter() {
     return Math.floor(Math.random() * (Letter.Length - 1)) + 1;

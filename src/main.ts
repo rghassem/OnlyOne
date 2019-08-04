@@ -1,16 +1,24 @@
 import { onLetterPressed } from "./letters";
-import { initializeLetters, drawEffects, events, drawBoard } from "./render";
+import { drawEffects, events, drawBoard, resetScreen, CellHeight } from "./render";
 import { updateState } from "./gameState";
 import { runAnimations } from "./animation";
+import { resetBoard, maxY } from "./board";
+import { makeButton } from "./button";
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
 // and the root stage PIXI.Container.
 const app = new PIXI.Application();
+
 const letterStage = new PIXI.Container();
 letterStage.x = 220;
 letterStage.y = 10;
 app.stage.addChild(letterStage);
+
+//Reset button
+const resetButtonX = letterStage.x * 3;
+const resetButtonY = maxY * CellHeight + letterStage.y - 50;
+makeButton(app.stage, resetButtonX, resetButtonY, 100, 50, "Reset", () => reset());
 
 // The application will create a canvas element for you that you
 // can then insert into the DOM.
@@ -47,7 +55,8 @@ function start() {
     app.ticker.add(() => {
         runAnimations(app.ticker.elapsedMS / 1000);
     });
-    initializeLetters(letterStage);
+
+    reset();
 
     let resolving = false;
     events.onLetterClick = (x: number, y: number) => {
@@ -64,4 +73,9 @@ function start() {
             drawBoard(letterStage);
         }
     }
+}
+
+function reset() {
+    resetBoard();
+    resetScreen(letterStage);
 }

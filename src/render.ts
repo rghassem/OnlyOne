@@ -2,8 +2,8 @@ import { Letter, gameboard, maxX, maxY, getLetterEntity, letterVisuals, LetterEn
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 import { animate, TweeningFunctions } from "./animation";
 
-const CellWidth = 35;
-const CellHeight = CellWidth;
+export const CellWidth = 35;
+export const CellHeight = CellWidth;
 
 export let events: {
     onLetterClick: ((x: number, y: number) => void) | null
@@ -11,13 +11,20 @@ export let events: {
     onLetterClick: null
 };
 
-let pixiLetters = new Array<PIXI.Text>();
+let pixiLetters: Array<PIXI.Text>;
 
 function getPixiLetter(x: number, y: number) {
     return pixiLetters[x + (maxX * y)];
 }
 
-export function initializeLetters(stage: PIXI.Container) {
+export function resetScreen(stage: PIXI.Container) {
+    if (pixiLetters) {
+        for (const letter of pixiLetters) {
+            stage.removeChild(letter);
+            letter.destroy();
+        }
+    }
+    pixiLetters = []
     for (let y = 0; y < maxY; ++y) {
         for (let x = 0; x < maxX; ++x) {
             const entity = getLetterEntity(x, y)!; //guaranteed a letter at every coordinated
