@@ -22,7 +22,6 @@ const button = makeButton(app.stage, 100, 50, "Reset", () => {
     reset()
 });
 
-
 function resize() {
     app.renderer.view.style.position = "absolute";
     app.renderer.view.style.display = "block";
