@@ -28,9 +28,3 @@ function levelTwo() {
         + 'IIIUIICIII';
     return result;
 }
-
-function makePreset(text: string, line = 0) {
-    const lines = 1 + Math.floor(text.length / maxX);
-    const buffer = maxX - (text.length % maxX);
-    return ' '.repeat((maxX * (maxY - lines))) + text + buffer;
-}
