@@ -38,14 +38,14 @@ export function updateState(changes: Array<BoardEffect>) {
     return result;
 }
 
-export function checkWinAndResetOneScore() {
-    if (letterOScored && letterNScored && letterEScored) {
-        letterOScored = false;
-        letterNScored = false;
-        letterEScored = false;
-        return true;
-    }
-    else return false;
+export function checkWin() {
+    return letterOScored && letterNScored && letterEScored;
+}
+
+export function resetScore() {
+    letterOScored = false;
+    letterNScored = false;
+    letterEScored = false;
 }
 
 function move(x: number, y: number, toX: number, toY: number) {

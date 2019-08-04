@@ -1,6 +1,6 @@
 import { onLetterPressed } from "./letters";
 import { drawEffects, events, drawBoard, resetScreen, CellHeight, CellWidth } from "./render";
-import { updateState, checkWinAndResetOneScore } from "./gameState";
+import { updateState, checkWin, resetScore } from "./gameState";
 import { runAnimations, wait, clearAnimations } from "./animation";
 import { resetBoard, maxY, maxX, gameboard, Letter } from "./board";
 import { makeButton } from "./button";
@@ -126,7 +126,7 @@ function start() {
             drawBoard(letterStage);
         }
 
-        if (checkWinAndResetOneScore()) {
+        if (checkWin()) {
             changeLevel(++currentLevel);
         }
     }
@@ -153,6 +153,7 @@ function start() {
     async function reset(preset?: string) {
         await resetting;
         clearAnimations();
+        resetScore();
         resetBoard(preset);
         resetting = resetScreen(letterStage);
         await resetting;
