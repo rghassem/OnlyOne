@@ -18,12 +18,6 @@ const letterStage = new PIXI.Container();
 letterStage.y = 20;
 app.stage.addChild(letterStage);
 
-//Reset button
-const button = makeButton(app.stage, 100, 50, "Reset", () => {
-    shootSound();
-    reset()
-});
-
 function resize() {
     app.renderer.view.style.position = "absolute";
     app.renderer.view.style.display = "block";
@@ -34,9 +28,6 @@ function resize() {
     const letterStageHeight = CellHeight * maxY;
     letterStage.x = window.innerWidth / 2 - letterStageWidth / 2;
     letterStage.y = window.innerHeight / 2 - letterStageHeight / 2;
-
-    button.x = letterStage.x + letterStageWidth + 100;
-    button.y = letterStage.y + letterStageHeight - 50;
 
     letterStage.scale.set(1);
 }
@@ -56,6 +47,7 @@ document.body.appendChild(app.view);
     },
 
     active() {
+        resize()
         start();
     },
 };
@@ -83,6 +75,16 @@ function start() {
         runAnimations(app.ticker.elapsedMS / 1000);
     });
 
+    const button = makeButton(app.stage, 100, 50, "Reset", () => {
+        shootSound();
+        reset()
+    });
+    
+    const letterStageWidth = CellWidth * maxX;
+    const letterStageHeight = CellHeight * maxY;
+    button.x = letterStage.x + letterStageWidth + 100;
+    button.y = letterStage.y + letterStageHeight - 50;
+    
     reset(levels[currentLevel]());
 
     let resolving = false;

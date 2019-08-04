@@ -1,8 +1,5 @@
 
 High Priority
-* Put win on screen and reset level <Reza>
-* Tutorial <Reza>
-* Play music better <Reza>
 * Win screen jingle <Reza> 
 * Actually scale window to fit different resolutions. <Reza>
 * New letters drop in. <Reza>
@@ -10,7 +7,6 @@ High Priority
 
 * Bomb chain <Mark>
 * Win streak counter <Mark>
-* Same font in reset button <Mark>
 
 * Remove CDN dependencies
 * Do proper webpack production release with minjs etc.

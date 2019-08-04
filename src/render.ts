@@ -169,7 +169,7 @@ function updateScoredLetters() {
     }
 }
 
-export const description = new PIXI.Text("Get O/N/E to the bottom row! \nDestroy them and it's game over!");
+export const description = new PIXI.Text("* Press a letter\n* Score ONE point \n* Don't destroy ONE ");
 
 function drawDescription(stage: PIXI.Container) {
     description.style = new PIXI.TextStyle({
