@@ -1,6 +1,6 @@
 import { Letter, gameboard, maxX, maxY, getLetterEntity, letterVisuals, LetterEntity } from "./board";
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
-import { animate, TweeningFunctions } from "./animation";
+import { animate, TweeningFunctions, wait } from "./animation";
 import { letterOScored, letterNScored, letterEScored } from "./gameState";
 import { bonusSound, explosionSound, bounceSound } from "./sounds";
 
@@ -86,6 +86,7 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
                 letter.y = e.toY * CellHeight;
                 break;
             case BoardEffectType.Score:
+                break;
         }
     }
 

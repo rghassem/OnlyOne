@@ -1,3 +1,5 @@
+type LetterChar = 'O' | 'N' | 'E' | 'L' | 'R' | 'U' | 'D' | 'W' | 'I' | 'C' | 'Blank' | ' ';
+
 export enum Letter {
     Blank,
     O,
@@ -72,17 +74,31 @@ export const maxY = 15;
 export const maxX = 10;
 export let gameboard: Array<LetterEntity>;
 
-export function resetBoard() {
+export function resetBoard(preset?: string) {
     gameboard = [];
+
     for (let y = 0; y < maxY; ++y) {
         for (let x = 0; x < maxX; ++x) {
-            addLetter(getRandomLetter(), x, y);
+            const index2d = x + (maxX * y);
+            if (preset && preset.length >= index2d && preset.charAt(index2d) !== '*') {
+                let letterStr = preset.charAt(index2d) as LetterChar;
+                if (letterStr === ' ') letterStr = 'Blank';
+                const letter = Letter[letterStr];
+                addLetter(letter, x, y);
+            }
+            else {
+                addLetter(getRandomLetter(), x, y);
+            }
+
         }
     }
-    //This is super confusing but it sets the O, N, and E somewhere at the top.
-    const topArea = 50;
-    for (let i = Letter.O; i <= Letter.E; ++i) {
-        gameboard[Math.floor(Math.random() * topArea)].letter = i;
+
+    if (!preset) {
+        //This is super confusing but it sets the O, N, and E somewhere at the top.
+        const topArea = 50;
+        for (let i = Letter.O; i <= Letter.E; ++i) {
+            gameboard[Math.floor(Math.random() * topArea)].letter = i;
+        }
     }
 }
 

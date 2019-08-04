@@ -1,10 +1,12 @@
 import { onLetterPressed } from "./letters";
 import { drawEffects, events, drawBoard, resetScreen, CellHeight, CellWidth } from "./render";
-import { updateState } from "./gameState";
-import { runAnimations } from "./animation";
-import { resetBoard, maxY, maxX } from "./board";
+import { updateState, checkWinAndResetOneScore } from "./gameState";
+import { runAnimations, wait } from "./animation";
+import { resetBoard, maxY, maxX, gameboard, Letter } from "./board";
 import { makeButton } from "./button";
-import { explosionSound, bonusSound, shootSound } from "./sounds";
+import { shootSound, bonusSound } from "./sounds";
+import { levels, winScreen } from "./levels";
+import { BoardEffectType, BoardEffect } from "./boardEffect";
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
@@ -73,12 +75,14 @@ document.body.appendChild(app.view);
 /* eslint-enabled */
 
 function start() {
+    let currentLevel = 0;
+
     //Run animation system
     app.ticker.add(() => {
         runAnimations(app.ticker.elapsedMS / 1000);
     });
 
-    reset();
+    reset(levels[currentLevel]());
 
     let resolving = false;
     events.onLetterClick = (x: number, y: number) => {
@@ -94,11 +98,33 @@ function start() {
             effects = updateState(effects);
             drawBoard(letterStage);
         }
+
+        if (checkWinAndResetOneScore()) {
+            changeLevel(++currentLevel);
+        }
+    }
+
+    async function changeLevel(level: number) {
+        reset(winScreen());
+        drawBoard(letterStage);
+        bonusSound();
+        await wait(0.7);
+        bonusSound();
+        await wait(0.7);
+        const destroyWinLetters = gameboard
+            .map(entity => {
+                if (entity.letter !== Letter.Blank && entity.letter !== undefined)
+                    return { x: entity.x, y: entity.y, effect: BoardEffectType.Destroy }
+                else return null;
+            })
+            .filter(effect => effect !== null) as BoardEffect[];
+        await drawEffects(letterStage, destroyWinLetters);
+        reset(level < levels.length ? levels[level]() : undefined);
     }
 }
 
-function reset() {
-    resetBoard();
+function reset(preset?: string) {
+    resetBoard(preset);
     resetScreen(letterStage);
 }
 
