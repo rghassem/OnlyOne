@@ -206,14 +206,16 @@ function drawTooltip(stage: PIXI.Container) {
         wordWrapWidth: 200,
     });
 
-    tooltip.x = 400;
-    tooltip.y = 300;
+    tooltip.anchor.set(0.5, 0.5);
+    tooltip.x = (maxX * CellWidth) / 2;
+    tooltip.y = -20;
 
     stage.addChild(tooltip);
 }
 
 function updateTooltip(text: string) {
     tooltip.text = text;
+    // tooltip.x = (maxX * CellWidth) / 2 - (text.length * 24) / 12;
 }
 
 function drawLetter(letter: Letter, x: number, y: number, stage: PIXI.Container) {
@@ -236,7 +238,7 @@ function drawLetter(letter: Letter, x: number, y: number, stage: PIXI.Container)
     text.on('pointerover', () => {
         const letter = letterVisuals.get(getLetterEntity(posX, posY)!.letter)!;
         text.style.fill = '#FF0000';
-        updateTooltip(`-${letter.name}-\n${letter.description}`);
+        updateTooltip(`${letter.name}`);
     })
         .on('pointerout', () => {
             const letter = letterVisuals.get(getLetterEntity(posX, posY)!.letter)!;
@@ -245,7 +247,7 @@ function drawLetter(letter: Letter, x: number, y: number, stage: PIXI.Container)
         .on('pointerdown', () => {
             events.onLetterClick && events.onLetterClick(x, y);
             const letter = letterVisuals.get(getLetterEntity(posX, posY)!.letter)!;
-            updateTooltip(`-${letter.name}-\n${letter.description}`);
+            updateTooltip(`${letter.name}`);
         });
 
     stage.addChild(text);

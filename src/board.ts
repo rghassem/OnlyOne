@@ -68,7 +68,7 @@ export class LetterEntity {
     ) { }
 }
 
-export const maxY = 15;
+export const maxY = 14;
 export const maxX = 10;
 export let gameboard: Array<LetterEntity>;
 
