@@ -88,7 +88,7 @@ function start() {
 
     button = makeButton(app.stage, 100, 50, "Reset", () => {
         shootSound();
-        reset();
+        reset(currentLevel < levels.length ? levels[currentLevel]() : undefined);
     });
 
     resize();
