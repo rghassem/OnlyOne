@@ -10,6 +10,11 @@ const bounce = "assets/bounce.wav";
 const music = "assets/PerituneMaterial_Ramble.mp3";
 
 sounds.load([explosion, bounce, music]);
+const allSoundsLoaded = new Promise<void>((resolve, reject) => {
+    sounds.whenLoaded = () => {
+        resolve();
+    }
+});
 
 export function shootSound() {
     soundEffect(
@@ -54,12 +59,15 @@ export function bonusSound() {
     soundEffect(1174.66, 0, 0.3, "square", volume, 0, 0.2);
 }
 
-export function bgmusic() {
-    if (!sounds[music].playing) {
-        sounds[music].volume = 0;
-        sounds[music].playbackRate = 0.8;
-        sounds[music].loop = true;
-        sounds[music].play();
-        sounds[music].fadeIn(5, 0.2);
+export async function bgmusic() {
+    await allSoundsLoaded;
+    const song = sounds[music];
+    if (!song.playing) {
+        console.log("beginning song playback");
+        song.volume = 0;
+        song.playbackRate = 0.8;
+        song.loop = true;
+        song.play();
+        song.fadeIn(5, 0.2);
     }
 }
