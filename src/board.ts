@@ -1,4 +1,4 @@
-type LetterChar = 'O' | 'N' | 'E' | 'L' | 'R' | 'U' | 'D' | 'W' | 'I' | 'C' | 'Y' | 'Blank' | ' ';
+type LetterChar = 'O' | 'N' | 'E' | 'L' | 'R' | 'U' | 'D' | 'W' | 'I' | 'C' | 'X' | 'Y' | 'Blank' | ' ';
 
 export enum Letter {
     Blank,
@@ -12,7 +12,7 @@ export enum Letter {
     W,
     I,
     C,
-    // X,
+    X,
     Y,
     B,
     M,
@@ -46,6 +46,7 @@ letterVisuals.set(Letter.D, new LetterVisual('D', 'Down', 'Destroys all letters 
 letterVisuals.set(Letter.W, new LetterVisual('W', 'Wall', 'Blocks all letter destruction effects. Can be destroyed normally.', '#55B560'));
 letterVisuals.set(Letter.I, new LetterVisual('I', 'Invisible', 'Can only be destroyed by letter abilities.', '#4FA4E4'));
 letterVisuals.set(Letter.C, new LetterVisual('C', 'Cross', 'Destroys one block in each cardinal direction.'));
+letterVisuals.set(Letter.X, new LetterVisual('X', 'X Bomb', 'Destroys one block at each corner.'));
 letterVisuals.set(Letter.Y, new LetterVisual('Y', 'Yttrium Bomb', 'We kinda just liked the pattern.', '#99041D'));
 letterVisuals.set(Letter.B, new LetterVisual('B', 'B'));
 letterVisuals.set(Letter.M, new LetterVisual('M', 'M'));
@@ -64,8 +65,9 @@ letterFrequency.set(Letter.U, 10);
 letterFrequency.set(Letter.D, 5);
 letterFrequency.set(Letter.W, 14);
 letterFrequency.set(Letter.I, 14);
-letterFrequency.set(Letter.C, 14);
-letterFrequency.set(Letter.Y, 13);
+letterFrequency.set(Letter.C, 10);
+letterFrequency.set(Letter.Y, 10);
+letterFrequency.set(Letter.X, 7);
 
 export function getRandomLetter() {
     let rand = Math.random() * 100;

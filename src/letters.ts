@@ -24,10 +24,11 @@ export function onLetterPressed(x: number, y: number): Array<BoardEffect> {
 			return [];
 		case Letter.C:
 			return cross(x, y);
+
 		case Letter.Y:
 			return ybomb(x, y);
-		// case Letter.X:
-		// 	return diagonal(x, y);
+		case Letter.X:
+			return diagonal(x, y);
 		default:
 			return itself(x, y);
 	}
