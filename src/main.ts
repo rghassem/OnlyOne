@@ -72,7 +72,7 @@ document.body.appendChild(app.view);
 // include the web-font loader script
 (function () {
     const wf = document.createElement('script');
-    wf.src = `${document.location.protocol === 'https:' ? 'https' : 'http'
+    wf.src = `${document.location !== null && document.location.protocol === 'https:' ? 'https' : 'http'
         }://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js`;
     wf.type = 'text/javascript';
     wf.async = true;
