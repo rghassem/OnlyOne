@@ -12,11 +12,11 @@ import { BoardEffectType, BoardEffect } from "./boardEffect";
 // with a fallback to a canvas render. It will also setup the ticker
 // and the root stage PIXI.Container.
 const app = new PIXI.Application();
+console.log(`window.devicePixelRatio: ${window.devicePixelRatio}`);
 
 //Letter stage
 const letterStage = new PIXI.Container();
 app.stage.addChild(letterStage);
-
 
 
 //Reset button
@@ -24,17 +24,22 @@ let button: PIXI.Graphics;
 
 let skipButton: PIXI.Graphics;
 
+//Initialize renderer stuff
+app.renderer.view.style.position = "absolute";
+app.renderer.view.style.display = "block";
+(<any>app).renderer.autoDensity = true;
+app.renderer.resize(window.innerWidth, window.innerHeight);
 
-function resize() {
-    app.renderer.view.style.position = "absolute";
-    app.renderer.view.style.display = "block";
-    app.renderer.autoResize = true;
+function resize(resizeRenderer: boolean = false) {
 
-    app.renderer.resize(window.innerWidth, window.innerHeight);
+    if (resizeRenderer) {
+        app.renderer.resize(window.innerWidth, window.innerHeight);
+    }
+
     const letterStageWidth = CellWidth * maxX;
     const letterStageHeight = CellHeight * maxY;
-    letterStage.x = window.innerWidth / 2 - letterStageWidth / 2;
-    letterStage.y = window.innerHeight / 2 - letterStageHeight / 2;
+    letterStage.x = app.screen.width / 2 - letterStageWidth / 2;
+    letterStage.y = app.screen.height / 2 - letterStageHeight / 2;
 
     if (button) {
         button.x = letterStage.x + 70;
@@ -46,10 +51,19 @@ function resize() {
         skipButton.y = letterStage.y + letterStageHeight + 75;
     }
 
+    const actualWidth = letterStageWidth + 0.15 * letterStageWidth;
+    const scaleFactor = app.screen.width / actualWidth;
+    if (scaleFactor < 1) {
+        const scaleAdjustment = (1 - scaleFactor) / 2;
+        app.stage.x = app.screen.width * scaleAdjustment;
+        app.stage.y = app.screen.height * scaleAdjustment;
+        app.stage.scale.set(scaleFactor);
+    }
 }
 
-resize();
-window.onresize = resize;
+window.onresize = () => {
+    resize(true);
+}
 
 // The application will create a canvas element for you that you
 // can then insert into the DOM.
@@ -63,7 +77,7 @@ document.body.appendChild(app.view);
     },
 
     active() {
-        resize()
+        console.log(".active");
         start();
     },
 };
