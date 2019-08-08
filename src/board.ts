@@ -55,7 +55,7 @@ letterVisuals.set(Letter.A, new LetterVisual('A', 'A'));
 letterVisuals.set(Letter.K, new LetterVisual('K', 'K'));
 letterVisuals.set(Letter.S, new LetterVisual('S', 'S'));
 letterVisuals.set(Letter.P, new LetterVisual('P', 'P'));
-letterVisuals.set(Letter.T, new LetterVisual('T', 'T'));
+letterVisuals.set(Letter.T, new LetterVisual('T', 'Twist', "Rotate all letters clockwise", '#07a32b'));
 letterVisuals.set(Letter.G, new LetterVisual('G', 'G'));
 
 export const letterFrequency = new Map<Letter, number>();
@@ -67,7 +67,8 @@ letterFrequency.set(Letter.W, 14);
 letterFrequency.set(Letter.I, 14);
 letterFrequency.set(Letter.C, 10);
 letterFrequency.set(Letter.Y, 10);
-letterFrequency.set(Letter.X, 7);
+letterFrequency.set(Letter.X, 0);
+letterFrequency.set(Letter.T, 7);
 
 export function getRandomLetter() {
     let rand = Math.random() * 100;

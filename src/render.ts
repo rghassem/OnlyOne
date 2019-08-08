@@ -87,8 +87,13 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
                 break;
             case BoardEffectType.Move:
                 const e = boardEffect as MoveEffect;
-                letter.x = e.toX * CellWidth;
-                letter.y = e.toY * CellHeight;
+                const startX = e.x;
+                const startY = e.y;
+                const moveY = animate(letter, 'y', e.toY * CellHeight, 0.4, TweeningFunctions.easeInCubic)
+                    .then(() => { letter.y = startY * CellHeight; });
+                const moveX = animate(letter, 'x', e.toX * CellWidth, 0.4, TweeningFunctions.easeInCubic)
+                    .then(() => { letter.x = startX * CellWidth });
+                promises.push(moveX, moveY);
                 break;
             case BoardEffectType.Score:
                 break;

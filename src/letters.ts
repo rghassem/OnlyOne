@@ -24,7 +24,10 @@ export function onLetterPressed(x: number, y: number): Array<BoardEffect> {
 			return [];
 		case Letter.C:
 			return cross(x, y);
-
+		case Letter.T:
+			const rotation = rotateAround(x, y);
+			const changeSelf = { x, y, effect: BoardEffectType.Change, changeTo: Letter.I };
+			return rotation.concat(changeSelf);
 		case Letter.Y:
 			return ybomb(x, y);
 		case Letter.X:
@@ -240,4 +243,46 @@ function down(x: number, y: number) {
 		});
 	}
 	return effects;
+}
+
+function rotateAround(centerX: number, centerY: number) {
+	const results = new Array<BoardEffect>();
+
+	for (let x = -1; x <= 1; ++x) {
+		for (let y = -1; y <= 1; ++y) {
+			//For each point that differes from the center by 1..
+			let newX = centerX + x;
+			let newY = centerY + y;
+
+			//..ignoring the center itself
+			if (x === 0 && y === 0) continue;
+
+			//1. Move adjacent points clockwise
+			if (x === 0 || y === 0) {
+				if (x === 0) newX -= y;
+				if (y === 0) newY += x;
+			}
+			//2. Move diagonal points clockwise
+			else {
+				if (x + y === 0) newY += x;
+				else newX -= y;
+			}
+			results.push(makeMove(centerX + x, centerY + y, newX, newY));
+		}
+	}
+
+	//Remove offboard moves
+	results.filter(result => result.x < 0 || result.x >= maxX
+		|| result.y < 0 || result.y >= maxY);
+
+	return results;
+}
+
+function makeMove(x: number, y: number, toX: number, toY: number) {
+	return {
+		x, y,
+		effect: BoardEffectType.Move,
+		toX: toX,
+		toY: toY
+	}
 }

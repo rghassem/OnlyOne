@@ -1,11 +1,12 @@
+import { Letter } from "./board";
+
 export enum BoardEffectType {
     Destroy,
     Fall,
     Move,
+    Change,
     Score,
-    ScoreDestroy,
-    Victory,
-    NextLevel
+    ScoreDestroy
 }
 
 export interface BoardEffect {
@@ -17,4 +18,8 @@ export interface BoardEffect {
 export interface MoveEffect extends BoardEffect {
     toX: number,
     toY: number
+}
+
+export interface ChangeEffect extends BoardEffect {
+    changeTo: Letter
 }
