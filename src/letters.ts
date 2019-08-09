@@ -26,7 +26,7 @@ export function onLetterPressed(x: number, y: number): Array<BoardEffect> {
 			return cross(x, y);
 		case Letter.T:
 			const rotation = rotateAround(x, y);
-			const changeSelf = { x, y, effect: BoardEffectType.Change, changeTo: Letter.I };
+			const changeSelf = { x, y, effect: BoardEffectType.Transform, changeTo: Letter.I };
 			return rotation.concat(changeSelf);
 		case Letter.Y:
 			return ybomb(x, y);

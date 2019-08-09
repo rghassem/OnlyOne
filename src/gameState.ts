@@ -39,7 +39,7 @@ export function updateState(changes: Array<BoardEffect>) {
                 }
                 break;
 
-            case BoardEffectType.Change:
+            case BoardEffectType.Transform:
                 const changeEffect = effect as ChangeEffect;
                 const target = getLetterEntity(changeEffect.x, changeEffect.y);
                 if (target) {
