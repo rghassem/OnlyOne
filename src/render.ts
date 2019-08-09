@@ -50,13 +50,11 @@ export async function resetScreen(stage: PIXI.Container) {
 
 export function drawBoard(stage: PIXI.Container) {
     pixiLetters.forEach(pixiLetter => {
-        pixiLetter.text = ' ';
+        pixiLetter.alpha = 0;
     });
     for (const entity of gameboard) {
         const pixiLetter = getPixiLetter(entity.x, entity.y);
-        // pixiLetter.x = entity.x * CellWidth;
-        // pixiLetter.y = entity.y * CellHeight;
-        setStyle(pixiLetter, entity.letter);
+        updateStyle(pixiLetter, entity.letter);
     }
 }
 
@@ -73,7 +71,7 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
                 bonusSound();
             case BoardEffectType.Destroy:
                 pauseForEffect = true;
-                letter.text = ' ';
+                letter.alpha = 0;
                 explosionSound();
                 await ghettoAssExplosion(stage, boardEffect, 100);
                 break;
@@ -250,15 +248,22 @@ function drawLetter(letter: Letter, x: number, y: number, stage: PIXI.Container)
     const gridx = x * CellWidth;
     const gridy = y * CellHeight;
 
-    const text = new PIXI.Text(' ');
-    setStyle(text, letter);
+    const text = new PIXI.Text();
+    const style = new PIXI.TextStyle({
+        fontFamily: 'VT323',
+        fontSize: 36,
+        stroke: '#4a1850',
+        strokeThickness: 5,
+        dropShadow: true
+    });
+    text.style = style;
+
+    updateStyle(text, letter);
     text.x = gridx;
     text.y = gridy;
 
     text.interactive = true;
     text.buttonMode = true;
-
-    const vis = letterVisuals.get(letter)!;
 
     const posX = x;
     const posY = y;
@@ -287,26 +292,20 @@ function drawLetter(letter: Letter, x: number, y: number, stage: PIXI.Container)
     return text;
 }
 
-function setStyle(pixiText: PIXI.Text, letter: Letter) {
+function updateStyle(pixiText: PIXI.Text, letter: Letter) {
+    if (letter == Letter.Blank) {
+        pixiText.alpha = 0;
+        return;
+    }
+
+    if (pixiText.alpha === 0) pixiText.alpha = 1
+
     const viz = letterVisuals.get(letter);
+    if (viz && viz.char !== pixiText.text) {
+        pixiText.style.fill = viz.color;
+        pixiText.text = viz.char;
+    }
 
-    const style = new PIXI.TextStyle({
-        fontFamily: 'VT323',
-        fontSize: 36,
-        fill: viz ? viz.color : '#ffffff',
-        stroke: '#4a1850',
-        strokeThickness: 5,
-        dropShadow: true,
-        // dropShadowColor: '#000000',
-        // dropShadowBlur: 4,
-        // dropShadowAngle: Math.PI / 6,
-        // dropShadowDistance: 6,
-        wordWrap: true,
-        wordWrapWidth: 440,
-    });
-
-    pixiText.text = viz ? viz.char : ' ';
-    pixiText.style = style;
 }
 
 async function pulse(pixiText: PIXI.Text) {
@@ -319,9 +318,19 @@ async function pulse(pixiText: PIXI.Text) {
     await animate(pixiText.style, 'strokeThickness', 5, 0.2, TweeningFunctions.easeOutCubic);
 }
 
+let cachedExplosion: PIXI.Graphics | null = null;
+
 async function ghettoAssExplosion(stage: PIXI.Container, boardEffect: BoardEffect, durationMS: number) {
     return new Promise<void>((resolve, reject) => {
-        const explosion = new PIXI.Graphics();
+        let explosion: PIXI.Graphics;
+        if (cachedExplosion) {
+            explosion = cachedExplosion;
+            cachedExplosion = null;
+        }
+        else {
+            explosion = new PIXI.Graphics();
+        }
+
         stage.addChild(explosion);
         explosion.x = (boardEffect.x * CellWidth) + CellWidth / 4;
         explosion.y = (boardEffect.y * CellHeight) + CellHeight / 4;
@@ -351,7 +360,12 @@ async function ghettoAssExplosion(stage: PIXI.Container, boardEffect: BoardEffec
             }
             else {
                 stage.removeChild(explosion);
-                explosion.destroy();
+                if (!cachedExplosion) {
+                    cachedExplosion = explosion
+                }
+                else {
+                    explosion.destroy();
+                }
                 wait(0.01).then(() => resolve());
             }
         }
