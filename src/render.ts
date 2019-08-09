@@ -63,6 +63,7 @@ export function drawBoard(stage: PIXI.Container) {
 export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEffect>) {
     const promises = new Array<Promise<void>>();
     let playBounce = false;
+    let pauseForEffect = false;
     for (const boardEffect of effects) {
         const letter = getPixiLetter(boardEffect.x, boardEffect.y);
 
@@ -71,6 +72,7 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
                 updateScoredLetters();
                 bonusSound();
             case BoardEffectType.Destroy:
+                pauseForEffect = true;
                 letter.text = ' ';
                 explosionSound();
                 await ghettoAssExplosion(stage, boardEffect, 100);
@@ -99,6 +101,10 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
                 promises.push(moveX, moveY);
                 break;
 
+            case BoardEffectType.Transform:
+                await pulse(letter);
+                break;
+
             case BoardEffectType.Score:
                 break;
         }
@@ -106,6 +112,7 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
 
     if (playBounce) bounceSound(0.2);
     await Promise.all(promises);
+    if (pauseForEffect) await wait(0.4);
 }
 
 function drawScore(stage: PIXI.Container) {
