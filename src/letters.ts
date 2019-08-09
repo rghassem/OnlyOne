@@ -1,4 +1,4 @@
-import { Letter, getLetterEntity, maxY, maxX } from "./board";
+import { Letter, getLetterEntity, maxY, maxX, LetterEntity } from "./board";
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 
 type LetterEffect = (x: number, y: number) => Array<BoardEffect>;
@@ -63,14 +63,11 @@ function ybomb(x: number, y: number) {
 	];
 	for (let pattern of patterns) {
 		const entity = getLetterEntity(pattern.x, pattern.y);
-		if (!entity || entity.letter === Letter.W) {
-			continue;
-		} else {
-			effects.push({
-				x: pattern.x,
-				y: pattern.y,
-				effect: BoardEffectType.Destroy
-			});
+		if (!entity) continue;
+		const effect = destroy(entity);
+		effects.push(effect);
+		if (effect.effect === BoardEffectType.BlockDestruction) {
+			break;
 		}
 	}
 	return effects;
@@ -100,14 +97,11 @@ function cross(x: number, y: number) {
 
 	for (let position of cardinal) {
 		const entity = getLetterEntity(position.x, position.y);
-		if (!entity || entity.letter === Letter.W) {
-			continue;
-		} else {
-			effects.push({
-				x: position.x,
-				y: position.y,
-				effect: BoardEffectType.Destroy
-			});
+		if (!entity) continue;
+		const effect = destroy(entity);
+		effects.push(effect);
+		if (effect.effect === BoardEffectType.BlockDestruction) {
+			break;
 		}
 	}
 	return effects;
@@ -143,14 +137,11 @@ function diagonal(x: number, y: number) {
 
 	for (let position of diagonal) {
 		const entity = getLetterEntity(position.x, position.y);
-		if (!entity || entity.letter === Letter.W) {
-			continue;
-		} else {
-			effects.push({
-				x: position.x,
-				y: position.y,
-				effect: BoardEffectType.Destroy
-			});
+		if (!entity) continue;
+		const effect = destroy(entity);
+		effects.push(effect);
+		if (effect.effect === BoardEffectType.BlockDestruction) {
+			break;
 		}
 	}
 
@@ -167,14 +158,12 @@ function right(x: number, y: number) {
 	];
 	for (let i = x + 1; i < maxX; ++i) {
 		const entity = getLetterEntity(i, y);
-		if (entity && entity.letter === Letter.W) {
+		if (!entity) continue;
+		const effect = destroy(entity);
+		effects.push(effect);
+		if (effect.effect === BoardEffectType.BlockDestruction) {
 			break;
 		}
-		effects.push({
-			x: i,
-			y,
-			effect: BoardEffectType.Destroy
-		});
 	}
 	return effects;
 }
@@ -189,14 +178,12 @@ function left(x: number, y: number) {
 	];
 	for (let i = x - 1; i >= 0; --i) {
 		const entity = getLetterEntity(i, y);
-		if (entity && entity.letter === Letter.W) {
+		if (!entity) continue;
+		const effect = destroy(entity);
+		effects.push(effect);
+		if (effect.effect === BoardEffectType.BlockDestruction) {
 			break;
 		}
-		effects.push({
-			x: i,
-			y,
-			effect: BoardEffectType.Destroy
-		});
 	}
 	return effects;
 }
@@ -211,14 +198,12 @@ function up(x: number, y: number) {
 	];
 	for (let i = y - 1; i >= 0; --i) {
 		const entity = getLetterEntity(x, i);
-		if (entity && entity.letter === Letter.W) {
+		if (!entity) continue;
+		const effect = destroy(entity);
+		effects.push(effect);
+		if (effect.effect === BoardEffectType.BlockDestruction) {
 			break;
 		}
-		effects.push({
-			x,
-			y: i,
-			effect: BoardEffectType.Destroy
-		});
 	}
 	return effects;
 }
@@ -233,14 +218,12 @@ function down(x: number, y: number) {
 	];
 	for (let i = y + 1; i < maxY; ++i) {
 		const entity = getLetterEntity(x, i);
-		if (entity && entity.letter === Letter.W) {
+		if (!entity) continue;
+		const effect = destroy(entity);
+		effects.push(effect);
+		if (effect.effect === BoardEffectType.BlockDestruction) {
 			break;
 		}
-		effects.push({
-			x,
-			y: i,
-			effect: BoardEffectType.Destroy
-		});
 	}
 	return effects;
 }
@@ -285,4 +268,19 @@ function makeMove(x: number, y: number, toX: number, toY: number) {
 		toX: toX,
 		toY: toY
 	}
+}
+
+function destroy(entity: LetterEntity) {
+	if (entity.letter === Letter.W) {
+		return {
+			x: entity.x,
+			y: entity.y,
+			effect: BoardEffectType.BlockDestruction
+		};
+	}
+	return {
+		x: entity.x,
+		y: entity.y,
+		effect: BoardEffectType.Destroy
+	};
 }

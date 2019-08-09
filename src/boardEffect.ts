@@ -5,6 +5,7 @@ export enum BoardEffectType {
     Fall,
     Move,
     Transform,
+    BlockDestruction,
     Score,
     ScoreDestroy
 }

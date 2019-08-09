@@ -2,7 +2,7 @@ import { Letter, gameboard, maxX, maxY, getLetterEntity, letterVisuals, LetterEn
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 import { animate, TweeningFunctions, wait } from "./animation";
 import { letterOScored, letterNScored, letterEScored } from "./gameState";
-import { bonusSound, explosionSound, bounceSound } from "./sounds";
+import { bonusSound, explosionSound, bounceSound, blockSound } from "./sounds";
 
 export const CellWidth = 35;
 export const CellHeight = CellWidth;
@@ -75,6 +75,9 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
                 explosionSound();
                 await ghettoAssExplosion(stage, boardEffect, 100);
                 break;
+            case BoardEffectType.BlockDestruction:
+                await pulse(letter);
+                break;
             case BoardEffectType.Fall:
                 const fallEffect = boardEffect as MoveEffect;
                 const startingY = letter.y;
@@ -95,6 +98,7 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
                     .then(() => { letter.x = startX * CellWidth });
                 promises.push(moveX, moveY);
                 break;
+
             case BoardEffectType.Score:
                 break;
         }
@@ -296,6 +300,16 @@ function setStyle(pixiText: PIXI.Text, letter: Letter) {
 
     pixiText.text = viz ? viz.char : ' ';
     pixiText.style = style;
+}
+
+async function pulse(pixiText: PIXI.Text) {
+    blockSound();
+
+    animate(pixiText.style, 'fontSize', 45, 0.2, TweeningFunctions.linear);
+    await animate(pixiText.style, 'strokeThickness', 10, 0.1, TweeningFunctions.linear);
+
+    animate(pixiText.style, 'fontSize', 36, 0.2, TweeningFunctions.easeOutCubic);
+    await animate(pixiText.style, 'strokeThickness', 5, 0.2, TweeningFunctions.easeOutCubic);
 }
 
 async function ghettoAssExplosion(stage: PIXI.Container, boardEffect: BoardEffect, durationMS: number) {
