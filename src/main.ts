@@ -1,4 +1,4 @@
-import { onLetterPressed } from "./letters";
+import { onLetterPressed } from "./effects/letters";
 import { drawEffects, events, drawBoard, resetScreen, CellHeight, CellWidth } from "./render";
 import { updateState, checkWin, resetScore } from "./gameState";
 import { runAnimations, wait, clearAnimations } from "./animation";
@@ -6,7 +6,7 @@ import { resetBoard, maxY, maxX, gameboard, Letter } from "./board";
 import { makeButton } from "./button";
 import { shootSound, bonusSound, bgmusic } from "./sounds";
 import { levels, winScreen } from "./levels";
-import { BoardEffectType, BoardEffect } from "./boardEffect";
+import { BoardEffectType, BoardEffect } from "./effects/boardEffect";
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker

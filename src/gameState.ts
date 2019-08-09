@@ -1,4 +1,4 @@
-import { BoardEffect, BoardEffectType, MoveEffect, ChangeEffect } from "./boardEffect";
+import { BoardEffect, BoardEffectType, MoveEffect, ChangeEffect } from "./effects/boardEffect";
 import { getLetterEntity, Letter, maxX, maxY, removeLetterEntity, LetterEntity } from "./board";
 import { fillGaps, Gap } from "./gapFill";
 

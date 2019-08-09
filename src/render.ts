@@ -1,5 +1,5 @@
 import { Letter, gameboard, maxX, maxY, getLetterEntity, letterVisuals, LetterEntity } from "./board";
-import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
+import { BoardEffect, BoardEffectType, MoveEffect } from "./effects/boardEffect";
 import { animate, TweeningFunctions, wait } from "./animation";
 import { letterOScored, letterNScored, letterEScored } from "./gameState";
 import { bonusSound, explosionSound, bounceSound } from "./sounds";

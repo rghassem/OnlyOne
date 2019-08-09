@@ -1,4 +1,4 @@
-import { MoveEffect, BoardEffectType } from "./boardEffect";
+import { MoveEffect, BoardEffectType } from "./effects/boardEffect";
 import { getLetterEntity } from "./board";
 
 export class Gap {
