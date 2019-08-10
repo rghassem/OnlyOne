@@ -8,7 +8,7 @@ const volume = 0.5;
 const explosion = "assets/explosion.wav";
 const bounce = "assets/bounce.wav";
 const block = "assets/block.wav";
-const music = "assets/PerituneMaterial_Ramble.mp3";
+const music = "assets/PerituneMaterial_Ramble_small.mp3";
 
 sounds.load([explosion, bounce, music, block]);
 const allSoundsLoaded = new Promise<void>((resolve, reject) => {

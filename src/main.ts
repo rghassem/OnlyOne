@@ -125,7 +125,6 @@ function start() {
     });
 
     events.onLetterClick = (x: number, y: number) => {
-        bgmusic();
         if (resolving) return;
         resolving = true;
         resolveMove(x, y).then(() => resolving = false);
@@ -158,6 +157,7 @@ function start() {
                 else return null;
             })
             .filter(effect => effect !== null) as BoardEffect[];
+        if (level === 1) bgmusic();
         await drawEffects(letterStage, destroyWinLetters);
         await reset(level < levels.length ? levels[level]() : undefined);
     }
