@@ -66,9 +66,6 @@ function ybomb(x: number, y: number) {
 		if (!entity) continue;
 		const effect = destroy(entity);
 		effects.push(effect);
-		if (effect.effect === BoardEffectType.BlockDestruction) {
-			break;
-		}
 	}
 	return effects;
 }
@@ -100,9 +97,6 @@ function cross(x: number, y: number) {
 		if (!entity) continue;
 		const effect = destroy(entity);
 		effects.push(effect);
-		if (effect.effect === BoardEffectType.BlockDestruction) {
-			break;
-		}
 	}
 	return effects;
 }
@@ -228,8 +222,8 @@ function down(x: number, y: number) {
 	return effects;
 }
 
-function rotateAround(centerX: number, centerY: number) {
-	const results = new Array<BoardEffect>();
+function rotateAround(centerX: number, centerY: number): BoardEffect[] {
+	let results = new Array<MoveEffect>();
 
 	for (let x = -1; x <= 1; ++x) {
 		for (let y = -1; y <= 1; ++y) {
@@ -254,9 +248,15 @@ function rotateAround(centerX: number, centerY: number) {
 		}
 	}
 
-	//Remove offboard moves
-	results.filter(result => result.x < 0 || result.x >= maxX
-		|| result.y < 0 || result.y >= maxY);
+	//Do not work if there were offboard moves
+	const valid = results.every(
+		result => result.x > 0 && result.x < maxX
+			&& result.y > 0 && result.y < maxY
+			&& result.toX > 0 && result.toX < maxX
+			&& result.toY > 0 && result.toY < maxY
+	);
+
+	if (!valid) return []
 
 	return results;
 }
