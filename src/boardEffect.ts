@@ -2,6 +2,7 @@ import { Letter } from "./board";
 
 export enum BoardEffectType {
     Destroy,
+    Explode,
     Fall,
     Move,
     Transform,

@@ -2,15 +2,15 @@ import { BoardEffect, BoardEffectType, MoveEffect, ChangeEffect } from "./boardE
 import { getLetterEntity, Letter, maxX, maxY, removeLetterEntity, LetterEntity } from "./board";
 import { fillGaps, Gap } from "./gapFill";
 
-export let letterOScored = false;
-export let letterNScored = false;
-export let letterEScored = false;
+export let firstLetterScored = false;
+export let secondLetterScored = false;
+export let thirdLevelScored = false;
 
 type QueuedMove = { letter: LetterEntity, x: number, y: number };
 
 export function updateState(changes: Array<BoardEffect>) {
     let result = new Array<BoardEffect>();
-
+    
     //Seperate some operations from main loop.
     const gaps = new Array<Gap>();
     const queuedMoves = new Array<QueuedMove>();
@@ -64,13 +64,13 @@ export function updateState(changes: Array<BoardEffect>) {
 }
 
 export function checkWin() {
-    return letterOScored && letterNScored && letterEScored;
+    return firstLetterScored && secondLetterScored && thirdLevelScored;
 }
 
 export function resetScore() {
-    letterOScored = false;
-    letterNScored = false;
-    letterEScored = false;
+    firstLetterScored = false;
+    secondLetterScored = false;
+    thirdLevelScored = false;
 }
 
 function move(queuedMove: QueuedMove) {
@@ -92,23 +92,27 @@ function fall(x: number, y: number, toY: number) {
         letter.x = x;
         letter.y = toY;
     }
-    if (letter && (letter.letter === Letter.O || letter.letter === Letter.N || letter.letter === Letter.E) && toY === maxY - 1) {
+    if (letter && hasReachedBottomRow(letter)) {
         return [
             {
                 x: letter.x,
                 y: letter.y,
                 effect: BoardEffectType.Score
             }
-        ]
+        ];
     }
     return [];
 }
 
+function hasReachedBottomRow(letter: LetterEntity) {
+    return (letter.letter === Letter.First || letter.letter === Letter.Second || letter.letter === Letter.Third) && letter.y === maxY - 1
+}
+
 function score(x: number, y: number) {
     const entity = getLetterEntity(x, y)!;
-    letterOScored = letterOScored || entity.letter === Letter.O;
-    letterNScored = letterNScored || entity.letter === Letter.N;
-    letterEScored = letterEScored || entity.letter === Letter.E;
+    firstLetterScored = firstLetterScored || entity.letter === Letter.First;
+    secondLetterScored = secondLetterScored || entity.letter === Letter.Second;
+    thirdLevelScored = thirdLevelScored || entity.letter === Letter.Third;
     const results = [
         {
             x,
@@ -116,12 +120,5 @@ function score(x: number, y: number) {
             effect: BoardEffectType.ScoreDestroy
         }
     ]
-    if (letterOScored && letterNScored && letterEScored) {
-        // results.push({
-        //     x,
-        //     y,
-        //     effect: BoardEffectType.Victory
-        // })
-    }
     return results;
 }

@@ -5,24 +5,25 @@ export const levels = [levelOne, levelTwo, levelThree, levelFour, levelFive];
 export function winScreen() {
     return ' '
         .repeat(maxX * Math.floor(maxY / 2))
-        + '   WIN   ' +
+        + '  WINNER  ' +
         ' '.repeat(maxX * Math.floor(maxY / 2))
 }
 
 function levelOne() {
     return ' '
         .repeat(maxX * (maxY - 2))
-        + '   ONE    '
+        + '   012    '
         + 'IIIWIIIIIL';
 }
 
 function levelTwo() {
     const result = ' '
-        .repeat(maxX * (maxY - 5))
+        .repeat(maxX * (maxY - 6))
         + 'IMUSIC BYI'
         + 'IPERITUNEI'
+        + 'II2IIIII2I'
         + 'IIDIIIIIDI'
-        + 'IIIIONIIII'
+        + 'IIII01IIII'
         + 'RIIIIIIIII'
 
     return result;
@@ -33,9 +34,9 @@ function levelThree() {
         .repeat(maxX * (maxY - 6))
         + 'BY  REZA G'
         + 'AND MARK D'
-        + 'OIIOIIIIII'
-        + 'DIIWNIIIIW'
-        + 'IIIIDEIIII'
+        + '0II0IIIIII'
+        + 'DIIW1IIIIW'
+        + 'IIIID2IIII'
         + 'WIIUIICIIU';
     return result;
 }
@@ -43,12 +44,12 @@ function levelThree() {
 function levelFour() {
     const result = ' '
         .repeat(maxX * (maxY - 7))
-        + 'IIIIIIINII'
-        + 'IIIIIIIINI'
+        + 'IIIIIII1II'
+        + 'IIIIIIII1I'
         + 'IIIIIIICII'
         + 'IIIIIIIIYI'
-        + 'RIOIIIRCII'
-        + 'IIYIDEIIIC'
+        + 'RI0IIIRCII'
+        + 'IIYID2IIIC'
         + 'RIIUIICWWW';
     return result;
 }
@@ -56,9 +57,9 @@ function levelFour() {
 function levelFive() {
     const result = ' '
         .repeat(maxX * (maxY - 10))
-        + '**OINIE****'
-        + 'NIIIIIOIINI'
-        + 'IIIEIIICII'
+        + '**0I1I2****'
+        + '1IIIII0II1I'
+        + 'III2IIICII'
         + '**********'
         + '**********'
         + '**********'

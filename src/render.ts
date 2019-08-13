@@ -1,8 +1,9 @@
 import { Letter, gameboard, maxX, maxY, getLetterEntity, letterVisuals, LetterEntity } from "./board";
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 import { animate, TweeningFunctions, wait } from "./animation";
-import { letterOScored, letterNScored, letterEScored } from "./gameState";
+import { firstLetterScored, secondLetterScored, thirdLevelScored } from "./gameState";
 import { bonusSound, explosionSound, bounceSound, blockSound } from "./sounds";
+import { doLetterEffect } from "./letters";
 
 export const CellWidth = 35;
 export const CellHeight = CellWidth;
@@ -14,9 +15,9 @@ export let events: {
 };
 
 let pixiLetters: Array<PIXI.Text>;
-const textO = new PIXI.Text('O');
-const textN = new PIXI.Text('N');
-const textE = new PIXI.Text('E');
+const firstScoreLetter = new PIXI.Text('0');
+const secondScoreLetter = new PIXI.Text('1');
+const thirdScoreLetter = new PIXI.Text('2');
 
 function getPixiLetter(x: number, y: number) {
     return pixiLetters[x + (maxX * y)];
@@ -78,6 +79,9 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
             case BoardEffectType.BlockDestruction:
                 await pulse(letter);
                 break;
+            case BoardEffectType.Explode:
+                await pulse(letter);
+                break;
             case BoardEffectType.Fall:
                 const fallEffect = boardEffect as MoveEffect;
                 const startingY = letter.y;
@@ -125,15 +129,15 @@ function drawScore(stage: PIXI.Container) {
 
     const yPadding = 15;
 
-    textO.x = (maxX * CellWidth) / 2 - 32 - 64;
-    textO.y = maxY * CellHeight + yPadding;
+    firstScoreLetter.x = (maxX * CellWidth) / 2 - 32 - 64;
+    firstScoreLetter.y = maxY * CellHeight + yPadding;
 
-    textN.x = (maxX * CellWidth) / 2 - 32;
-    textN.y = maxY * CellHeight + yPadding;
+    secondScoreLetter.x = (maxX * CellWidth) / 2 - 32;
+    secondScoreLetter.y = maxY * CellHeight + yPadding;
 
-    textE.x = (maxX * CellWidth) / 2 - 32 + 64;
-    textE.y = maxY * CellHeight + yPadding;
-    textO.style = new PIXI.TextStyle({
+    thirdScoreLetter.x = (maxX * CellWidth) / 2 - 32 + 64;
+    thirdScoreLetter.y = maxY * CellHeight + yPadding;
+    firstScoreLetter.style = new PIXI.TextStyle({
         fontFamily: 'VT323',
         fontSize: 64,
         fill: '#000000',
@@ -148,7 +152,7 @@ function drawScore(stage: PIXI.Container) {
         wordWrapWidth: 440
     });
 
-    textN.style = new PIXI.TextStyle({
+    secondScoreLetter.style = new PIXI.TextStyle({
         fontFamily: 'VT323',
         fontSize: 64,
         fill: '#000000',
@@ -163,7 +167,7 @@ function drawScore(stage: PIXI.Container) {
         wordWrapWidth: 440
     });
 
-    textE.style = new PIXI.TextStyle({
+    thirdScoreLetter.style = new PIXI.TextStyle({
         fontFamily: 'VT323',
         fontSize: 64,
         fill: '#000000',
@@ -178,23 +182,23 @@ function drawScore(stage: PIXI.Container) {
         wordWrapWidth: 440
     });
 
-    stage.addChild(textO);
-    stage.addChild(textN);
-    stage.addChild(textE);
+    stage.addChild(firstScoreLetter);
+    stage.addChild(secondScoreLetter);
+    stage.addChild(thirdScoreLetter);
 }
 
 function updateScoredLetters() {
-    if (letterOScored) {
-        textO.style.fill = '#FFFF00';
-        textO.style.stroke = '#4a1850';
+    if (firstLetterScored) {
+        firstScoreLetter.style.fill = '#FFFF00';
+        firstScoreLetter.style.stroke = '#4a1850';
     }
-    if (letterNScored) {
-        textN.style.fill = '#FFFF00';
-        textN.style.stroke = '#4a1850';
+    if (secondLetterScored) {
+        secondScoreLetter.style.fill = '#FFFF00';
+        secondScoreLetter.style.stroke = '#4a1850';
     }
-    if (letterEScored) {
-        textE.style.fill = '#FFFF00';
-        textE.style.stroke = '#4a1850';
+    if (thirdLevelScored) {
+        thirdScoreLetter.style.fill = '#FFFF00';
+        thirdScoreLetter.style.stroke = '#4a1850';
     }
 }
 
