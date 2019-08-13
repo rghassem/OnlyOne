@@ -3,6 +3,7 @@ import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 import { animate, TweeningFunctions, wait } from "./animation";
 import { letterOScored, letterNScored, letterEScored } from "./gameState";
 import { bonusSound, explosionSound, bounceSound, blockSound } from "./sounds";
+import { doLetterEffect } from "./letters";
 
 export const CellWidth = 35;
 export const CellHeight = CellWidth;
@@ -77,6 +78,10 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
                 break;
             case BoardEffectType.BlockDestruction:
                 await pulse(letter);
+                break;
+            case BoardEffectType.Explode:
+                await pulse(letter);
+                pauseForEffect = true;
                 break;
             case BoardEffectType.Fall:
                 const fallEffect = boardEffect as MoveEffect;
