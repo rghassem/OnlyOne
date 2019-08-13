@@ -1,8 +1,6 @@
 import { Letter, getLetterEntity, maxY, maxX, LetterEntity } from "./board";
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 
-type LetterEffect = (x: number, y: number) => Array<BoardEffect>;
-
 type Position = {
 	x: number,
 	y: number

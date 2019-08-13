@@ -1,6 +1,9 @@
-type LetterChar = 'O' | 'N' | 'E' | 'L' | 'R' | 'U' | 'D' | 'W' | 'I' | 'C' | 'X' | 'Y' | 'Blank' | ' ';
+type LetterChar = 'O' | 'N' | 'E' | 'L' | 'R' | 'U' | 'D' | 'W' | 'I' | 'C' | 'X' | 'Y' | 'Blank' | ' ' | '0' | '1' | '2' | 'First' | 'Second' | 'Third';
 
 export enum Letter {
+    First,
+    Second,
+    Third,
     Blank,
     O,
     N,
@@ -36,9 +39,9 @@ class LetterVisual {
 }
 export const letterVisuals = new Map<Letter, LetterVisual>();
 letterVisuals.set(Letter.Blank, new LetterVisual(' '));
-letterVisuals.set(Letter.O, new LetterVisual('O', 'Get to the bottom!', 'Get this to the bottom row!', '#FFFF00'));
-letterVisuals.set(Letter.N, new LetterVisual('N', 'Get to the bottom!', 'Get this to the bottom row!', '#FFFF00'));
-letterVisuals.set(Letter.E, new LetterVisual('E', 'Get to the bottom!', 'Get this to the bottom row!', '#FFFF00'));
+letterVisuals.set(Letter.First, new LetterVisual('0', "Get this to the bottom!", "Get this to the bottom row!", "#FFFF00"));
+letterVisuals.set(Letter.Second, new LetterVisual('1', "Get this to the bottom!", "Get this to the bottom row!", "#FFFF00"));
+letterVisuals.set(Letter.Third, new LetterVisual('2', "Get this to the bottom!", "Get this to the bottom row!", "#FFFF00"));
 letterVisuals.set(Letter.R, new LetterVisual('R', 'Right', 'Destroys all letters to the right. Blocked by walls.'));
 letterVisuals.set(Letter.L, new LetterVisual('L', 'Left', 'Destroys all letters to the left. Blocked by walls.'));
 letterVisuals.set(Letter.U, new LetterVisual('U', 'Up', 'Destroys all letters above it. Blocked by walls.'));
@@ -48,6 +51,9 @@ letterVisuals.set(Letter.I, new LetterVisual('I', 'Invisible', 'Can only be dest
 letterVisuals.set(Letter.C, new LetterVisual('C', 'Cross', 'Destroys one block in each cardinal direction.'));
 letterVisuals.set(Letter.X, new LetterVisual('X', 'X Bomb', 'Destroys one block at each corner.'));
 letterVisuals.set(Letter.Y, new LetterVisual('Y', 'Yttrium Bomb', 'We kinda just liked the pattern.', '#99041D'));
+letterVisuals.set(Letter.O, new LetterVisual('O', 'O'));
+letterVisuals.set(Letter.N, new LetterVisual('N', 'N'));
+letterVisuals.set(Letter.E, new LetterVisual('E', 'E'));
 letterVisuals.set(Letter.B, new LetterVisual('B', 'B'));
 letterVisuals.set(Letter.M, new LetterVisual('M', 'M'));
 letterVisuals.set(Letter.Z, new LetterVisual('Z', 'Z'));
@@ -103,6 +109,9 @@ export function resetBoard(preset?: string) {
             if (preset && preset.length >= index2d && preset.charAt(index2d) !== '*') {
                 let letterStr = preset.charAt(index2d) as LetterChar;
                 if (letterStr === ' ') letterStr = 'Blank';
+                if (letterStr === '0') letterStr = 'First';
+                if (letterStr === '1') letterStr = 'Second';
+                if (letterStr === '2') letterStr = 'Third';
                 const letter = Letter[letterStr];
                 addLetter(letter, x, y);
             }
@@ -124,9 +133,9 @@ export function resetBoard(preset?: string) {
             used.push(idx);
         }
 
-        gameboard[used[0]].letter = Letter.O;
-        gameboard[used[1]].letter = Letter.N;
-        gameboard[used[2]].letter = Letter.E;
+        gameboard[used[0]].letter = Letter.First;
+        gameboard[used[1]].letter = Letter.Second;
+        gameboard[used[2]].letter = Letter.Third;
     }
 }
 

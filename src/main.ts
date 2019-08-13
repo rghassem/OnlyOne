@@ -97,8 +97,9 @@ document.body.appendChild(app.view);
 }());
 /* eslint-enabled */
 
+export let currentLevel = 0;
+
 function start() {
-    let currentLevel = 0;
 
     //Iniitalize letter stage
     let resolving = false;;
