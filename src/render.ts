@@ -311,11 +311,14 @@ function updateStyle(pixiText: PIXI.Text, letter: Letter) {
 async function pulse(pixiText: PIXI.Text) {
     blockSound();
 
-    animate(pixiText.style, 'fontSize', 45, 0.2, TweeningFunctions.linear);
-    await animate(pixiText.style, 'strokeThickness', 10, 0.1, TweeningFunctions.linear);
+    pixiText.pivot.set(0.5, 0.5);
+    animate(pixiText.scale, 'x', 1.4, 0.1, TweeningFunctions.linear);
+    await animate(pixiText.scale, 'y', 1.4, 0.1, TweeningFunctions.linear);
 
-    animate(pixiText.style, 'fontSize', 36, 0.2, TweeningFunctions.easeOutCubic);
-    await animate(pixiText.style, 'strokeThickness', 5, 0.2, TweeningFunctions.easeOutCubic);
+    animate(pixiText.scale, 'x', 1, 0.2, TweeningFunctions.easeOutCubic);
+    await animate(pixiText.scale, 'y', 1, 0.2, TweeningFunctions.easeOutCubic);
+
+    pixiText.pivot.set(0, 0);
 }
 
 let cachedExplosion: PIXI.Graphics | null = null;
