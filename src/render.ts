@@ -44,16 +44,6 @@ export async function resetScreen(stage: PIXI.Container) {
     await Promise.all(entrances);
 }
 
-// export function drawBoard(stage: PIXI.Container) {
-//     pixiLetters.forEach(pixiLetter => {
-//         pixiLetter.alpha = 0;
-//     });
-//     for (const entity of gameboard) {
-//         const pixiLetter = getPixiLetter(entity.x, entity.y);
-//         updateStyle(pixiLetter, entity.letter);
-//     }
-// }
-
 export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEffect>) {
     const promises = new Array<Promise<void>>();
     let playBounce = false;
@@ -289,11 +279,6 @@ function drawLetter(entity: LetterEntity, stage: PIXI.Container) {
 }
 
 function updateStyle(pixiText: PIXI.Text, letter: Letter) {
-    if (letter == Letter.Blank) {
-        pixiText.alpha = 0;
-        return;
-    }
-
     if (pixiText.alpha === 0) pixiText.alpha = 1
 
     const viz = letterVisuals.get(letter);
@@ -301,7 +286,6 @@ function updateStyle(pixiText: PIXI.Text, letter: Letter) {
         pixiText.style.fill = viz.color;
         pixiText.text = viz.char;
     }
-
 }
 
 async function pulse(pixiText: PIXI.Text) {

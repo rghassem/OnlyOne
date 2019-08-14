@@ -11,11 +11,9 @@ export function winScreen() {
 
 function levelOne() {
     return ' '
-        .repeat(maxX * (maxY - 4))
-        + 'IIIIIIIIII'
-        + '012       '
-        + 'IIIWIIIIIL'
-        + 'IILIIIIIII';
+        .repeat(maxX * (maxY - 2))
+        + '   012    '
+        + 'IIIWIIIIIL';
 }
 
 function levelTwo() {

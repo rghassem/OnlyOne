@@ -1,10 +1,9 @@
-type LetterChar = 'O' | 'N' | 'E' | 'L' | 'R' | 'U' | 'D' | 'W' | 'I' | 'C' | 'X' | 'Y' | 'Blank' | ' ' | '0' | '1' | '2' | 'First' | 'Second' | 'Third';
+type LetterChar = 'O' | 'N' | 'E' | 'L' | 'R' | 'U' | 'D' | 'W' | 'I' | 'C' | 'X' | 'Y' | '0' | '1' | '2' | 'First' | 'Second' | 'Third' | ' ';
 
 export enum Letter {
     First,
     Second,
     Third,
-    Blank,
     O,
     N,
     E,
@@ -38,7 +37,6 @@ class LetterVisual {
     ) { }
 }
 export const letterVisuals = new Map<Letter, LetterVisual>();
-letterVisuals.set(Letter.Blank, new LetterVisual(' '));
 letterVisuals.set(Letter.First, new LetterVisual('0', "Get this to the bottom!", "Get this to the bottom row!", "#FFFF00"));
 letterVisuals.set(Letter.Second, new LetterVisual('1', "Get this to the bottom!", "Get this to the bottom row!", "#FFFF00"));
 letterVisuals.set(Letter.Third, new LetterVisual('2', "Get this to the bottom!", "Get this to the bottom row!", "#FFFF00"));
@@ -85,7 +83,7 @@ export function getRandomLetter() {
             return key;
         }
     }
-    return Letter.Blank;
+    return Letter.I;
 }
 
 export class LetterEntity {
@@ -108,7 +106,7 @@ export function resetBoard(preset?: string) {
             const index2d = x + (maxX * y);
             if (preset && preset.length >= index2d && preset.charAt(index2d) !== '*') {
                 let letterStr = preset.charAt(index2d) as LetterChar;
-                if (letterStr === ' ') letterStr = 'Blank';
+                if (letterStr === ' ') continue;
                 if (letterStr === '0') letterStr = 'First';
                 if (letterStr === '1') letterStr = 'Second';
                 if (letterStr === '2') letterStr = 'Third';

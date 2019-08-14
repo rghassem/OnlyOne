@@ -151,7 +151,7 @@ function start() {
         await wait(0.7);
         const destroyWinLetters = gameboard
             .map(entity => {
-                if (entity.letter !== Letter.Blank && entity.letter !== undefined)
+                if (entity.letter !== undefined)
                     return { entity, effect: BoardEffectType.Destroy }
                 else return null;
             })

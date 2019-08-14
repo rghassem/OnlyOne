@@ -85,8 +85,6 @@ function destroyLetters(letters: Array<LetterEntity>, effects: Array<BoardEffect
 export function doLetterEffect(entity: LetterEntity | undefined, effects: Array<BoardEffect>) {
 	if (!entity) return;
 	switch (entity.letter) {
-		case Letter.Blank:
-			return [];
 		case Letter.L:
 			return left(entity, effects);
 		case Letter.R:
