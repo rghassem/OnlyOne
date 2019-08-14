@@ -3,45 +3,40 @@ import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 import { animate, TweeningFunctions, wait } from "./animation";
 import { firstLetterScored, secondLetterScored, thirdLevelScored } from "./gameState";
 import { bonusSound, explosionSound, bounceSound, blockSound } from "./sounds";
-import { doLetterEffect } from "./letters";
 
 export const CellWidth = 35;
 export const CellHeight = CellWidth;
 
 export let events: {
-    onLetterClick: ((x: number, y: number) => void) | null
+    onLetterClick: ((entity: LetterEntity) => void) | null
 } = {
     onLetterClick: null
 };
 
-let pixiLetters: Array<PIXI.Text>;
+let pixiLetters: Map<LetterEntity, PIXI.Text>;
 const firstScoreLetter = new PIXI.Text('0');
 const secondScoreLetter = new PIXI.Text('1');
 const thirdScoreLetter = new PIXI.Text('2');
 
-function getPixiLetter(x: number, y: number) {
-    return pixiLetters[x + (maxX * y)];
-}
 
 export async function resetScreen(stage: PIXI.Container) {
     if (pixiLetters) {
-        for (const letter of pixiLetters) {
+        for (const letter of pixiLetters.values()) {
             stage.removeChild(letter);
             letter.destroy();
         }
     }
+    pixiLetters = new Map();
+
     const entrances = new Array<Promise<void>>();
-    pixiLetters = []
-    for (let y = 0; y < maxY; ++y) {
-        for (let x = 0; x < maxX; ++x) {
-            const entity = getLetterEntity(x, y)!; //guaranteed a letter at every coordinated
-            const newLetter = drawLetter(entity.letter, entity.x, entity.y, stage);
-            newLetter.y -= maxY * CellHeight;
-            const duration = 1.5 + ((x / maxX) * 0.2);
-            entrances.push(animate(newLetter, 'y', entity.y * CellHeight, duration, TweeningFunctions.easeOutBounce));
-            pixiLetters.push(newLetter);
-        }
+    for (const entity of gameboard) {
+        const newLetter = drawLetter(entity, stage);
+        newLetter.y -= maxY * CellHeight;
+        const duration = 1.5 + ((entity.x / maxX) * 0.2);
+        entrances.push(animate(newLetter, 'y', entity.y * CellHeight, duration, TweeningFunctions.easeOutBounce));
+        pixiLetters.set(entity, newLetter);
     }
+
     drawScore(stage);
     drawDescription(stage);
     drawTooltip(stage);
@@ -49,22 +44,13 @@ export async function resetScreen(stage: PIXI.Container) {
     await Promise.all(entrances);
 }
 
-export function drawBoard(stage: PIXI.Container) {
-    pixiLetters.forEach(pixiLetter => {
-        pixiLetter.alpha = 0;
-    });
-    for (const entity of gameboard) {
-        const pixiLetter = getPixiLetter(entity.x, entity.y);
-        updateStyle(pixiLetter, entity.letter);
-    }
-}
-
 export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEffect>) {
     const promises = new Array<Promise<void>>();
     let playBounce = false;
     let pauseForEffect = false;
     for (const boardEffect of effects) {
-        const letter = getPixiLetter(boardEffect.x, boardEffect.y);
+        const letter = pixiLetters.get(boardEffect.entity);
+        if (!letter) continue;
 
         switch (boardEffect.effect) {
             case BoardEffectType.ScoreDestroy:
@@ -75,6 +61,7 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
                 letter.alpha = 0;
                 explosionSound();
                 await ghettoAssExplosion(stage, boardEffect, 100);
+                stage.removeChild(letter);
                 break;
             case BoardEffectType.BlockDestruction:
                 await pulse(letter);
@@ -84,22 +71,14 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
                 break;
             case BoardEffectType.Fall:
                 const fallEffect = boardEffect as MoveEffect;
-                const startingY = letter.y;
                 playBounce = true;
                 const anim = animate(letter, 'y', fallEffect.toY * CellHeight, 0.4, TweeningFunctions.easeOutBounce);
-                anim.then(() => {
-                    letter.y = startingY
-                });
                 promises.push(anim);
                 break;
             case BoardEffectType.Move:
                 const e = boardEffect as MoveEffect;
-                const startX = e.x;
-                const startY = e.y;
                 const moveY = animate(letter, 'y', e.toY * CellHeight, 0.4, TweeningFunctions.easeInCubic)
-                    .then(() => { letter.y = startY * CellHeight; });
                 const moveX = animate(letter, 'x', e.toX * CellWidth, 0.4, TweeningFunctions.easeInCubic)
-                    .then(() => { letter.x = startX * CellWidth });
                 promises.push(moveX, moveY);
                 break;
 
@@ -248,9 +227,10 @@ function updateTooltip(text: string) {
     // tooltip.x = (maxX * CellWidth) / 2 - (text.length * 24) / 12;
 }
 
-function drawLetter(letter: Letter, x: number, y: number, stage: PIXI.Container) {
-    const gridx = x * CellWidth;
-    const gridy = y * CellHeight;
+function drawLetter(entity: LetterEntity, stage: PIXI.Container) {
+
+    const gridx = entity.x * CellWidth;
+    const gridy = entity.y * CellHeight;
 
     const text = new PIXI.Text();
     const style = new PIXI.TextStyle({
@@ -262,32 +242,25 @@ function drawLetter(letter: Letter, x: number, y: number, stage: PIXI.Container)
     });
     text.style = style;
 
-    updateStyle(text, letter);
+    updateStyle(text, entity.letter);
     text.x = gridx;
     text.y = gridy;
 
     text.interactive = true;
     text.buttonMode = true;
 
-    const posX = x;
-    const posY = y;
-
-    text.on('pointerover', () => {
-        //const letter = letterVisuals.get(getLetterEntity(posX, posY)!.letter)!;
-        text.style.fill = '#FF0000';
-    })
+    text
+        .on('pointerover', () => {
+            text.style.fill = '#FF0000';
+        })
         .on('pointerout', () => {
-            const letterEntity = getLetterEntity(posX, posY);
-            if (!letterEntity) return;
-            const letter = letterVisuals.get(letterEntity.letter);
+            const letter = letterVisuals.get(entity.letter);
             if (!letter) return;
             text.style.fill = letter.color || "#FFFFFF";
         })
         .on('pointerdown', () => {
-            events.onLetterClick && events.onLetterClick(x, y);
-            const letterEntity = getLetterEntity(posX, posY);
-            if (!letterEntity) return;
-            const letter = letterVisuals.get(letterEntity.letter);
+            events.onLetterClick && events.onLetterClick(entity);
+            const letter = letterVisuals.get(entity.letter);
             if (!letter) return;
             updateTooltip(`${letter.name}`);
         });
@@ -297,11 +270,6 @@ function drawLetter(letter: Letter, x: number, y: number, stage: PIXI.Container)
 }
 
 function updateStyle(pixiText: PIXI.Text, letter: Letter) {
-    if (letter == Letter.Blank) {
-        pixiText.alpha = 0;
-        return;
-    }
-
     if (pixiText.alpha === 0) pixiText.alpha = 1
 
     const viz = letterVisuals.get(letter);
@@ -309,7 +277,6 @@ function updateStyle(pixiText: PIXI.Text, letter: Letter) {
         pixiText.style.fill = viz.color;
         pixiText.text = viz.char;
     }
-
 }
 
 async function pulse(pixiText: PIXI.Text) {
@@ -339,8 +306,8 @@ async function ghettoAssExplosion(stage: PIXI.Container, boardEffect: BoardEffec
         }
 
         stage.addChild(explosion);
-        explosion.x = (boardEffect.x * CellWidth) + CellWidth / 4;
-        explosion.y = (boardEffect.y * CellHeight) + CellHeight / 4;
+        explosion.x = (boardEffect.entity.x * CellWidth) + CellWidth / 4;
+        explosion.y = (boardEffect.entity.y * CellHeight) + CellHeight / 4;
         const time = durationMS;
         let elapsed = 0;
         let previous: number;

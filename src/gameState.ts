@@ -6,11 +6,11 @@ export let firstLetterScored = false;
 export let secondLetterScored = false;
 export let thirdLevelScored = false;
 
-type QueuedMove = { letter: LetterEntity, x: number, y: number };
+type QueuedMove = { entity: LetterEntity, x: number, y: number };
 
 export function updateState(changes: Array<BoardEffect>) {
     let result = new Array<BoardEffect>();
-    
+
     //Seperate some operations from main loop.
     const gaps = new Array<Gap>();
     const queuedMoves = new Array<QueuedMove>();
@@ -20,35 +20,29 @@ export function updateState(changes: Array<BoardEffect>) {
         switch (effect.effect) {
             case BoardEffectType.Destroy:
             case BoardEffectType.ScoreDestroy:
-                gaps.push(new Gap(effect.x, effect.y));
-                destroy(effect.x, effect.y);
+                gaps.push(new Gap(effect.entity.x, effect.entity.y));
+                destroy(effect.entity);
                 break;
 
             case BoardEffectType.Fall:
                 const fallEffect = effect as MoveEffect;
-                result = result.concat(fall(fallEffect.x, fallEffect.y, fallEffect.toY));
+                result = result.concat(fall(effect.entity, fallEffect.toY));
                 break;
 
             case BoardEffectType.Move:
                 const e = effect as MoveEffect;
                 if (e.toX >= 0 && e.toX < maxX && e.toY >= 0 && e.toY < maxY) {
-                    const letter = getLetterEntity(effect.x, effect.y);
-                    if (letter) {
-                        queuedMoves.push({ letter, x: e.toX, y: e.toY });
-                    }
+                    queuedMoves.push({ entity: effect.entity, x: e.toX, y: e.toY });
                 }
                 break;
 
             case BoardEffectType.Transform:
                 const changeEffect = effect as ChangeEffect;
-                const target = getLetterEntity(changeEffect.x, changeEffect.y);
-                if (target) {
-                    target.letter = changeEffect.changeTo;
-                }
+                changeEffect.entity.letter = changeEffect.changeTo;
                 break;
 
             case BoardEffectType.Score:
-                result = result.concat(score(effect.x, effect.y));
+                result = result.concat(score(effect.entity));
                 break;
         }
     }
@@ -74,29 +68,21 @@ export function resetScore() {
 }
 
 function move(queuedMove: QueuedMove) {
-    queuedMove.letter.x = queuedMove.x;
-    queuedMove.letter.y = queuedMove.y;
+    queuedMove.entity.x = queuedMove.x;
+    queuedMove.entity.y = queuedMove.y;
 }
 
-function destroy(x: number, y: number) {
+function destroy(entity: LetterEntity) {
     //Destroy the letter
-    const entity = getLetterEntity(x, y);
-    if (entity) {
-        removeLetterEntity(entity);
-    }
+    removeLetterEntity(entity);
 }
 
-function fall(x: number, y: number, toY: number) {
-    const letter = getLetterEntity(x, y);
-    if (letter) {
-        letter.x = x;
-        letter.y = toY;
-    }
-    if (letter && hasReachedBottomRow(letter)) {
+function fall(entity: LetterEntity, toY: number) {
+    entity.y = toY;
+    if (hasReachedBottomRow(entity)) {
         return [
             {
-                x: letter.x,
-                y: letter.y,
+                entity,
                 effect: BoardEffectType.Score
             }
         ];
@@ -108,15 +94,13 @@ function hasReachedBottomRow(letter: LetterEntity) {
     return (letter.letter === Letter.First || letter.letter === Letter.Second || letter.letter === Letter.Third) && letter.y === maxY - 1
 }
 
-function score(x: number, y: number) {
-    const entity = getLetterEntity(x, y)!;
+function score(entity: LetterEntity) {
     firstLetterScored = firstLetterScored || entity.letter === Letter.First;
     secondLetterScored = secondLetterScored || entity.letter === Letter.Second;
     thirdLevelScored = thirdLevelScored || entity.letter === Letter.Third;
     const results = [
         {
-            x,
-            y,
+            entity,
             effect: BoardEffectType.ScoreDestroy
         }
     ]

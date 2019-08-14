@@ -20,8 +20,7 @@ const chainingLetters = [
 
 const processedLetters = new Set<string>();
 
-export function onLetterPressed(x: number, y: number): Array<BoardEffect> {
-	const entity = getLetterEntity(x, y);
+export function onLetterPressed(entity: LetterEntity): Array<BoardEffect> {
 	const effects: Array<BoardEffect> = [];
 	doLetterEffect(entity, effects);
 	processedLetters.clear();
@@ -61,26 +60,22 @@ function destroyLetters(letters: Array<LetterEntity>, effects: Array<BoardEffect
 		const outcome = attemptDestroy(letter);
 		if (outcome === EffectOutcome.Prevent) {
 			effects.push({
-				x: letter.x,
-				y: letter.y,
+				entity: letter,
 				effect: BoardEffectType.BlockDestruction
 			});
 		} else if (outcome === EffectOutcome.Destroy) {
 			effects.push({
-				x: letter.x,
-				y: letter.y,
+				entity: letter,
 				effect: BoardEffectType.Destroy
 			});
 		} else if (outcome === EffectOutcome.Chain) {
 			effects.push({
-				x: letter.x,
-				y: letter.y,
+				entity: letter,
 				effect: BoardEffectType.Explode
 			});
 			doLetterEffect(letter, effects);
 			effects.push({
-				x: letter.x,
-				y: letter.y,
+				entity: letter,
 				effect: BoardEffectType.Destroy
 			});
 		}
@@ -90,8 +85,6 @@ function destroyLetters(letters: Array<LetterEntity>, effects: Array<BoardEffect
 export function doLetterEffect(entity: LetterEntity | undefined, effects: Array<BoardEffect>) {
 	if (!entity) return;
 	switch (entity.letter) {
-		case Letter.Blank:
-			return [];
 		case Letter.L:
 			return left(entity, effects);
 		case Letter.R:
@@ -109,10 +102,9 @@ export function doLetterEffect(entity: LetterEntity | undefined, effects: Array<
 		case Letter.C:
 			return cross(entity, effects);
 		case Letter.T:
-			const rotation = rotateAround(entity.x, entity.y);
+			const rotation = rotateAround(entity);
 			const changeSelf = {
-				x: entity.x,
-				y: entity.y,
+				entity,
 				effect: BoardEffectType.Transform,
 				changeTo: Letter.I
 			};
@@ -128,8 +120,7 @@ export function doLetterEffect(entity: LetterEntity | undefined, effects: Array<
 
 function itself(entity: LetterEntity, effects: Array<BoardEffect>) {
 	effects.push({
-		x: entity.x,
-		y: entity.y,
+		entity,
 		effect: BoardEffectType.Destroy
 	});
 	return effects;
@@ -137,8 +128,7 @@ function itself(entity: LetterEntity, effects: Array<BoardEffect>) {
 
 function prevent(entity: LetterEntity, effects: Array<BoardEffect>) {
 	effects.push({
-		x: entity.x,
-		y: entity.y,
+		entity,
 		effect: BoardEffectType.BlockDestruction
 	});
 	return effects;
@@ -276,8 +266,10 @@ function down(entity: LetterEntity, effects: Array<BoardEffect>) {
 	return effects;
 }
 
-function rotateAround(centerX: number, centerY: number): BoardEffect[] {
-	let results = new Array<MoveEffect>();
+function rotateAround(entity: LetterEntity): BoardEffect[] {
+	let movements = new Array<{ x: number, y: number, toX: number, toY: number }>();
+	let centerX = entity.x;
+	let centerY = entity.y;
 
 	for (let x = -1; x <= 1; ++x) {
 		for (let y = -1; y <= 1; ++y) {
@@ -298,12 +290,12 @@ function rotateAround(centerX: number, centerY: number): BoardEffect[] {
 				if (x + y === 0) newY += x;
 				else newX -= y;
 			}
-			results.push(makeMove(centerX + x, centerY + y, newX, newY));
+			movements.push({ x: centerX + x, y: centerY + y, toX: newX, toY: newY });
 		}
 	}
 
 	//Do not work if there were offboard moves
-	const valid = results.every(
+	const valid = movements.every(
 		result => result.x > 0 && result.x < maxX
 			&& result.y > 0 && result.y < maxY
 			&& result.toX > 0 && result.toX < maxX
@@ -312,12 +304,17 @@ function rotateAround(centerX: number, centerY: number): BoardEffect[] {
 
 	if (!valid) return []
 
+	const results = movements.map(move => {
+		const entity = getLetterEntity(move.x, move.y)!;
+		return makeMove(entity, move.toX, move.toY);
+	})
+
 	return results;
 }
 
-function makeMove(x: number, y: number, toX: number, toY: number) {
+function makeMove(entity: LetterEntity, toX: number, toY: number) {
 	return {
-		x, y,
+		entity,
 		effect: BoardEffectType.Move,
 		toX: toX,
 		toY: toY

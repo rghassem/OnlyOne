@@ -1,4 +1,4 @@
-import { Letter } from "./board";
+import { Letter, LetterEntity } from "./board";
 
 export enum BoardEffectType {
     Destroy,
@@ -12,9 +12,8 @@ export enum BoardEffectType {
 }
 
 export interface BoardEffect {
-    x: number,
-    y: number,
     effect: BoardEffectType;
+    entity: LetterEntity;
 }
 
 export interface MoveEffect extends BoardEffect {
