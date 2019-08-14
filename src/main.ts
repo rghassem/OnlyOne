@@ -1,8 +1,8 @@
 import { onLetterPressed } from "./letters";
-import { drawEffects, events, drawBoard, resetScreen, CellHeight, CellWidth } from "./render";
+import { drawEffects, events, resetScreen, CellHeight, CellWidth } from "./render";
 import { updateState, checkWin, resetScore } from "./gameState";
 import { runAnimations, wait, clearAnimations } from "./animation";
-import { resetBoard, maxY, maxX, gameboard, Letter } from "./board";
+import { resetBoard, maxY, maxX, gameboard, Letter, LetterEntity } from "./board";
 import { makeButton } from "./button";
 import { shootSound, bonusSound, bgmusic } from "./sounds";
 import { levels, winScreen } from "./levels";
@@ -125,18 +125,17 @@ function start() {
         runAnimations(app.ticker.elapsedMS / 1000);
     });
 
-    events.onLetterClick = (x: number, y: number) => {
+    events.onLetterClick = (entity: LetterEntity) => {
         if (resolving) return;
         resolving = true;
-        resolveMove(x, y).then(() => resolving = false);
+        resolveMove(entity).then(() => resolving = false);
     }
 
-    async function resolveMove(x: number, y: number) {
-        let effects = onLetterPressed(x, y);
+    async function resolveMove(entity: LetterEntity) {
+        let effects = onLetterPressed(entity);
         while (effects.length !== 0) {
             await drawEffects(letterStage, effects);
             effects = updateState(effects);
-            drawBoard(letterStage);
         }
 
         if (checkWin()) {
@@ -146,7 +145,6 @@ function start() {
 
     async function changeLevel(level: number) {
         await reset(winScreen());
-        drawBoard(letterStage);
         bonusSound();
         await wait(0.7);
         bonusSound();
@@ -154,7 +152,7 @@ function start() {
         const destroyWinLetters = gameboard
             .map(entity => {
                 if (entity.letter !== Letter.Blank && entity.letter !== undefined)
-                    return { x: entity.x, y: entity.y, effect: BoardEffectType.Destroy }
+                    return { entity, effect: BoardEffectType.Destroy }
                 else return null;
             })
             .filter(effect => effect !== null) as BoardEffect[];

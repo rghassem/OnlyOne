@@ -24,8 +24,9 @@ export function fillGaps(gaps: Array<Gap>): Array<MoveEffect> {
         if (above) {
             results.push({
                 effect: BoardEffectType.Fall,
-                x: above.x, y: above.y,
-                toX: gap.x, toY: above.y + gap.distance
+                entity: above,
+                toX: gap.x,
+                toY: above.y + gap.distance
             });
             //..and push another gap to the list, preserving y ordering
             const insertIndex = orderedGaps.findIndex(gap => gap.y === gap.y - 1);
