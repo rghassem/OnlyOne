@@ -71,22 +71,14 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
                 break;
             case BoardEffectType.Fall:
                 const fallEffect = boardEffect as MoveEffect;
-                //const startingY = letter.y;
                 playBounce = true;
                 const anim = animate(letter, 'y', fallEffect.toY * CellHeight, 0.4, TweeningFunctions.easeOutBounce);
-                // anim.then(() => {
-                //     letter.y = startingY
-                // });
                 promises.push(anim);
                 break;
             case BoardEffectType.Move:
                 const e = boardEffect as MoveEffect;
-                // const startX = letter.x;
-                // const startY = letter.y;
                 const moveY = animate(letter, 'y', e.toY * CellHeight, 0.4, TweeningFunctions.easeInCubic)
-                //.then(() => { letter.y = startY * CellHeight; });
                 const moveX = animate(letter, 'x', e.toX * CellWidth, 0.4, TweeningFunctions.easeInCubic)
-                //.then(() => { letter.x = startX * CellWidth });
                 promises.push(moveX, moveY);
                 break;
 
@@ -259,7 +251,6 @@ function drawLetter(entity: LetterEntity, stage: PIXI.Container) {
 
     text
         .on('pointerover', () => {
-            //const letter = letterVisuals.get(getLetterEntity(posX, posY)!.letter)!;
             text.style.fill = '#FF0000';
         })
         .on('pointerout', () => {
