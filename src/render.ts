@@ -30,6 +30,15 @@ export async function resetScreen(stage: PIXI.Container) {
     pixiLetters = new Map();
 
     const entrances = new Array<Promise<void>>();
+    drawScore(stage);
+    drawGameboard(stage, entrances);
+    drawDescription(stage);
+    drawTooltip(stage);
+    updateTooltip('');
+    await Promise.all(entrances);
+}
+
+function drawGameboard(stage: PIXI.Container, entrances: Promise<void>[]) {
     for (const entity of gameboard) {
         const newLetter = drawLetter(entity, stage);
         newLetter.y -= maxY * CellHeight;
@@ -37,12 +46,6 @@ export async function resetScreen(stage: PIXI.Container) {
         entrances.push(animate(newLetter, 'y', entity.y * CellHeight, duration, TweeningFunctions.easeOutBounce));
         pixiLetters.set(entity, newLetter);
     }
-
-    drawScore(stage);
-    drawDescription(stage);
-    drawTooltip(stage);
-    updateTooltip('');
-    await Promise.all(entrances);
 }
 
 export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEffect>) {
@@ -97,6 +100,8 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
     if (pauseForEffect) await wait(0.4);
 }
 
+
+
 function drawScore(stage: PIXI.Container) {
 
     const scoringLine = new PIXI.Graphics();
@@ -113,7 +118,6 @@ function drawScore(stage: PIXI.Container) {
     const hundreds = Math.floor(level / 100) % 10;
     const tens = Math.floor(level / 10) % 10;
     const ones = level % 10;
-    console.log(`${hundreds}_${tens}_${ones}`);
 
     firstScoreLetter.text = hundreds.toString();
     secondScoreLetter.text = tens.toString();
@@ -269,12 +273,22 @@ function drawLetter(entity: LetterEntity, stage: PIXI.Container) {
 }
 
 function updateStyle(pixiText: PIXI.Text, letter: Letter) {
-    if (pixiText.alpha === 0) pixiText.alpha = 1
+    if (pixiText.alpha === 0) {
+        pixiText.alpha = 1;
+    }
 
     const viz = letterVisuals.get(letter);
     if (viz && viz.char !== pixiText.text) {
         pixiText.style.fill = viz.color;
-        pixiText.text = viz.char;
+        if (letter === Letter.First) {
+            pixiText.text = firstScoreLetter.text;
+        } else if (letter === Letter.Second) {
+            pixiText.text = secondScoreLetter.text;
+        } else if (letter === Letter.Third) {
+            pixiText.text = thirdScoreLetter.text;
+        } else {
+            pixiText.text = viz.char;
+        }
     }
 }
 
