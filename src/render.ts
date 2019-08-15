@@ -3,8 +3,9 @@ import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 import { animate, TweeningFunctions, wait } from "./animation";
 import { firstLetterScored, secondLetterScored, thirdLevelScored } from "./gameState";
 import { bonusSound, explosionSound, bounceSound, blockSound } from "./sounds";
+import { currentLevel } from "./main";
 
-export const CellWidth = 35;
+export const CellWidth = 45;
 export const CellHeight = CellWidth;
 
 export let events: {
@@ -108,6 +109,16 @@ function drawScore(stage: PIXI.Container) {
 
     const yPadding = 15;
 
+    const level = currentLevel + 1;
+    const hundreds = Math.floor(level / 100) % 10;
+    const tens = Math.floor(level / 10) % 10;
+    const ones = level % 10;
+    console.log(`${hundreds}_${tens}_${ones}`);
+
+    firstScoreLetter.text = hundreds.toString();
+    secondScoreLetter.text = tens.toString();
+    thirdScoreLetter.text = ones.toString();
+
     firstScoreLetter.x = (maxX * CellWidth) / 2 - 32 - 64;
     firstScoreLetter.y = maxY * CellHeight + yPadding;
 
@@ -123,10 +134,6 @@ function drawScore(stage: PIXI.Container) {
         stroke: '#ffffff',
         strokeThickness: 5,
         dropShadow: true,
-        // dropShadowColor: '#000000',
-        // dropShadowBlur: 4,
-        // dropShadowAngle: Math.PI / 6,
-        // dropShadowDistance: 6,
         wordWrap: true,
         wordWrapWidth: 440
     });
@@ -138,10 +145,6 @@ function drawScore(stage: PIXI.Container) {
         stroke: '#ffffff',
         strokeThickness: 5,
         dropShadow: true,
-        // dropShadowColor: '#000000',
-        // dropShadowBlur: 4,
-        // dropShadowAngle: Math.PI / 6,
-        // dropShadowDistance: 6,
         wordWrap: true,
         wordWrapWidth: 440
     });
@@ -153,10 +156,6 @@ function drawScore(stage: PIXI.Container) {
         stroke: '#ffffff',
         strokeThickness: 5,
         dropShadow: true,
-        // dropShadowColor: '#000000',
-        // dropShadowBlur: 4,
-        // dropShadowAngle: Math.PI / 6,
-        // dropShadowDistance: 6,
         wordWrap: true,
         wordWrapWidth: 440
     });
@@ -235,7 +234,7 @@ function drawLetter(entity: LetterEntity, stage: PIXI.Container) {
     const text = new PIXI.Text();
     const style = new PIXI.TextStyle({
         fontFamily: 'VT323',
-        fontSize: 36,
+        fontSize: 52,
         stroke: '#4a1850',
         strokeThickness: 5,
         dropShadow: true

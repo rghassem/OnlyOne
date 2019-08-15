@@ -95,7 +95,7 @@ export class LetterEntity {
 }
 
 export const maxY = 13;
-export const maxX = 10;
+export const maxX = 8;
 export let gameboard: Array<LetterEntity>;
 
 export function resetBoard(preset?: string) {

@@ -5,26 +5,26 @@ export const levels = [levelOne, levelTwo, levelThree, levelFour, levelFive];
 export function winScreen() {
     return ' '
         .repeat(maxX * Math.floor(maxY / 2))
-        + '  WINNER  ' +
+        + ' WINNER ' +
         ' '.repeat(maxX * Math.floor(maxY / 2))
 }
 
 function levelOne() {
     return ' '
         .repeat(maxX * (maxY - 2))
-        + '   012    '
-        + 'IIIWIIIIIL';
+        + '  012   '
+        + 'IIWIIIIL';
 }
 
 function levelTwo() {
     const result = ' '
         .repeat(maxX * (maxY - 6))
-        + 'IMUSIC BYI'
-        + 'IPERITUNEI'
-        + 'II2IIIII2I'
-        + 'IIDIIIIIDI'
-        + 'IIII01IIII'
-        + 'RIIIIIIIII'
+        + 'MUSIC BY'
+        + 'PERITUNE'
+        + 'I2IIIII2'
+        + 'IDIIIIID'
+        + 'III01III'
+        + 'RIIIIIII'
 
     return result;
 }
@@ -32,40 +32,40 @@ function levelTwo() {
 function levelThree() {
     const result = ' '
         .repeat(maxX * (maxY - 6))
-        + 'BY  REZA G'
-        + 'AND MARK D'
-        + '0II0IIIIII'
-        + 'DIIW1IIIIW'
-        + 'IIIID2IIII'
-        + 'WIIUIICIIU';
+        + 'BY  REZA'
+        + 'AND MARK'
+        + '0I0IIIII'
+        + 'DIW1IIIW'
+        + 'IIID2III'
+        + 'WIUIICIU';
     return result;
 }
 
 function levelFour() {
     const result = ' '
         .repeat(maxX * (maxY - 7))
-        + 'IIIIIII1II'
-        + 'IIIIIIII1I'
-        + 'IIIIIIICII'
-        + 'IIIIIIIIYI'
-        + 'RI0IIIRCII'
-        + 'IIYID2IIIC'
-        + 'RIIUIICWWW';
+        + 'IIIIII1I'
+        + 'IIIIIII1'
+        + 'IIIIIICI'
+        + 'IIIIIIIY'
+        + 'R0IIIRCI'
+        + 'IYID2IIC'
+        + 'RIUIICWW';
     return result;
 }
 
 function levelFive() {
     const result = ' '
         .repeat(maxX * (maxY - 10))
-        + '**0I1I2****'
-        + '1IIIII0II1I'
-        + 'III2IIICII'
-        + '**********'
-        + '**********'
-        + '**********'
-        + '**********'
-        + '**********'
-        + '**********'
-        + '**********';
+        + '**0I1I2*'
+        + '1IIII0I1'
+        + 'III2IICI'
+        + '********'
+        + '********'
+        + '********'
+        + '********'
+        + '********'
+        + '********'
+        + '********';
     return result;
 }
