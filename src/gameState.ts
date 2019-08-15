@@ -1,4 +1,4 @@
-import { BoardEffect, BoardEffectType, MoveEffect, ChangeEffect } from "./boardEffect";
+import { BoardEffect, BoardEffectType, MoveEffect, TransformEffect, BasicBoardEffect } from "./boardEffect";
 import { getLetterEntity, Letter, maxX, maxY, removeLetterEntity, LetterEntity } from "./board";
 import { fillGaps, Gap } from "./gapFill";
 
@@ -25,20 +25,17 @@ export function updateState(changes: Array<BoardEffect>) {
                 break;
 
             case BoardEffectType.Fall:
-                const fallEffect = effect as MoveEffect;
-                result = result.concat(fall(effect.entity, fallEffect.toY));
+                result = result.concat(fall(effect.entity, effect.toY));
                 break;
 
             case BoardEffectType.Move:
-                const e = effect as MoveEffect;
-                if (e.toX >= 0 && e.toX < maxX && e.toY >= 0 && e.toY < maxY) {
-                    queuedMoves.push({ entity: effect.entity, x: e.toX, y: e.toY });
+                if (effect.toX >= 0 && effect.toX < maxX && effect.toY >= 0 && effect.toY < maxY) {
+                    queuedMoves.push({ entity: effect.entity, x: effect.toX, y: effect.toY });
                 }
                 break;
 
             case BoardEffectType.Transform:
-                const changeEffect = effect as ChangeEffect;
-                changeEffect.entity.letter = changeEffect.changeTo;
+                effect.entity.letter = effect.changeTo;
                 break;
 
             case BoardEffectType.Score:
@@ -77,7 +74,7 @@ function destroy(entity: LetterEntity) {
     removeLetterEntity(entity);
 }
 
-function fall(entity: LetterEntity, toY: number) {
+function fall(entity: LetterEntity, toY: number): BoardEffect[] {
     entity.y = toY;
     if (hasReachedBottomRow(entity)) {
         return [
@@ -94,11 +91,11 @@ function hasReachedBottomRow(letter: LetterEntity) {
     return (letter.letter === Letter.First || letter.letter === Letter.Second || letter.letter === Letter.Third) && letter.y === maxY - 1
 }
 
-function score(entity: LetterEntity) {
+function score(entity: LetterEntity): BoardEffect[] {
     firstLetterScored = firstLetterScored || entity.letter === Letter.First;
     secondLetterScored = secondLetterScored || entity.letter === Letter.Second;
     thirdLevelScored = thirdLevelScored || entity.letter === Letter.Third;
-    const results = [
+    const results: BasicBoardEffect[] = [
         {
             entity,
             effect: BoardEffectType.ScoreDestroy

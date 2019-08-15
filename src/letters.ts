@@ -1,5 +1,5 @@
 import { Letter, getLetterEntity, maxY, maxX, LetterEntity } from "./board";
-import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
+import { BoardEffect, BoardEffectType, MoveEffect, TransformEffect } from "./boardEffect";
 
 type Position = {
 	x: number,
@@ -102,13 +102,14 @@ export function doLetterEffect(entity: LetterEntity | undefined, effects: Array<
 		case Letter.C:
 			return cross(entity, effects);
 		case Letter.T:
-			const rotation = rotateAround(entity);
-			const changeSelf = {
+			const rotation: BoardEffect[] = rotateAround(entity);
+			const changeSelf: TransformEffect = {
 				entity,
 				effect: BoardEffectType.Transform,
 				changeTo: Letter.I
 			};
-			return rotation.concat(changeSelf);
+			effects.push(...rotation.concat(changeSelf));
+			return effects;
 		case Letter.Y:
 			return ybomb(entity, effects);
 		case Letter.X:
@@ -266,7 +267,7 @@ function down(entity: LetterEntity, effects: Array<BoardEffect>) {
 	return effects;
 }
 
-function rotateAround(entity: LetterEntity): BoardEffect[] {
+function rotateAround(entity: LetterEntity) {
 	let movements = new Array<{ x: number, y: number, toX: number, toY: number }>();
 	let centerX = entity.x;
 	let centerY = entity.y;
@@ -296,10 +297,10 @@ function rotateAround(entity: LetterEntity): BoardEffect[] {
 
 	//Do not work if there were offboard moves
 	const valid = movements.every(
-		result => result.x > 0 && result.x < maxX
-			&& result.y > 0 && result.y < maxY
-			&& result.toX > 0 && result.toX < maxX
-			&& result.toY > 0 && result.toY < maxY
+		result => result.x >= 0 && result.x < maxX
+			&& result.y >= 0 && result.y < maxY
+			&& result.toX >= 0 && result.toX < maxX
+			&& result.toY >= 0 && result.toY < maxY
 	);
 
 	if (!valid) return []
@@ -312,7 +313,7 @@ function rotateAround(entity: LetterEntity): BoardEffect[] {
 	return results;
 }
 
-function makeMove(entity: LetterEntity, toX: number, toY: number) {
+function makeMove(entity: LetterEntity, toX: number, toY: number): MoveEffect {
 	return {
 		entity,
 		effect: BoardEffectType.Move,

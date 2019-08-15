@@ -74,20 +74,19 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
                 await pulse(letter);
                 break;
             case BoardEffectType.Fall:
-                const fallEffect = boardEffect as MoveEffect;
                 playBounce = true;
-                const anim = animate(letter, 'y', fallEffect.toY * CellHeight, 0.4, TweeningFunctions.easeOutBounce);
+                const anim = animate(letter, 'y', boardEffect.toY * CellHeight, 0.4, TweeningFunctions.easeOutBounce);
                 promises.push(anim);
                 break;
             case BoardEffectType.Move:
-                const e = boardEffect as MoveEffect;
-                const moveY = animate(letter, 'y', e.toY * CellHeight, 0.4, TweeningFunctions.easeInCubic)
-                const moveX = animate(letter, 'x', e.toX * CellWidth, 0.4, TweeningFunctions.easeInCubic)
+                const moveY = animate(letter, 'y', boardEffect.toY * CellHeight, 0.4, TweeningFunctions.easeInCubic)
+                const moveX = animate(letter, 'x', boardEffect.toX * CellWidth, 0.4, TweeningFunctions.easeInCubic)
                 promises.push(moveX, moveY);
                 break;
 
             case BoardEffectType.Transform:
                 await pulse(letter);
+                updateStyle(letter, boardEffect.changeTo);
                 break;
 
             case BoardEffectType.Score:
@@ -278,18 +277,21 @@ function updateStyle(pixiText: PIXI.Text, letter: Letter) {
     }
 
     const viz = letterVisuals.get(letter);
-    if (viz && viz.char !== pixiText.text) {
+    if (viz) {
         pixiText.style.fill = viz.color;
-        if (letter === Letter.First) {
-            pixiText.text = firstScoreLetter.text;
-        } else if (letter === Letter.Second) {
-            pixiText.text = secondScoreLetter.text;
-        } else if (letter === Letter.Third) {
-            pixiText.text = thirdScoreLetter.text;
-        } else {
-            pixiText.text = viz.char;
+        if (viz.char !== pixiText.text) {
+            if (letter === Letter.First) {
+                pixiText.text = firstScoreLetter.text;
+            } else if (letter === Letter.Second) {
+                pixiText.text = secondScoreLetter.text;
+            } else if (letter === Letter.Third) {
+                pixiText.text = thirdScoreLetter.text;
+            } else {
+                pixiText.text = viz.char;
+            }
         }
     }
+
 }
 
 async function pulse(pixiText: PIXI.Text) {
