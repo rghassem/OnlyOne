@@ -1,6 +1,7 @@
 import { BoardEffect, BoardEffectType, MoveEffect, TransformEffect, BasicBoardEffect } from "./boardEffect";
-import { getLetterEntity, Letter, maxX, maxY, removeLetterEntity, LetterEntity } from "./board";
+import { getLetterEntity, maxX, maxY, removeLetterEntity, Gameboard } from "./board";
 import { fillGaps, Gap } from "./gapFill";
+import { LetterEntity, Letter } from "./letterEntity";
 
 export let firstLetterScored = false;
 export let secondLetterScored = false;
@@ -8,7 +9,17 @@ export let thirdLevelScored = false;
 
 type QueuedMove = { entity: LetterEntity, x: number, y: number };
 
-export function updateState(changes: Array<BoardEffect>) {
+export function checkWin() {
+    return firstLetterScored && secondLetterScored && thirdLevelScored;
+}
+
+export function resetScore() {
+    firstLetterScored = false;
+    secondLetterScored = false;
+    thirdLevelScored = false;
+}
+
+export function updateState(gameboard: Gameboard, changes: Array<BoardEffect>) {
     let result = new Array<BoardEffect>();
 
     //Seperate some operations from main loop.
@@ -48,58 +59,49 @@ export function updateState(changes: Array<BoardEffect>) {
     queuedMoves.forEach(qm => move(qm));
 
     //Process fall effects
-    const fallEffects = fillGaps(gaps);
+    const fallEffects = fillGaps(gameboard, gaps);
     result = result.concat(fallEffects);
 
     return result;
-}
 
-export function checkWin() {
-    return firstLetterScored && secondLetterScored && thirdLevelScored;
-}
+    function move(queuedMove: QueuedMove) {
+        queuedMove.entity.x = queuedMove.x;
+        queuedMove.entity.y = queuedMove.y;
+    }
 
-export function resetScore() {
-    firstLetterScored = false;
-    secondLetterScored = false;
-    thirdLevelScored = false;
-}
+    function destroy(entity: LetterEntity) {
+        //Destroy the letter
+        removeLetterEntity(gameboard, entity);
+    }
 
-function move(queuedMove: QueuedMove) {
-    queuedMove.entity.x = queuedMove.x;
-    queuedMove.entity.y = queuedMove.y;
-}
+    function fall(entity: LetterEntity, toY: number): BoardEffect[] {
+        entity.y = toY;
+        if (hasReachedBottomRow(entity)) {
+            return [
+                {
+                    entity,
+                    effect: BoardEffectType.Score
+                }
+            ];
+        }
+        return [];
+    }
 
-function destroy(entity: LetterEntity) {
-    //Destroy the letter
-    removeLetterEntity(entity);
-}
+    function hasReachedBottomRow(letter: LetterEntity) {
+        return (letter.letter === Letter.First || letter.letter === Letter.Second || letter.letter === Letter.Third) && letter.y === maxY - 1
+    }
 
-function fall(entity: LetterEntity, toY: number): BoardEffect[] {
-    entity.y = toY;
-    if (hasReachedBottomRow(entity)) {
-        return [
+    function score(entity: LetterEntity): BoardEffect[] {
+        firstLetterScored = firstLetterScored || entity.letter === Letter.First;
+        secondLetterScored = secondLetterScored || entity.letter === Letter.Second;
+        thirdLevelScored = thirdLevelScored || entity.letter === Letter.Third;
+        const results: BasicBoardEffect[] = [
             {
                 entity,
-                effect: BoardEffectType.Score
+                effect: BoardEffectType.ScoreDestroy
             }
-        ];
+        ]
+        return results;
     }
-    return [];
-}
 
-function hasReachedBottomRow(letter: LetterEntity) {
-    return (letter.letter === Letter.First || letter.letter === Letter.Second || letter.letter === Letter.Third) && letter.y === maxY - 1
-}
-
-function score(entity: LetterEntity): BoardEffect[] {
-    firstLetterScored = firstLetterScored || entity.letter === Letter.First;
-    secondLetterScored = secondLetterScored || entity.letter === Letter.Second;
-    thirdLevelScored = thirdLevelScored || entity.letter === Letter.Third;
-    const results: BasicBoardEffect[] = [
-        {
-            entity,
-            effect: BoardEffectType.ScoreDestroy
-        }
-    ]
-    return results;
 }

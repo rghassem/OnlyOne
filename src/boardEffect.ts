@@ -1,4 +1,4 @@
-import { Letter, LetterEntity } from "./board";
+import { LetterEntity, Letter } from "./letterEntity";
 
 export enum BoardEffectType {
     Destroy,

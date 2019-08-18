@@ -1,9 +1,10 @@
-import { Letter, gameboard, maxX, maxY, getLetterEntity, letterVisuals, LetterEntity } from "./board";
+import { maxX, maxY, Gameboard } from "./board";
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 import { animate, TweeningFunctions, wait } from "./animation";
 import { firstLetterScored, secondLetterScored, thirdLevelScored } from "./gameState";
 import { bonusSound, explosionSound, bounceSound, blockSound } from "./sounds";
 import { currentLevel } from "./main";
+import { LetterEntity, letterVisuals, Letter } from "./letterEntity";
 
 export const CellWidth = 45;
 export const CellHeight = CellWidth;
@@ -20,7 +21,7 @@ const secondScoreLetter = new PIXI.Text('1');
 const thirdScoreLetter = new PIXI.Text('2');
 
 
-export async function resetScreen(stage: PIXI.Container) {
+export async function resetScreen(gameboard: Gameboard, stage: PIXI.Container) {
     if (pixiLetters) {
         for (const letter of pixiLetters.values()) {
             stage.removeChild(letter);
@@ -31,14 +32,14 @@ export async function resetScreen(stage: PIXI.Container) {
 
     const entrances = new Array<Promise<void>>();
     drawScore(stage);
-    drawGameboard(stage, entrances);
+    drawGameboard(gameboard, stage, entrances);
     drawDescription(stage);
     drawTooltip(stage);
     updateTooltip('');
     await Promise.all(entrances);
 }
 
-function drawGameboard(stage: PIXI.Container, entrances: Promise<void>[]) {
+function drawGameboard(gameboard: Gameboard, stage: PIXI.Container, entrances: Promise<void>[]) {
     for (const entity of gameboard) {
         const newLetter = drawLetter(entity, stage);
         newLetter.y -= maxY * CellHeight;

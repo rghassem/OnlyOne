@@ -1,5 +1,5 @@
 import { MoveEffect, BoardEffectType } from "./boardEffect";
-import { getLetterEntity } from "./board";
+import { getLetterEntity, Gameboard } from "./board";
 
 export class Gap {
     constructor(
@@ -9,7 +9,7 @@ export class Gap {
     ) { }
 }
 
-export function fillGaps(gaps: Array<Gap>): Array<MoveEffect> {
+export function fillGaps(board: Gameboard, gaps: Array<Gap>): Array<MoveEffect> {
     let results = new Array<MoveEffect>();
     let orderedGaps = gaps.sort((g1, g2) => g1.y - g2.y);
     while (orderedGaps.length > 0) {
@@ -20,7 +20,7 @@ export function fillGaps(gaps: Array<Gap>): Array<MoveEffect> {
         if (gap.y === 0) continue;
 
         //2. Above is a block. It should fall.
-        const above = getLetterEntity(gap.x, gap.y - 1);
+        const above = getLetterEntity(board, gap.x, gap.y - 1);
         if (above) {
             results.push({
                 effect: BoardEffectType.Fall,
