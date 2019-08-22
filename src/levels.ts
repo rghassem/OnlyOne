@@ -19,7 +19,7 @@ function levelOne() {
 function levelTwo() {
     const result = ' '
         .repeat(maxX * (maxY - 6))
-        + 'MUSIC BY'
+        + 'MUSICIBY'
         + 'PERITUNE'
         + 'I2IIIII2'
         + 'IDIIIIID'
