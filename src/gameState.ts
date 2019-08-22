@@ -23,7 +23,8 @@ export function updateState(gameboard: Gameboard, changes: Array<BoardEffect>) {
     let result = new Array<BoardEffect>();
 
     //Seperate some operations from main loop.
-    const gaps = new Array<Gap>();
+    let gaps = new Array<Gap>();
+    const possibleGaps = new Array<Gap>();
     const queuedMoves = new Array<QueuedMove>();
 
     for (let i = 0; i < changes.length; ++i) {
@@ -42,6 +43,8 @@ export function updateState(gameboard: Gameboard, changes: Array<BoardEffect>) {
             case BoardEffectType.Move:
                 if (effect.toX >= 0 && effect.toX < maxX && effect.toY >= 0 && effect.toY < maxY) {
                     queuedMoves.push({ entity: effect.entity, x: effect.toX, y: effect.toY });
+                    //Mark places moved from as possibly now being a gap
+                    possibleGaps.push(new Gap(effect.entity.x, effect.entity.y));
                 }
                 break;
 
@@ -59,6 +62,7 @@ export function updateState(gameboard: Gameboard, changes: Array<BoardEffect>) {
     queuedMoves.forEach(qm => move(qm));
 
     //Process fall effects
+    gaps = gaps.concat(possibleGaps.filter(gap => !getLetterEntity(gameboard, gap.x, gap.y)));
     const fallEffects = fillGaps(gameboard, gaps);
     result = result.concat(fallEffects);
 
