@@ -1,7 +1,7 @@
 import { onLetterPressed } from "./letters";
 import { updateState } from "./gameState";
 import { LetterEntity, Letter, letterVisuals } from "./letterEntity";
-import { Gameboard } from "./board";
+import { Gameboard, maxY, maxX } from "./board";
 
 type Move = { moveIndex: number, resultingBoard: Gameboard, score: number };
 
@@ -24,7 +24,10 @@ export function minimax(board: Gameboard, depth: number, movesSoFar: Array<Move>
         //score += minimax(nextBoard, depth - 1);
         options.push({ moveIndex: i, resultingBoard: testBoard, score });
     }
-    const best = options.reduce((a, b) => a.score < b.score ? a : b);
+    const best = options.reduce((a, b) => a.score > b.score ? a : b);
+    if (best.score === -Infinity) {
+        return [];
+    }
     const move = moves[best.moveIndex];
     return [move];
 }
@@ -41,22 +44,36 @@ function doMove(board: Gameboard, clickedEntity: LetterEntity) {
     return board; //transformed in updateState
 }
 
-//Smaller number better
 function evaluate(board: Gameboard): number {
     const scored = (board.firstLetterScored ? 1 : 0) + (board.secondLetterScored ? 1 : 0) + (board.thirdLetterScored ? 1 : 0);
-    if (scored === 3) return -Infinity;
+    if (scored === 3) return Infinity; //Won
     const points = board.filter(state => state.letter === Letter.First || state.letter === Letter.Second || state.letter === Letter.Third);
-    if (points.length < 3 - scored) return Infinity;
-    const heights = points
-        .map(point => point.y)
-        .reduce((y1, y2) => y1 + y2, points[0].y);
 
-    return heights - (100 * scored);
+    const invisibles = board.filter(state => state.letter === Letter.I).length;
+    const invisiblesRemoved = (maxY * maxX) - invisibles;
+
+    if (points.length === 0) return -Infinity; //Lost
+    const heights = points.map(point => normalizedDistanceFromTop010(point.y));
+
+    const heightComponent = heights.length > 1 ? heights.reduce((y1, y2) => y1 + y2) : normalizedDistanceFromTop010(points[0].y);
+    const scoreComponent = 20 * scored;
+    const invisComponent = invisiblesRemoved * 0.1;
+
+    return heightComponent + scoreComponent + invisComponent;
+
+    //distance from top (y) normalized and multiplied to 1-10 range
+    function normalizedDistanceFromTop010(y: number) {
+        const bottom = (maxY - 1);
+        return (y / bottom) * 10
+    }
 }
 
 function canClick(letter: Letter) {
     switch (letter) {
         case Letter.I:
+        case Letter.First:
+        case Letter.Second:
+        case Letter.Third:
             return false;
         default:
             return true;
@@ -66,8 +83,8 @@ function canClick(letter: Letter) {
 function copyBoard(board: Gameboard) {
     const copy: any = board.map(entity => new LetterEntity(entity.letter, entity.x, entity.y));
     copy.firstLetterScored = board.firstLetterScored;
-    copy.secondLetterScored = board.firstLetterScored;
-    copy.thirdLetterScored = board.firstLetterScored;
+    copy.secondLetterScored = board.secondLetterScored;
+    copy.thirdLetterScored = board.thirdLetterScored;
     return copy as Gameboard;
 }
 
