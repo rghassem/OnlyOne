@@ -18,7 +18,7 @@ export function minimax(board: Gameboard, depth: number, movesSoFar: Array<Move>
         let testBoard = copyBoard(board);
         let testBoardMoves = getMoves(testBoard);
         const move = testBoardMoves[i];
-        logMove(move);
+        //logMove(move);
         testBoard = doMove(testBoard, move);
         let score = evaluate(testBoard);
         //score += minimax(nextBoard, depth - 1);
