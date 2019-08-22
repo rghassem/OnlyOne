@@ -1,7 +1,6 @@
 import { maxX, maxY, Gameboard } from "./board";
 import { BoardEffect, BoardEffectType, MoveEffect } from "./boardEffect";
 import { animate, TweeningFunctions, wait } from "./animation";
-import { firstLetterScored, secondLetterScored, thirdLevelScored } from "./gameState";
 import { bonusSound, explosionSound, bounceSound, blockSound } from "./sounds";
 import { currentLevel } from "./main";
 import { LetterEntity, letterVisuals, Letter } from "./letterEntity";
@@ -49,7 +48,7 @@ function drawGameboard(gameboard: Gameboard, stage: PIXI.Container, entrances: P
     }
 }
 
-export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEffect>) {
+export async function drawEffects(stage: PIXI.Container, gameboard: Gameboard, effects: Array<BoardEffect>) {
     const promises = new Array<Promise<void>>();
     let playBounce = false;
     let pauseForEffect = false;
@@ -59,7 +58,7 @@ export async function drawEffects(stage: PIXI.Container, effects: Array<BoardEff
 
         switch (boardEffect.effect) {
             case BoardEffectType.ScoreDestroy:
-                updateScoredLetters();
+                updateScoredLetters(gameboard);
                 bonusSound();
             case BoardEffectType.Destroy:
                 pauseForEffect = true;
@@ -169,16 +168,16 @@ function drawScore(stage: PIXI.Container) {
     stage.addChild(thirdScoreLetter);
 }
 
-function updateScoredLetters() {
-    if (firstLetterScored) {
+function updateScoredLetters(gameboard: Gameboard) {
+    if (gameboard.firstLetterScored) {
         firstScoreLetter.style.fill = '#FFFF00';
         firstScoreLetter.style.stroke = '#4a1850';
     }
-    if (secondLetterScored) {
+    if (gameboard.secondLetterScored) {
         secondScoreLetter.style.fill = '#FFFF00';
         secondScoreLetter.style.stroke = '#4a1850';
     }
-    if (thirdLevelScored) {
+    if (gameboard.thirdLetterScored) {
         thirdScoreLetter.style.fill = '#FFFF00';
         thirdScoreLetter.style.stroke = '#4a1850';
     }

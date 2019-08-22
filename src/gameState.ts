@@ -3,20 +3,18 @@ import { getLetterEntity, maxX, maxY, removeLetterEntity, Gameboard } from "./bo
 import { fillGaps, Gap } from "./gapFill";
 import { LetterEntity, Letter } from "./letterEntity";
 
-export let firstLetterScored = false;
-export let secondLetterScored = false;
-export let thirdLevelScored = false;
-
 type QueuedMove = { entity: LetterEntity, x: number, y: number };
 
-export function checkWin() {
-    return firstLetterScored && secondLetterScored && thirdLevelScored;
+export function checkWin(gameboard: Gameboard) {
+    return gameboard.firstLetterScored
+        && gameboard.secondLetterScored
+        && gameboard.thirdLetterScored;
 }
 
-export function resetScore() {
-    firstLetterScored = false;
-    secondLetterScored = false;
-    thirdLevelScored = false;
+export function resetScore(gameboard: Gameboard) {
+    gameboard.firstLetterScored = false;
+    gameboard.secondLetterScored = false;
+    gameboard.thirdLetterScored = false;
 }
 
 export function updateState(gameboard: Gameboard, changes: Array<BoardEffect>) {
@@ -50,7 +48,7 @@ export function updateState(gameboard: Gameboard, changes: Array<BoardEffect>) {
                 break;
 
             case BoardEffectType.Score:
-                result = result.concat(score(effect.entity));
+                result = result.concat(score(gameboard, effect.entity));
                 break;
         }
     }
@@ -91,10 +89,10 @@ export function updateState(gameboard: Gameboard, changes: Array<BoardEffect>) {
         return (letter.letter === Letter.First || letter.letter === Letter.Second || letter.letter === Letter.Third) && letter.y === maxY - 1
     }
 
-    function score(entity: LetterEntity): BoardEffect[] {
-        firstLetterScored = firstLetterScored || entity.letter === Letter.First;
-        secondLetterScored = secondLetterScored || entity.letter === Letter.Second;
-        thirdLevelScored = thirdLevelScored || entity.letter === Letter.Third;
+    function score(gameboard: Gameboard, entity: LetterEntity): BoardEffect[] {
+        gameboard.firstLetterScored = gameboard.firstLetterScored || entity.letter === Letter.First;
+        gameboard.secondLetterScored = gameboard.secondLetterScored || entity.letter === Letter.Second;
+        gameboard.thirdLetterScored = gameboard.thirdLetterScored || entity.letter === Letter.Third;
         const results: BasicBoardEffect[] = [
             {
                 entity,

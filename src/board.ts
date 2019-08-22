@@ -2,13 +2,21 @@ import { LetterEntity, Letter, getRandomLetter } from "./letterEntity";
 
 type LetterChar = 'O' | 'N' | 'E' | 'L' | 'R' | 'U' | 'D' | 'W' | 'I' | 'C' | 'X' | 'Y' | '0' | '1' | '2' | 'First' | 'Second' | 'Third' | ' ';
 
-export type Gameboard = Array<LetterEntity>;
+export interface Gameboard extends Array<LetterEntity> {
+    firstLetterScored: boolean;
+    secondLetterScored: boolean;
+    thirdLetterScored: boolean;
+}
 
 export const maxY = 13;
 export const maxX = 8;
 
 export function newBoard(preset?: string) {
-    const gameboard: Gameboard = [];
+    const partialGameboard = new Array<LetterEntity>();
+    (partialGameboard as Gameboard).firstLetterScored = false;
+    (partialGameboard as Gameboard).secondLetterScored = false;
+    (partialGameboard as Gameboard).thirdLetterScored = false;
+    const gameboard: Gameboard = partialGameboard as Gameboard;
 
     for (let y = 0; y < maxY; ++y) {
         for (let x = 0; x < maxX; ++x) {
@@ -53,7 +61,8 @@ export function addLetter(gameboard: Gameboard, letter: Letter, x: number, y: nu
 }
 
 export function removeLetterEntity(gameboard: Gameboard, entity: LetterEntity) {
-    gameboard.splice(gameboard.indexOf(entity), 1);
+    const target = gameboard.indexOf(entity);
+    gameboard.splice(target, 1);
 }
 
 export function getLetterEntity(gameboard: Gameboard, x: number, y: number) {

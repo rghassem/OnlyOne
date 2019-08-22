@@ -7,7 +7,8 @@ import { makeButton } from "./button";
 import { shootSound, bonusSound, bgmusic } from "./sounds";
 import { levels, winScreen } from "./levels";
 import { BoardEffectType, BoardEffect } from "./boardEffect";
-import { LetterEntity } from "./letterEntity";
+import { LetterEntity, Letter } from "./letterEntity";
+import { minimax } from "./solver";
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
@@ -127,22 +128,32 @@ async function start() {
     });
 
 
-    let gameboard = await reset(levels[currentLevel]());
+    let gameboard = newBoard(levels[currentLevel]());
+    gameboard = await reset(levels[currentLevel]());
 
-    events.onLetterClick = (entity: LetterEntity) => {
-        if (resolving) return;
-        resolving = true;
-        resolveMove(entity).then(() => resolving = false);
+    // events.onLetterClick = (entity: LetterEntity) => {
+    //     if (resolving) return;
+    //     resolving = true;
+    //     resolveMove(entity).then(() => resolving = false);
+    // }
+
+    //Test
+    events.onLetterClick = async (entity: LetterEntity) => {
+        while (!checkWin(gameboard)) {
+            let nextMove = minimax(gameboard, 0, []);
+            console.log(JSON.stringify(nextMove));
+            await resolveMove(nextMove[0]);
+        }
     }
 
     async function resolveMove(entity: LetterEntity) {
         let effects = onLetterPressed(gameboard, entity);
         while (effects.length !== 0) {
-            await drawEffects(letterStage, effects);
+            await drawEffects(letterStage, gameboard, effects);
             effects = updateState(gameboard, effects);
         }
 
-        if (checkWin()) {
+        if (checkWin(gameboard)) {
             changeLevel(++currentLevel);
         }
     }
@@ -161,7 +172,7 @@ async function start() {
             })
             .filter(effect => effect !== null) as BoardEffect[];
         if (level === 1) bgmusic();
-        await drawEffects(letterStage, destroyWinLetters);
+        await drawEffects(letterStage, gameboard, destroyWinLetters);
         gameboard = await reset(level < levels.length ? levels[level]() : undefined);
     }
 
@@ -169,7 +180,7 @@ async function start() {
     async function reset(preset?: string) {
         await resetting;
         clearAnimations();
-        resetScore();
+        resetScore(gameboard);
         const board = newBoard(preset);
         resetting = resetScreen(board, letterStage);
         await resetting;
