@@ -141,6 +141,10 @@ async function start() {
     events.onLetterClick = async (entity: LetterEntity) => {
         while (!checkWin(gameboard)) {
             let nextMove = minimax(gameboard, 0, []);
+            if (nextMove.length === 0) {
+                console.log("Unsolvable");
+                break;
+            }
             console.log(JSON.stringify(nextMove));
             await resolveMove(nextMove[0]);
         }
