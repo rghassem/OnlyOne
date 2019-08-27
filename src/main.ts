@@ -2,7 +2,7 @@ import { onLetterPressed } from "./letters";
 import { drawEffects, events, resetScreen, CellHeight, CellWidth } from "./render";
 import { updateState, checkWin, resetScore } from "./gameState";
 import { runAnimations, wait, clearAnimations } from "./animation";
-import { newBoard, maxY, maxX, Gameboard } from "./board";
+import { newBoard, maxY, maxX, Gameboard, getLetterEntity } from "./board";
 import { makeButton } from "./button";
 import { shootSound, bonusSound, bgmusic } from "./sounds";
 import { levels, winScreen } from "./levels";
@@ -140,13 +140,21 @@ async function start() {
     //Test
     events.onLetterClick = async (entity: LetterEntity) => {
         while (!checkWin(gameboard)) {
-            let nextMove = minimax(gameboard, 0, []);
-            if (nextMove.length === 0) {
+            let { moves: nextMoves, score } = minimax(gameboard, 0);
+            if (nextMoves.length === 0) {
                 console.log("Unsolvable");
                 break;
             }
-            console.log(JSON.stringify(nextMove));
-            await resolveMove(nextMove[0]);
+            while (nextMoves.length > 0) {
+                const moveCoords = nextMoves.shift()!;
+                const move = getLetterEntity(gameboard, moveCoords.x, moveCoords.y)
+                if (!move) {
+                    throw new Error(`Invalid move from AI (${moveCoords.x}, ${moveCoords.y})`);
+                }
+                console.log(JSON.stringify(move));
+                await resolveMove(move);
+            }
+
         }
     }
 

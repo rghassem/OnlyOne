@@ -3,7 +3,9 @@ import { updateState } from "./gameState";
 import { LetterEntity, Letter, letterVisuals } from "./letterEntity";
 import { Gameboard, maxY, maxX } from "./board";
 
-type Move = { moveIndex: number, resultingBoard: Gameboard, score: number };
+const LookAhead = 3;
+
+type Move = { moves: Array<{ x: number, y: number }>, score: number };
 
 function solve(board: Gameboard) {
     let moves = new Array<Move>();
@@ -11,7 +13,7 @@ function solve(board: Gameboard) {
     //     moves = moves.concat(minimax(board, 0, []));
 }
 
-export function minimax(board: Gameboard, depth: number, movesSoFar: Array<Move>) {
+export function minimax(board: Gameboard, depth: number) {
     const moves = getMoves(board);
     let options: Array<Move> = [];
     for (let i = 0; i < moves.length; ++i) {
@@ -21,15 +23,20 @@ export function minimax(board: Gameboard, depth: number, movesSoFar: Array<Move>
         //logMove(move);
         testBoard = doMove(testBoard, move);
         let score = evaluate(testBoard);
-        //score += minimax(nextBoard, depth - 1);
-        options.push({ moveIndex: i, resultingBoard: testBoard, score });
+        let moves = [{ x: move.x, y: move.y }];
+        if (depth < LookAhead - 1) {
+            testBoard.splice(i, 1);
+            const { moves: lookaheadMoves, score: lookaheadScore } = minimax(testBoard, depth + 1);
+            moves.push(...lookaheadMoves);
+            score += lookaheadScore;
+        }
+        options.push({ moves, score });
     }
     const best = options.reduce((a, b) => a.score > b.score ? a : b);
     if (best.score === -Infinity) {
-        return [];
+        return { moves: [], score: -Infinity };
     }
-    const move = moves[best.moveIndex];
-    return [move];
+    return { moves: best.moves, score: best.score };
 }
 
 function getMoves(board: Gameboard) {
@@ -56,8 +63,8 @@ function evaluate(board: Gameboard): number {
     const heights = points.map(point => normalizedDistanceFromTop010(point.y));
 
     const heightComponent = heights.length > 1 ? heights.reduce((y1, y2) => y1 + y2) : normalizedDistanceFromTop010(points[0].y);
-    const scoreComponent = 20 * scored;
-    const invisComponent = invisiblesRemoved * 0.1;
+    const scoreComponent = 100 * scored;
+    const invisComponent = 0.1 * invisiblesRemoved;
 
     return heightComponent + scoreComponent + invisComponent;
 
