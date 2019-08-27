@@ -8,7 +8,7 @@ import { shootSound, bonusSound, bgmusic } from "./sounds";
 import { levels, winScreen } from "./levels";
 import { BoardEffectType, BoardEffect } from "./boardEffect";
 import { LetterEntity, Letter } from "./letterEntity";
-import { minimax } from "./solver";
+import { solve } from "./solver";
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
@@ -140,18 +140,17 @@ async function start() {
     //Test
     events.onLetterClick = async (entity: LetterEntity) => {
         while (!checkWin(gameboard)) {
-            let { moves: nextMoves, score } = minimax(gameboard, 0);
-            if (nextMoves.length === 0) {
+            let nextMoveCoords = solve(gameboard);
+            if (nextMoveCoords === undefined) {
                 console.log("Unsolvable");
                 break;
             }
-            while (nextMoves.length > 0) {
-                const moveCoords = nextMoves.shift()!;
-                const move = getLetterEntity(gameboard, moveCoords.x, moveCoords.y)
+            else {
+                const move = getLetterEntity(gameboard, nextMoveCoords.x, nextMoveCoords.y)
                 if (!move) {
-                    throw new Error(`Invalid move from AI (${moveCoords.x}, ${moveCoords.y})`);
+                    throw new Error(`Invalid move from AI (${nextMoveCoords.x}, ${nextMoveCoords.y})`);
                 }
-                console.log(JSON.stringify(move));
+                //console.log(JSON.stringify(move));
                 await resolveMove(move);
             }
 

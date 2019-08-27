@@ -2,21 +2,35 @@ import { onLetterPressed } from "./letters";
 import { updateState } from "./gameState";
 import { LetterEntity, Letter, letterVisuals } from "./letterEntity";
 import { Gameboard, maxY, maxX } from "./board";
+import { moveCursor } from "readline";
 
-const LookAhead = 3;
+const EstimatedMoveTime = 0.5; //ms
+const DecisionBudgetMS = 1000; //ms
 
 type Move = { moves: Array<{ x: number, y: number }>, score: number };
 
-function solve(board: Gameboard) {
-    let moves = new Array<Move>();
-    // while (moves[moves.length - 1])
-    //     moves = moves.concat(minimax(board, 0, []));
+let maxDepth = 0;
+
+export function solve(board: Gameboard) {
+    maxDepth = 0;
+    let { moves: nextMoves } = minimax(board, 0, DecisionBudgetMS);
+    console.log(`Depth: ${maxDepth}`);
+    return nextMoves.shift();
 }
 
-export function minimax(board: Gameboard, depth: number) {
-    const moves = getMoves(board);
+function minimax(board: Gameboard, depth: number, budgetMS: number) {
+    maxDepth = Math.max(maxDepth, depth);
+
+    const availableMoves = getMoves(board);
+    if (availableMoves.length === 0) {
+        return { moves: [], score: 0 };
+    }
+
+    const estimatedLookAheadTime = EstimatedMoveTime * availableMoves.length;
+    const shouldLookAhead = estimatedLookAheadTime < budgetMS && availableMoves.length > 1;
+
     let options: Array<Move> = [];
-    for (let i = 0; i < moves.length; ++i) {
+    for (let i = 0; i < availableMoves.length; ++i) {
         let testBoard = copyBoard(board);
         let testBoardMoves = getMoves(testBoard);
         const move = testBoardMoves[i];
@@ -24,9 +38,10 @@ export function minimax(board: Gameboard, depth: number) {
         testBoard = doMove(testBoard, move);
         let score = evaluate(testBoard);
         let moves = [{ x: move.x, y: move.y }];
-        if (depth < LookAhead - 1) {
+        if (shouldLookAhead) {
             testBoard.splice(i, 1);
-            const { moves: lookaheadMoves, score: lookaheadScore } = minimax(testBoard, depth + 1);
+            const budgetShare = budgetMS / availableMoves.length;
+            const { moves: lookaheadMoves, score: lookaheadScore } = minimax(testBoard, depth + 1, budgetShare);
             moves.push(...lookaheadMoves);
             score += lookaheadScore;
         }
