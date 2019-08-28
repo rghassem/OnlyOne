@@ -139,21 +139,19 @@ async function start() {
 
     //Test
     events.onLetterClick = async (entity: LetterEntity) => {
-        while (!checkWin(gameboard)) {
-            let nextMoveCoords = solve(gameboard);
-            if (nextMoveCoords === undefined) {
-                console.log("Unsolvable");
-                break;
-            }
-            else {
-                const move = getLetterEntity(gameboard, nextMoveCoords.x, nextMoveCoords.y)
-                if (!move) {
-                    throw new Error(`Invalid move from AI (${nextMoveCoords.x}, ${nextMoveCoords.y})`);
-                }
-                //console.log(JSON.stringify(move));
-                await resolveMove(move);
-            }
+        const solution = solve(gameboard);
+        if (solution === null) {
+            console.log("Unsolvable");
+            return;
+        }
 
+        while (solution.moves.length > 0 && !checkWin(gameboard)) {
+            const turn = solution.moves.shift()!;
+            const move = getLetterEntity(gameboard, turn.x, turn.y)
+            if (!move) {
+                throw new Error(`Invalid move from AI (${turn.x}, ${turn.y})`);
+            }
+            await resolveMove(move);
         }
     }
 

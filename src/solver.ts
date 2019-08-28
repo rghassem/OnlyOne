@@ -1,58 +1,79 @@
-import { onLetterPressed } from "./letters";
-import { updateState } from "./gameState";
+import { onLetterPressed, doLetterEffect } from "./letters";
+import { updateState, checkWin } from "./gameState";
 import { LetterEntity, Letter, letterVisuals } from "./letterEntity";
-import { Gameboard, maxY, maxX } from "./board";
-import { moveCursor } from "readline";
+import { Gameboard, maxY, maxX, getLetterEntity } from "./board";
 
-const EstimatedMoveTime = 0.5; //ms
-const DecisionBudgetMS = 1000; //ms
+const DecisionBudgetMS = 5000; //ms
 
-type Move = { moves: Array<{ x: number, y: number }>, score: number };
-
-let maxDepth = 0;
+type Move = { x: number, y: number };
+type Path = { moves: Array<Move>, score: number, state: Gameboard };
 
 export function solve(board: Gameboard) {
-    maxDepth = 0;
-    let { moves: nextMoves } = minimax(board, 0, DecisionBudgetMS);
-    console.log(`Depth: ${maxDepth}`);
-    return nextMoves.shift();
-}
 
-function minimax(board: Gameboard, depth: number, budgetMS: number) {
-    maxDepth = Math.max(maxDepth, depth);
+    const pathQueue = new Array<Path>();
+    const winningPaths = new Array<Path>();
+    pathQueue.push({ moves: [], score: 0, state: board });
+    let remainingBudget = DecisionBudgetMS;
 
-    const availableMoves = getMoves(board);
-    if (availableMoves.length === 0) {
-        return { moves: [], score: 0 };
+    while (remainingBudget > 0 && pathQueue.length > 0 && pathQueue[0].score !== Infinity) {
+        const start = performance.now();
+
+        step(pathQueue.shift()!);
+
+        const end = performance.now();
+        const time = end - start;
+        remainingBudget -= time;
+        console.log(time);
     }
 
-    const estimatedLookAheadTime = EstimatedMoveTime * availableMoves.length;
-    const shouldLookAhead = estimatedLookAheadTime < budgetMS && availableMoves.length > 1;
+    if (winningPaths.length > 0) {
+        if (winningPaths.length === 1) return winningPaths.pop()!;
+        const best = winningPaths.reduce((a, b) => a.moves.length < b.moves.length ? a : b);
+        return best;
+    }
+    else {
+        return null;
+    }
 
-    let options: Array<Move> = [];
-    for (let i = 0; i < availableMoves.length; ++i) {
-        let testBoard = copyBoard(board);
-        let testBoardMoves = getMoves(testBoard);
-        const move = testBoardMoves[i];
-        //logMove(move);
-        testBoard = doMove(testBoard, move);
-        let score = evaluate(testBoard);
-        let moves = [{ x: move.x, y: move.y }];
-        if (shouldLookAhead) {
-            testBoard.splice(i, 1);
-            const budgetShare = budgetMS / availableMoves.length;
-            const { moves: lookaheadMoves, score: lookaheadScore } = minimax(testBoard, depth + 1, budgetShare);
-            moves.push(...lookaheadMoves);
-            score += lookaheadScore;
+    function step(path: Path) {
+        const availableMoves = getMoves(path.state);
+        if (availableMoves.length === 0) { return }
+
+        for (let i = 0; i < availableMoves.length; ++i) {
+            let testBoard = copyBoard(path.state);
+            let testBoardMoves = getMoves(testBoard);
+            const letter = testBoardMoves[i];
+            testBoard = doMove(testBoard, letter);
+            let score = evaluate(testBoard);
+            if (score === -Infinity) continue; //Drop losing paths 
+            let move = { x: letter.x, y: letter.y };
+            const newPath = {
+                moves: path.moves.concat(move),
+                score: score,
+                state: testBoard
+            };
+            if (score == Infinity) {
+                winningPaths.push(newPath);
+            }
+            else {
+                sortPathIntoQueue(newPath);
+            }
         }
-        options.push({ moves, score });
     }
-    const best = options.reduce((a, b) => a.score > b.score ? a : b);
-    if (best.score === -Infinity) {
-        return { moves: [], score: -Infinity };
+
+    function sortPathIntoQueue(path: Path) {
+        let i = 0;
+        for (i; i < pathQueue.length; ++i) {
+            if (pathQueue[i].score < path.score) {
+                pathQueue.splice(i, 0, path);
+                return;
+            }
+        }
+        pathQueue.push(path);
     }
-    return { moves: best.moves, score: best.score };
+
 }
+
 
 function getMoves(board: Gameboard) {
     return board.filter(entity => canClick(entity.letter));
