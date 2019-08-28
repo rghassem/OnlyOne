@@ -190,7 +190,7 @@ async function start() {
         await resetting;
         clearAnimations();
         resetScore(gameboard);
-        const board = newBoard(preset);
+        const board = newBoard(preset || currentLevel);
         resetting = resetScreen(board, letterStage);
         await resetting;
         return board;

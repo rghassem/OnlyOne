@@ -3,7 +3,7 @@ import { updateState, checkWin } from "./gameState";
 import { LetterEntity, Letter, letterVisuals } from "./letterEntity";
 import { Gameboard, maxY, maxX, getLetterEntity } from "./board";
 
-const DecisionBudgetMS = 10 * 1000; //ms
+const DecisionBudgetMS = 3 * 1000; //ms
 
 type Move = { x: number, y: number };
 type Path = { moves: Array<Move>, score: number, state: Gameboard };
@@ -75,6 +75,7 @@ export function solve(board: Gameboard) {
         }
     }
 
+    //TODO: Optimize this
     function sortPathIntoQueue(path: Path) {
         let i = 0;
         for (i; i < pathQueue.length; ++i) {

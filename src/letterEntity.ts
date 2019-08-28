@@ -74,8 +74,8 @@ letterFrequency.set(Letter.Y, 10);
 letterFrequency.set(Letter.X, 9);
 letterFrequency.set(Letter.T, 10);
 
-export function getRandomLetter() {
-    let rand = Math.random() * 100;
+export function getRandomLetter(rand01: number) {
+    let rand = rand01 * 100;
     let sum = 0;
     for (let key of letterFrequency.keys()) {
         sum += letterFrequency.get(key)!;

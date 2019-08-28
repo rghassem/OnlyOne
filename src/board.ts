@@ -11,7 +11,11 @@ export interface Gameboard extends Array<LetterEntity> {
 export const maxY = 13;
 export const maxX = 8;
 
-export function newBoard(preset?: string) {
+export function newBoard(input: string | number) {
+    const preset = typeof input === 'string' ? input : null;
+    const seed = typeof input !== 'string' ? input : 13; //Use 13 as seed for preset wildcards.
+    const rng = new RandomGenerator(seed);
+
     const partialGameboard = new Array<LetterEntity>();
     (partialGameboard as Gameboard).firstLetterScored = false;
     (partialGameboard as Gameboard).secondLetterScored = false;
@@ -31,7 +35,7 @@ export function newBoard(preset?: string) {
                 addLetter(gameboard, letter, x, y);
             }
             else {
-                addLetter(gameboard, getRandomLetter(), x, y);
+                addLetter(gameboard, getRandomLetter(rng.get()), x, y);
             }
 
         }
@@ -39,11 +43,11 @@ export function newBoard(preset?: string) {
 
     if (!preset) {
         const topArea = 50;
-        const used: Array<number> = [Math.floor(Math.random() * topArea)];
+        const used: Array<number> = [Math.floor(rng.get() * topArea)];
         for (let i = 0; i <= 3; ++i) {
-            let idx = Math.floor(Math.random() * topArea);
+            let idx = Math.floor(rng.get() * topArea);
             while (used.indexOf(idx) >= 0) {
-                idx = Math.floor(Math.random() * topArea);
+                idx = Math.floor(rng.get() * topArea);
             }
             used.push(idx);
         }
@@ -67,4 +71,13 @@ export function removeLetterEntity(gameboard: Gameboard, entity: LetterEntity) {
 
 export function getLetterEntity(gameboard: Gameboard, x: number, y: number) {
     return gameboard.find(entity => entity.x === x && entity.y === y);
+}
+
+class RandomGenerator {
+    constructor(public seed: number) { }
+    get = function () {
+        this.seed = (this.seed * 9301 + 49297) % 233280;
+        var rnd = this.seed / 233280;
+        return rnd;
+    }
 }
