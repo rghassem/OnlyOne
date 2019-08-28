@@ -23,7 +23,7 @@ app.stage.addChild(letterStage);
 
 //Reset button
 let button: PIXI.Graphics;
-
+let solveButton: PIXI.Graphics;
 let skipButton: PIXI.Graphics;
 
 //Initialize renderer stuff
@@ -51,6 +51,11 @@ function resize(resizeRenderer: boolean = false) {
     if (skipButton) {
         skipButton.x = letterStage.x + 170;
         skipButton.y = letterStage.y + letterStageHeight + 75;
+    }
+
+    if (solveButton) {
+        solveButton.x = letterStage.x + 400;
+        solveButton.y = letterStage.y + 300;
     }
 
     const actualWidth = letterStageWidth + 0.15 * letterStageWidth;
@@ -107,7 +112,6 @@ async function start() {
     let resolving = false;
     let resetting = Promise.resolve();
 
-
     button = makeButton(app.stage, 80, 28, "Reset", () => {
         shootSound();
         reset(currentLevel < levels.length ? levels[currentLevel]() : undefined)
@@ -118,6 +122,20 @@ async function start() {
         shootSound();
         currentLevel = 300;
         reset().then(board => gameboard = board);
+    });
+
+    solveButton = makeButton(app.stage, 80, 28, "Solve", async () => {
+        resolving = true;
+        const result = solve(gameboard);
+        while (result.solved && result.solution.moves.length > 0 && !checkWin(gameboard)) {
+            const turn = result.solution.moves.shift()!;
+            const move = getLetterEntity(gameboard, turn.x, turn.y)
+            if (!move) {
+                throw new Error(`Invalid move from AI (${turn.x}, ${turn.y})`);
+            }
+            await resolveMove(move);
+        }
+        resolving = false;
     });
 
     resize();
@@ -131,28 +149,10 @@ async function start() {
     let gameboard = newBoard(levels[currentLevel]());
     gameboard = await reset(levels[currentLevel]());
 
-    // events.onLetterClick = (entity: LetterEntity) => {
-    //     if (resolving) return;
-    //     resolving = true;
-    //     resolveMove(entity).then(() => resolving = false);
-    // }
-
-    //Test
-    events.onLetterClick = async (entity: LetterEntity) => {
-        const solution = solve(gameboard);
-        if (solution === null) {
-            console.log("Unsolvable");
-            return;
-        }
-
-        while (solution.moves.length > 0 && !checkWin(gameboard)) {
-            const turn = solution.moves.shift()!;
-            const move = getLetterEntity(gameboard, turn.x, turn.y)
-            if (!move) {
-                throw new Error(`Invalid move from AI (${turn.x}, ${turn.y})`);
-            }
-            await resolveMove(move);
-        }
+    events.onLetterClick = (entity: LetterEntity) => {
+        if (resolving) return;
+        resolving = true;
+        resolveMove(entity).then(() => resolving = false);
     }
 
     async function resolveMove(entity: LetterEntity) {

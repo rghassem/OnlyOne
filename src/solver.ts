@@ -3,7 +3,7 @@ import { updateState, checkWin } from "./gameState";
 import { LetterEntity, Letter, letterVisuals } from "./letterEntity";
 import { Gameboard, maxY, maxX, getLetterEntity } from "./board";
 
-const DecisionBudgetMS = 5000; //ms
+const DecisionBudgetMS = 10 * 1000; //ms
 
 type Move = { x: number, y: number };
 type Path = { moves: Array<Move>, score: number, state: Gameboard };
@@ -15,24 +15,38 @@ export function solve(board: Gameboard) {
     pathQueue.push({ moves: [], score: 0, state: board });
     let remainingBudget = DecisionBudgetMS;
 
-    while (remainingBudget > 0 && pathQueue.length > 0 && pathQueue[0].score !== Infinity) {
-        const start = performance.now();
+    const start = performance.now();
+    let solved = false;
+    let steps = 0;
 
+    while (remainingBudget > 0 && pathQueue.length > 0) {
         step(pathQueue.shift()!);
+        ++steps;
 
         const end = performance.now();
         const time = end - start;
-        remainingBudget -= time;
-        console.log(time);
+        remainingBudget = DecisionBudgetMS - time;
+
+        if (!solved && winningPaths.length > 0) {
+            solved = true;
+            console.log(`First solution at: ${DecisionBudgetMS - remainingBudget}ms`);
+        }
     }
 
+    console.log(`Solver complete, total time ${DecisionBudgetMS - remainingBudget}`);
+    console.log(`Steps considered ${steps}`);
+    console.log(`Solutions: ${winningPaths.length}`);
+
     if (winningPaths.length > 0) {
-        if (winningPaths.length === 1) return winningPaths.pop()!;
+        if (winningPaths.length === 1) return { solved: true, solution: winningPaths.pop()! };
         const best = winningPaths.reduce((a, b) => a.moves.length < b.moves.length ? a : b);
-        return best;
+        console.log(`Shortest path length: ${best.moves.length}`);
+        return { solved: true, solution: best };
     }
     else {
-        return null;
+        const best = pathQueue.reduce((a, b) => a.score > b.score ? a : b);
+        console.log(`No solution found`);
+        return { solved: false, solution: best };
     }
 
     function step(path: Path) {
@@ -44,7 +58,7 @@ export function solve(board: Gameboard) {
             let testBoardMoves = getMoves(testBoard);
             const letter = testBoardMoves[i];
             testBoard = doMove(testBoard, letter);
-            let score = evaluate(testBoard);
+            let score = evaluate(testBoard, path.moves.length);
             if (score === -Infinity) continue; //Drop losing paths 
             let move = { x: letter.x, y: letter.y };
             const newPath = {
@@ -87,7 +101,7 @@ function doMove(board: Gameboard, clickedEntity: LetterEntity) {
     return board; //transformed in updateState
 }
 
-function evaluate(board: Gameboard): number {
+function evaluate(board: Gameboard, moveCount: number): number {
     const scored = (board.firstLetterScored ? 1 : 0) + (board.secondLetterScored ? 1 : 0) + (board.thirdLetterScored ? 1 : 0);
     if (scored === 3) return Infinity; //Won
     const points = board.filter(state => state.letter === Letter.First || state.letter === Letter.Second || state.letter === Letter.Third);
@@ -98,11 +112,12 @@ function evaluate(board: Gameboard): number {
     if (points.length === 0) return -Infinity; //Lost
     const heights = points.map(point => normalizedDistanceFromTop010(point.y));
 
-    const heightComponent = heights.length > 1 ? heights.reduce((y1, y2) => y1 + y2) : normalizedDistanceFromTop010(points[0].y);
     const scoreComponent = 100 * scored;
+    const heightComponent = heights.length > 1 ? heights.reduce((y1, y2) => y1 + y2) : normalizedDistanceFromTop010(points[0].y);
     const invisComponent = 0.1 * invisiblesRemoved;
+    const pathLengthComponent = -0.01 * moveCount; //between two equal paths, the one with fewer steps is better
 
-    return heightComponent + scoreComponent + invisComponent;
+    return heightComponent + scoreComponent + invisComponent + pathLengthComponent;
 
     //distance from top (y) normalized and multiplied to 1-10 range
     function normalizedDistanceFromTop010(y: number) {
