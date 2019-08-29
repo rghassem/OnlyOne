@@ -1,12 +1,24 @@
-import { maxX, maxY } from "./board";
+import { maxX, maxY, newBoard } from "./board";
 
-export const levels = [levelOne, levelTwo, levelThree, levelFour, levelFive];
+const levels = new Map<number, string>();
+levels.set(0, levelOne());
+levels.set(1, levelTwo());
+levels.set(2, levelThree());
+levels.set(3, levelFour());
+levels.set(4, levelFive());
+
+export function getLevel(level: number) {
+    if (levels.has(level)) {
+        return newBoard(levels.get(level)!);
+    }
+    else return newBoard(level);
+}
 
 export function winScreen() {
-    return ' '
+    return newBoard(' '
         .repeat(maxX * Math.floor(maxY / 2))
         + ' WINNER ' +
-        ' '.repeat(maxX * Math.floor(maxY / 2))
+        ' '.repeat(maxX * Math.floor(maxY / 2)));
 }
 
 function levelOne() {

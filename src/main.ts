@@ -5,7 +5,7 @@ import { runAnimations, wait, clearAnimations } from "./animation";
 import { newBoard, maxY, maxX, Gameboard, getLetterEntity } from "./board";
 import { makeButton } from "./button";
 import { shootSound, bonusSound, bgmusic } from "./sounds";
-import { levels, winScreen } from "./levels";
+import { winScreen, getLevel } from "./levels";
 import { BoardEffectType, BoardEffect } from "./boardEffect";
 import { LetterEntity } from "./letterEntity";
 import { solve } from "./solver";
@@ -116,14 +116,15 @@ async function start() {
 
     button = makeButton(app.stage, 80, 28, "Reset", () => {
         shootSound();
-        reset(currentLevel < levels.length ? levels[currentLevel]() : undefined)
+        reset(getLevel(currentLevel))
             .then(board => gameboard = board);
     });
 
     skipButton = makeButton(app.stage, 80, 28, "Skip", () => {
         shootSound();
-        currentLevel = 300;
-        reset().then(board => gameboard = board);
+        currentLevel = currentLevel + 1;
+        reset(getLevel(currentLevel))
+            .then(board => gameboard = board);
     });
 
     if (EnableSolver) {
@@ -150,8 +151,8 @@ async function start() {
     });
 
 
-    let gameboard = newBoard(levels[currentLevel]());
-    gameboard = await reset(levels[currentLevel]());
+    let gameboard = getLevel(0); //TODO: Clean up
+    gameboard = await reset(getLevel(0));
 
     events.onLetterClick = (entity: LetterEntity) => {
         if (resolving) return;
@@ -186,17 +187,16 @@ async function start() {
             .filter(effect => effect !== null) as BoardEffect[];
         if (level === 1) bgmusic();
         await drawEffects(letterStage, gameboard, destroyWinLetters);
-        gameboard = await reset(level < levels.length ? levels[level]() : undefined);
+        gameboard = await reset(getLevel(level));
     }
 
 
-    async function reset(preset?: string) {
+    async function reset(newBoard: Gameboard) {
         await resetting;
         clearAnimations();
         resetScore(gameboard);
-        const board = newBoard(preset || currentLevel);
-        resetting = resetScreen(board, letterStage);
+        resetting = resetScreen(newBoard, letterStage);
         await resetting;
-        return board;
+        return newBoard;
     }
 }
