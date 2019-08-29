@@ -9,13 +9,13 @@ levels.set(4, levelFive());
 
 export function getLevel(level: number) {
     if (levels.has(level)) {
-        return new Gameboard(levels.get(level)!);
+        return Gameboard.fromString(levels.get(level)!);
     }
-    else return new Gameboard(level);
+    else return Gameboard.fromSeed(level);
 }
 
 export function winScreen() {
-    return new Gameboard(' '
+    return Gameboard.fromString(' '
         .repeat(maxX * Math.floor(maxY / 2))
         + ' WINNER ' +
         ' '.repeat(maxX * Math.floor(maxY / 2)));

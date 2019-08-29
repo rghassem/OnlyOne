@@ -64,7 +64,7 @@ export function solve(board: Gameboard) {
         if (availableMoves.length === 0) { return }
 
         for (let i = 0; i < availableMoves.length; ++i) {
-            let testBoard = copyBoard(path.state);
+            let testBoard = path.state.clone();
             let testBoardMoves = getMoves(testBoard);
             const letter = testBoardMoves[i];
             testBoard = doMove(testBoard, letter);
@@ -88,7 +88,7 @@ export function solve(board: Gameboard) {
 
 
 function getMoves(board: Gameboard) {
-    return board.filter(entity => canClick(entity.letter));
+    return board.entities.filter(entity => canClick(entity.letter));
 }
 
 function doMove(board: Gameboard, clickedEntity: LetterEntity) {
@@ -102,9 +102,9 @@ function doMove(board: Gameboard, clickedEntity: LetterEntity) {
 function evaluate(board: Gameboard, moveCount: number): number {
     const scored = (board.firstLetterScored ? 1 : 0) + (board.secondLetterScored ? 1 : 0) + (board.thirdLetterScored ? 1 : 0);
     if (scored === 3) return Infinity; //Won
-    const points = board.filter(state => state.letter === Letter.First || state.letter === Letter.Second || state.letter === Letter.Third);
+    const points = board.entities.filter(state => state.letter === Letter.First || state.letter === Letter.Second || state.letter === Letter.Third);
 
-    const invisibles = board.filter(state => state.letter === Letter.I).length;
+    const invisibles = board.entities.filter(state => state.letter === Letter.I).length;
     const invisiblesRemoved = (maxY * maxX) - invisibles;
 
     if (points.length === 0) return -Infinity; //Lost
@@ -134,14 +134,6 @@ function canClick(letter: Letter) {
         default:
             return true;
     }
-}
-
-function copyBoard(board: Gameboard) {
-    const copy: any = board.map(entity => new LetterEntity(entity.letter, entity.x, entity.y));
-    copy.firstLetterScored = board.firstLetterScored;
-    copy.secondLetterScored = board.secondLetterScored;
-    copy.thirdLetterScored = board.thirdLetterScored;
-    return copy as Gameboard;
 }
 
 function comparePathByScore(a: Path, b: Path) {

@@ -10,7 +10,7 @@ import { BoardEffectType, BoardEffect } from "./boardEffect";
 import { LetterEntity } from "./letterEntity";
 import { solve } from "./solver";
 
-const EnableSolver = false;
+const EnableSolver = true;
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
@@ -178,7 +178,7 @@ async function start() {
         await wait(0.7);
         bonusSound();
         await wait(0.7);
-        const destroyWinLetters = gameboard
+        const destroyWinLetters = gameboard.entities
             .map(entity => {
                 if (entity.letter !== undefined)
                     return { entity, effect: BoardEffectType.Destroy }
