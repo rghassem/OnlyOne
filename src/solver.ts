@@ -1,35 +1,45 @@
-import { onLetterPressed, doLetterEffect } from "./letters";
-import { updateState, checkWin } from "./gameState";
-import { LetterEntity, Letter, letterVisuals } from "./letterEntity";
-import { Gameboard, maxY, maxX, getLetterEntity } from "./board";
+import { onLetterPressed } from "./letters";
+import { updateState } from "./gameState";
+import { LetterEntity, Letter } from "./letterEntity";
+import { Gameboard, maxY, maxX } from "./board";
+import { TypedPriorityQueue } from "../libs/TypedPriorityQueue";
 
-const DecisionBudgetMS = 3 * 1000; //ms
+const DecisionBudgetMS = 2 * 1000; //ms
 
 type Move = { x: number, y: number };
 type Path = { moves: Array<Move>, score: number, state: Gameboard };
 
 export function solve(board: Gameboard) {
 
-    const pathQueue = new Array<Path>();
+    const pathQueue = new TypedPriorityQueue<Path>(comparePathByScore);
     const winningPaths = new Array<Path>();
-    pathQueue.push({ moves: [], score: 0, state: board });
+    pathQueue.add({ moves: [], score: 0, state: board });
     let remainingBudget = DecisionBudgetMS;
 
     const start = performance.now();
+
+    //For logging
     let solved = false;
     let steps = 0;
+    let bigSteps = 0;
 
-    while (remainingBudget > 0 && pathQueue.length > 0) {
-        step(pathQueue.shift()!);
+    while (remainingBudget > 0 && !pathQueue.isEmpty()) {
+        step(pathQueue.poll()!);
         ++steps;
 
         const end = performance.now();
         const time = end - start;
         remainingBudget = DecisionBudgetMS - time;
 
+        //Logging
         if (!solved && winningPaths.length > 0) {
             solved = true;
             console.log(`First solution at: ${DecisionBudgetMS - remainingBudget}ms`);
+        }
+
+        if (DecisionBudgetMS - remainingBudget > bigSteps * 1000) {
+            console.log(`Steps: ${steps} at ${DecisionBudgetMS - remainingBudget}`);
+            ++bigSteps;
         }
     }
 
@@ -44,7 +54,7 @@ export function solve(board: Gameboard) {
         return { solved: true, solution: best };
     }
     else {
-        const best = pathQueue.reduce((a, b) => a.score > b.score ? a : b);
+        const best = pathQueue.peek()!;
         console.log(`No solution found`);
         return { solved: false, solution: best };
     }
@@ -70,23 +80,10 @@ export function solve(board: Gameboard) {
                 winningPaths.push(newPath);
             }
             else {
-                sortPathIntoQueue(newPath);
+                pathQueue.add(newPath);
             }
         }
     }
-
-    //TODO: Optimize this
-    function sortPathIntoQueue(path: Path) {
-        let i = 0;
-        for (i; i < pathQueue.length; ++i) {
-            if (pathQueue[i].score < path.score) {
-                pathQueue.splice(i, 0, path);
-                return;
-            }
-        }
-        pathQueue.push(path);
-    }
-
 }
 
 
@@ -147,7 +144,6 @@ function copyBoard(board: Gameboard) {
     return copy as Gameboard;
 }
 
-function logMove(move: LetterEntity) {
-    const letter = letterVisuals.get(move.letter)!;
-    console.log(`Test move: Letter: ${letter.char} (${move.x}, ${move.y})`);
+function comparePathByScore(a: Path, b: Path) {
+    return a.score > b.score;
 }
