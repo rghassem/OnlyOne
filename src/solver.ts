@@ -4,7 +4,7 @@ import { LetterEntity, Letter } from "./letterEntity";
 import { Gameboard, maxY, maxX } from "./board";
 import { TypedPriorityQueue } from "../libs/TypedPriorityQueue";
 
-const DecisionBudgetMS = 2 * 1000; //ms
+const DecisionBudgetMS = 1 * 1000; //ms
 
 type Move = { x: number, y: number };
 type Path = { moves: Array<Move>, score: number, state: Gameboard };

@@ -10,7 +10,7 @@ import { BoardEffectType, BoardEffect } from "./boardEffect";
 import { LetterEntity } from "./letterEntity";
 import { solve } from "./solver";
 
-const EnableSolver = true;
+const EnableSolver = false;
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
