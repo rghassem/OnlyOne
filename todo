@@ -1,9 +1,28 @@
+Todo:
 
-High Priority
-* Actually scale window to fit different resolutions. <Reza>
+MVP:
+* Nuke (Mark)
+* Twist Edges Fix (Reza)
+* UI Valume (Mark)
+* Persistence (Mark)
+* Levels (Reza/Mark)
+* Game Over (Mark)
+* Go to Level (Mark)
 
-* Bomb chain <Mark>
-* Win streak counter <Mark>
-
-* Remove CDN dependencies
-* Do proper webpack production release with minjs etc.
+After:
+* Screen Shake
+* Letter Expand
+* Simultaneous Explosion
+* Gravity
+* Juice
+* More?
+* Grow
+* Earthquake
+* Font/Color
+* Pulse
+* Particles
+* Word Effects
+* Smoke
+* IAP
+* Game Modes
+* Light mode
