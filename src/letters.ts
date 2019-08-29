@@ -1,4 +1,4 @@
-import { getLetterEntity, maxY, maxX, Gameboard } from "./board";
+import { maxY, maxX, Gameboard } from "./board";
 import { BoardEffect, BoardEffectType, MoveEffect, TransformEffect } from "./boardEffect";
 import { Letter, LetterEntity } from "./letterEntity";
 
@@ -41,7 +41,7 @@ function attemptDestroy(entity: LetterEntity) {
 function filterValidLetters(board: Gameboard, positions: Array<Position>, prevent: boolean) {
     const letters = [];
     for (let position of positions) {
-        const entity = getLetterEntity(board, position.x, position.y);
+        const entity = board.getLetterEntity(position.x, position.y);
         if (entity) {
             const entityId = `${entity.x}_${entity.y}`;
             if (!processedLetters.has(entityId)) {
@@ -307,7 +307,7 @@ export function doLetterEffect(board: Gameboard, entity: LetterEntity | undefine
 
         const results: MoveEffect[] = [];
         for (const move of movements) {
-            const entity = getLetterEntity(board, move.x, move.y);
+            const entity = board.getLetterEntity(move.x, move.y);
             if (entity) {
                 results.push(makeMove(entity, move.toX, move.toY));
             }

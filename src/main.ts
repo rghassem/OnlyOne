@@ -2,7 +2,7 @@ import { onLetterPressed } from "./letters";
 import { drawEffects, events, resetScreen, CellHeight, CellWidth } from "./render";
 import { updateState, checkWin, resetScore } from "./gameState";
 import { runAnimations, wait, clearAnimations } from "./animation";
-import { newBoard, maxY, maxX, Gameboard, getLetterEntity } from "./board";
+import { maxY, maxX, Gameboard } from "./board";
 import { makeButton } from "./button";
 import { shootSound, bonusSound, bgmusic } from "./sounds";
 import { winScreen, getLevel } from "./levels";
@@ -133,7 +133,7 @@ async function start() {
             const result = solve(gameboard);
             while (result.solved && result.solution.moves.length > 0 && !checkWin(gameboard)) {
                 const turn = result.solution.moves.shift()!;
-                const move = getLetterEntity(gameboard, turn.x, turn.y)
+                const move = gameboard.getLetterEntity(turn.x, turn.y)
                 if (!move) {
                     throw new Error(`Invalid move from AI (${turn.x}, ${turn.y})`);
                 }

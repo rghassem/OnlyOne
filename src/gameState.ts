@@ -1,5 +1,5 @@
 import { BoardEffect, BoardEffectType, MoveEffect, TransformEffect, BasicBoardEffect } from "./boardEffect";
-import { getLetterEntity, maxX, maxY, removeLetterEntity, Gameboard } from "./board";
+import { maxX, maxY, Gameboard } from "./board";
 import { fillGaps, Gap } from "./gapFill";
 import { LetterEntity, Letter } from "./letterEntity";
 
@@ -60,7 +60,7 @@ export function updateState(gameboard: Gameboard, changes: Array<BoardEffect>) {
     queuedMoves.forEach(qm => move(qm));
 
     //Process fall effects
-    gaps = gaps.concat(possibleGaps.filter(gap => !getLetterEntity(gameboard, gap.x, gap.y)));
+    gaps = gaps.concat(possibleGaps.filter(gap => !gameboard.getLetterEntity(gap.x, gap.y)));
     const fallEffects = fillGaps(gameboard, gaps);
     result = result.concat(fallEffects);
 
@@ -73,7 +73,7 @@ export function updateState(gameboard: Gameboard, changes: Array<BoardEffect>) {
 
     function destroy(entity: LetterEntity) {
         //Destroy the letter
-        removeLetterEntity(gameboard, entity);
+        gameboard.removeLetterEntity(entity);
     }
 
     function fall(entity: LetterEntity, toY: number): BoardEffect[] {

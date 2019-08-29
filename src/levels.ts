@@ -1,4 +1,4 @@
-import { maxX, maxY, newBoard } from "./board";
+import { maxX, maxY, Gameboard } from "./board";
 
 const levels = new Map<number, string>();
 levels.set(0, levelOne());
@@ -9,13 +9,13 @@ levels.set(4, levelFive());
 
 export function getLevel(level: number) {
     if (levels.has(level)) {
-        return newBoard(levels.get(level)!);
+        return new Gameboard(levels.get(level)!);
     }
-    else return newBoard(level);
+    else return new Gameboard(level);
 }
 
 export function winScreen() {
-    return newBoard(' '
+    return new Gameboard(' '
         .repeat(maxX * Math.floor(maxY / 2))
         + ' WINNER ' +
         ' '.repeat(maxX * Math.floor(maxY / 2)));
