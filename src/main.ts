@@ -7,8 +7,10 @@ import { makeButton } from "./button";
 import { shootSound, bonusSound, bgmusic } from "./sounds";
 import { levels, winScreen } from "./levels";
 import { BoardEffectType, BoardEffect } from "./boardEffect";
-import { LetterEntity, Letter } from "./letterEntity";
+import { LetterEntity } from "./letterEntity";
 import { solve } from "./solver";
+
+const EnableSolver = false;
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
@@ -124,19 +126,21 @@ async function start() {
         reset().then(board => gameboard = board);
     });
 
-    solveButton = makeButton(app.stage, 80, 28, "Solve", async () => {
-        resolving = true;
-        const result = solve(gameboard);
-        while (result.solved && result.solution.moves.length > 0 && !checkWin(gameboard)) {
-            const turn = result.solution.moves.shift()!;
-            const move = getLetterEntity(gameboard, turn.x, turn.y)
-            if (!move) {
-                throw new Error(`Invalid move from AI (${turn.x}, ${turn.y})`);
+    if (EnableSolver) {
+        solveButton = makeButton(app.stage, 80, 28, "Solve", async () => {
+            resolving = true;
+            const result = solve(gameboard);
+            while (result.solved && result.solution.moves.length > 0 && !checkWin(gameboard)) {
+                const turn = result.solution.moves.shift()!;
+                const move = getLetterEntity(gameboard, turn.x, turn.y)
+                if (!move) {
+                    throw new Error(`Invalid move from AI (${turn.x}, ${turn.y})`);
+                }
+                await resolveMove(move);
             }
-            await resolveMove(move);
-        }
-        resolving = false;
-    });
+            resolving = false;
+        });
+    }
 
     resize();
 
