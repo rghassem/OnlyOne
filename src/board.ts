@@ -1,4 +1,5 @@
 import { LetterEntity, Letter, getRandomLetter } from "./letterEntity";
+import { RandomNumberGenerator } from "./randomNumberGenerator";
 
 type LetterChar = 'O' | 'N' | 'E' | 'L' | 'R' | 'U' | 'D' | 'W' | 'I' | 'C' | 'X' | 'Y' | '0' | '1' | '2' | 'First' | 'Second' | 'Third' | ' ';
 
@@ -23,7 +24,7 @@ export class Gameboard {
 
     static fromString(preset: string) {
         const result = new Gameboard();
-        const rng = new RandomGenerator(13);
+        const rng = new RandomNumberGenerator(13);
 
         for (let y = 0; y < maxY; ++y) {
             for (let x = 0; x < maxX; ++x) {
@@ -49,7 +50,7 @@ export class Gameboard {
 
     static fromSeed(seed: number) {
         const result = new Gameboard();
-        const rng = new RandomGenerator(seed);
+        const rng = new RandomNumberGenerator(seed);
 
         for (let y = 0; y < maxY; ++y) {
             for (let x = 0; x < maxX; ++x) {
@@ -94,14 +95,5 @@ export class Gameboard {
         copy.secondLetterScored = this.secondLetterScored;
         copy.thirdLetterScored = this.thirdLetterScored;
         return copy;
-    }
-}
-
-class RandomGenerator {
-    constructor(public seed: number) { }
-    get = function () {
-        this.seed = (this.seed * 9301 + 49297) % 233280;
-        var rnd = this.seed / 233280;
-        return rnd;
     }
 }
