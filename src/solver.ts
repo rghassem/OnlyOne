@@ -3,13 +3,47 @@ import { updateState } from "./gameState";
 import { LetterEntity, Letter } from "./letterEntity";
 import { Gameboard, maxY, maxX } from "./board";
 import { TypedPriorityQueue } from "../libs/TypedPriorityQueue";
+import { getLevel } from "./levels";
+import { Z_BEST_COMPRESSION } from "zlib";
 
 const DecisionBudgetMS = 1 * 1000; //ms
 
 type Move = { x: number, y: number };
 type Path = { moves: Array<Move>, score: number, state: Gameboard };
 
-export function solve(board: Gameboard) {
+interface Solution {
+    solved: boolean
+    bestPath: Path,
+    totalTime: number,
+    steps: number,
+    numberOfSolutions: number,
+    shortestPathLength: number,
+    firstSolutionTime: number
+}
+
+export function solveMany(start: number, end: number) {
+    const data = new Array<Solution>();
+    for (let i = start; i < end; ++i) {
+        const level = getLevel(i);
+        const solution = solve(level);
+        data.push(solution);
+        console.count("Processed");
+    }
+    const csv = formatCSV(data, start);
+    download('levels.csv', csv);
+}
+
+export function printSolution(solution: Solution) {
+    console.log(`
+    ${solution.solved ? '-- Solved --' : ' -- Unsolved --'}------------
+        Solution in ${solution.firstSolutionTime}ms
+        Steps: ${solution.steps}
+        Shortest Path: ${solution.shortestPathLength}
+    -----------------------
+    `);
+}
+
+export function solve(board: Gameboard): Solution {
 
     const pathQueue = new TypedPriorityQueue<Path>(comparePathByScore);
     const winningPaths = new Array<Path>();
@@ -18,10 +52,13 @@ export function solve(board: Gameboard) {
 
     const start = performance.now();
 
-    //For logging
+
     let solved = false;
     let steps = 0;
-    let bigSteps = 0;
+    let firstSolutionTime = -1;
+
+    //For logging
+    //let bigSteps = 0;
 
     while (remainingBudget > 0 && !pathQueue.isEmpty()) {
         step(pathQueue.poll()!);
@@ -31,33 +68,40 @@ export function solve(board: Gameboard) {
         const time = end - start;
         remainingBudget = DecisionBudgetMS - time;
 
-        //Logging
         if (!solved && winningPaths.length > 0) {
             solved = true;
-            console.log(`First solution at: ${DecisionBudgetMS - remainingBudget}ms`);
+            firstSolutionTime = DecisionBudgetMS - remainingBudget;
         }
 
-        if (DecisionBudgetMS - remainingBudget > bigSteps * 1000) {
-            console.log(`Steps: ${steps} at ${DecisionBudgetMS - remainingBudget}`);
-            ++bigSteps;
-        }
+        //Logging
+        // if (DecisionBudgetMS - remainingBudget > bigSteps * 1000) {
+        //     console.log(`Steps: ${steps} at ${DecisionBudgetMS - remainingBudget}`);
+        //     ++bigSteps;
+        // }
     }
 
-    console.log(`Solver complete, total time ${DecisionBudgetMS - remainingBudget}`);
-    console.log(`Steps considered ${steps}`);
-    console.log(`Solutions: ${winningPaths.length}`);
+    let best: Path;
+    let shortestPathLength = -1;
 
     if (winningPaths.length > 0) {
-        if (winningPaths.length === 1) return { solved: true, solution: winningPaths.pop()! };
-        const best = winningPaths.reduce((a, b) => a.moves.length < b.moves.length ? a : b);
-        console.log(`Shortest path length: ${best.moves.length}`);
-        return { solved: true, solution: best };
+        best = (winningPaths.length === 1)
+            ? winningPaths.pop()!
+            : winningPaths.reduce((a, b) => a.moves.length < b.moves.length ? a : b);
+        shortestPathLength = best.moves.length;
     }
     else {
-        const best = pathQueue.peek()!;
-        console.log(`No solution found`);
-        return { solved: false, solution: best };
+        best = pathQueue.peek()!;
     }
+
+    return {
+        solved,
+        bestPath: best,
+        totalTime: DecisionBudgetMS - remainingBudget,
+        steps: steps,
+        numberOfSolutions: winningPaths.length,
+        shortestPathLength,
+        firstSolutionTime
+    };
 
     function step(path: Path) {
         const availableMoves = getMoves(path.state);
@@ -138,4 +182,25 @@ function canClick(letter: Letter) {
 
 function comparePathByScore(a: Path, b: Path) {
     return a.score > b.score;
+}
+
+function formatCSV(data: Array<Solution>, startLevel: number) {
+    const headers = `Level,Solved,TotalTime,FirstSolveTime,SolutionCount,Shortest,StepCount`
+    const rows = data.map((solution, i) =>
+        `${startLevel + i},${solution.solved},${solution.totalTime},${solution.firstSolutionTime},${solution.numberOfSolutions},${solution.shortestPathLength},${solution.steps}`)
+        .join('\n')
+    return headers + '\n' + rows;
+}
+
+function download(filename: string, text: string) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
 }

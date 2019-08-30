@@ -8,9 +8,9 @@ import { shootSound, bonusSound, bgmusic } from "./sounds";
 import { winScreen, getLevel } from "./levels";
 import { BoardEffectType, BoardEffect } from "./boardEffect";
 import { LetterEntity } from "./letterEntity";
-import { solve } from "./solver";
+import { solve, solveMany, printSolution } from "./solver";
 
-const EnableSolver = false;
+const EnableSolver = true;
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
@@ -130,9 +130,10 @@ async function start() {
     if (EnableSolver) {
         solveButton = makeButton(app.stage, 80, 28, "Solve", async () => {
             resolving = true;
-            const result = solve(gameboard);
-            while (result.solved && result.solution.moves.length > 0 && !checkWin(gameboard)) {
-                const turn = result.solution.moves.shift()!;
+            const solution = solve(gameboard);
+            printSolution(solution);
+            while (solution.solved && solution.bestPath.moves.length > 0 && !checkWin(gameboard)) {
+                const turn = solution.bestPath.moves.shift()!;
                 const move = gameboard.getLetterEntity(turn.x, turn.y)
                 if (!move) {
                     throw new Error(`Invalid move from AI (${turn.x}, ${turn.y})`);
@@ -150,6 +151,8 @@ async function start() {
         runAnimations(app.ticker.elapsedMS / 1000);
     });
 
+    //TEMP: Solve all the things:
+    //solveMany(10, 110);
 
     let gameboard = getLevel(0); //TODO: Clean up
     gameboard = await reset(getLevel(0));
