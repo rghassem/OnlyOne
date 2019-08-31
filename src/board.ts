@@ -9,6 +9,7 @@ export class Gameboard {
     firstLetterScored: boolean = false;
     secondLetterScored: boolean = false;
     thirdLetterScored: boolean = false;
+    lost: boolean = false;
 
     readonly entities: Array<LetterEntity>;
 
