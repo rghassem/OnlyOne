@@ -14,7 +14,7 @@ export interface Strategy {
 const generator = new RandomNumberGenerator(377827);
 const rng = () => generator.get();
 
-export const weightSets: Array<Strategy> = [
+export const strategyList: Array<Strategy> = [
     { name: "Base", score: 100, allLetter: 1, firstLetter: 0, secondLetter: 0, thirdLetter: 0, invisibles: 0.1, letterCount: 0 },
     { name: "LetterOneFirst", score: 100, allLetter: 1, firstLetter: 10, secondLetter: 0, thirdLetter: 0, invisibles: 0.1, letterCount: 0, },
     { name: "LetterTwoFirst", score: 100, allLetter: 1, firstLetter: 0, secondLetter: 10, thirdLetter: 0, invisibles: 0.1, letterCount: 0, },
@@ -25,5 +25,18 @@ export const weightSets: Array<Strategy> = [
     { name: "Rando1", score: 100, allLetter: rng(), firstLetter: rng(), secondLetter: rng(), thirdLetter: rng(), invisibles: rng(), letterCount: rng() },
     { name: "Rando2", score: 100, allLetter: rng(), firstLetter: rng(), secondLetter: rng(), thirdLetter: rng(), invisibles: rng(), letterCount: rng() },
     { name: "Rando3", score: 100, allLetter: rng(), firstLetter: rng(), secondLetter: rng(), thirdLetter: rng(), invisibles: rng(), letterCount: rng() },
-    { name: "Rando4", score: 100, allLetter: rng(), firstLetter: rng(), secondLetter: rng(), thirdLetter: rng(), invisibles: rng(), letterCount: rng() }
+    { name: "Rando4", score: 100, allLetter: rng(), firstLetter: rng(), secondLetter: rng(), thirdLetter: rng(), invisibles: rng(), letterCount: rng() },
+
+
+    { name: "Rando5", score: 100, allLetter: rng(), firstLetter: rng(), secondLetter: rng(), thirdLetter: rng(), invisibles: rng(), letterCount: rng() },
+    { name: "Rando6", score: 100, allLetter: rng(), firstLetter: rng(), secondLetter: rng(), thirdLetter: rng(), invisibles: rng(), letterCount: rng() },
+    { name: "Rando7", score: 100, allLetter: rng(), firstLetter: rng(), secondLetter: rng(), thirdLetter: rng(), invisibles: rng(), letterCount: rng() },
+    { name: "Rando8", score: 100, allLetter: rng(), firstLetter: rng(), secondLetter: rng(), thirdLetter: rng(), invisibles: rng(), letterCount: rng() },
+    { name: "Rando9", score: 100, allLetter: rng(), firstLetter: rng(), secondLetter: rng(), thirdLetter: rng(), invisibles: rng(), letterCount: rng() },
+    { name: "Rando10", score: 100, allLetter: rng(), firstLetter: rng(), secondLetter: rng(), thirdLetter: rng(), invisibles: rng(), letterCount: rng() },
+    { name: "Rando11", score: 100, allLetter: rng(), firstLetter: rng(), secondLetter: rng(), thirdLetter: rng(), invisibles: rng(), letterCount: rng() },
+    { name: "Rando12", score: 100, allLetter: rng(), firstLetter: rng(), secondLetter: rng(), thirdLetter: rng(), invisibles: rng(), letterCount: rng() },
+    { name: "Rando13", score: 100, allLetter: rng(), firstLetter: rng(), secondLetter: rng(), thirdLetter: rng(), invisibles: rng(), letterCount: rng() },
+    { name: "Rando14", score: 100, allLetter: rng(), firstLetter: rng(), secondLetter: rng(), thirdLetter: rng(), invisibles: rng(), letterCount: rng() }
+
 ];

@@ -152,7 +152,7 @@ async function start() {
     });
 
     //TEMP: Solve all the things:
-    solveMany(10, 110);
+    //solveMany(10, 110);
 
     let gameboard = getLevel(0); //TODO: Clean up
     gameboard = await reset(getLevel(0));

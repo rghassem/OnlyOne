@@ -4,9 +4,8 @@ import { LetterEntity, Letter } from "./letterEntity";
 import { Gameboard, maxY, maxX } from "./board";
 import { TypedPriorityQueue } from "../libs/TypedPriorityQueue";
 import { getLevel } from "./levels";
-import { Strategy, weightSets } from "./strategy";
+import { Strategy, strategyList } from "./strategy";
 
-const DecisionBudgetMS = 1.1 * 1000; //ms
 const BudgetPerRunMS = 100;
 
 type Move = { x: number, y: number };
@@ -18,12 +17,12 @@ interface Run {
     numberOfSolutions: number,
     firstSolutionTime: number,
     bestPath: Path,
+    bestScore: number,
     shortestPathLength: number
 }
 
 interface Solution {
     solved: boolean
-    totalTime: number,
     runs: Run[]
     shortestPathLength: number,
     bestPath: Path,
@@ -43,20 +42,23 @@ export function solveMany(start: number, end: number) {
 }
 
 export function printSolution(solution: Solution) {
-    // console.log(`
-    // ${solution.solved ? '-- Solved --' : ' -- Unsolved --'}------------
-    //     Solution in ${solution.firstSolutionTime}ms
-    //     Steps: ${solution.steps}
-    //     Shortest Path: ${solution.shortestPathLength}
-    // -----------------------
-    // `);
+    if (solution.solved) {
+        console.log(`
+        -------- Solved --------
+            Shortest Path: ${solution.shortestPathLength}
+            Solved Runs: ${solution.runs.filter(run => run.numberOfSolutions > 0).map(run => run.strategy)}
+        ------------------------
+        `);
+    }
+    else {
+        console.log(`
+        ------- Unsolved -------`)
+    }
 }
 
 export function solve(board: Gameboard): Solution {
 
     let pathQueue: TypedPriorityQueue<Path>;
-    let remainingBudget = DecisionBudgetMS;
-    const start = performance.now();
 
     let solved = false;
     let currentRun = 0;
@@ -73,20 +75,19 @@ export function solve(board: Gameboard): Solution {
         let firstSolutionTime = 0;
         let runSolved = false;
 
-        do {
-            step(pathQueue.poll()!, weightSets[currentRun], runWins);
+        while (runTime < BudgetPerRunMS && !pathQueue.isEmpty()) {
+            step(pathQueue.poll()!, strategyList[currentRun], runWins);
             ++steps;
 
             const end = performance.now();
             runTime = end - runStart;
-            remainingBudget = DecisionBudgetMS - (end - start);
 
             if (!runSolved && runWins.length > 0) {
                 solved = true;
                 runSolved = true;
-                firstSolutionTime = DecisionBudgetMS - remainingBudget;
+                firstSolutionTime = runTime;
             }
-        } while (runTime < BudgetPerRunMS)
+        }
 
         //Post-run
         const numberOfSolutions = runWins.length;
@@ -102,21 +103,28 @@ export function solve(board: Gameboard): Solution {
             shortestPathLength = -1;
             bestPath = pathQueue.peek()!;
         }
+        const bestScore = bestPath.score;
 
         runs.push({
-            strategy: weightSets[currentRun].name,
+            strategy: strategyList[currentRun].name,
             steps, numberOfSolutions, firstSolutionTime,
-            bestPath, shortestPathLength
+            bestPath, shortestPathLength, bestScore
         });
-        currentRun = (currentRun + 1) % weightSets.length;
+        currentRun++;
 
-    } while (remainingBudget > 0 && !pathQueue.isEmpty())
+    } while (currentRun < strategyList.length && !pathQueue.isEmpty())
 
-    const bestRun = runs.reduce((a, b) => a.shortestPathLength < b.shortestPathLength ? a : b);
+    const solvedRuns = runs.filter(run => run.numberOfSolutions > 0);
+    let bestRun: Run;
+    if (solvedRuns.length > 0) {
+        bestRun = solvedRuns.reduce((a, b) => a.shortestPathLength < b.shortestPathLength ? a : b);
+    }
+    else {
+        bestRun = runs.reduce((a, b) => a.bestScore > b.bestScore ? a : b);
+    }
 
     return {
         solved,
-        totalTime: DecisionBudgetMS - remainingBudget,
         runs,
         shortestPathLength: bestRun.shortestPathLength,
         bestPath: bestRun.bestPath
@@ -219,11 +227,11 @@ function comparePathByScore(a: Path, b: Path) {
 }
 
 function formatCSV(data: Array<Solution>, startLevel: number) {
-    let headers = `Level,Solved,`
-    weightSets
+    let headers = `Level,Solved,,`
+    strategyList
         .map(set => set.name)
         .forEach(name => {
-            headers += `${name}FirstSolveTime,${name}SolutionCount,${name}Shortest,${name}StepCount,`;
+            headers += `${name}FirstSolveTime,${name}Shortest,,`;
         })
 
     const rows = new Array<string>();
@@ -231,7 +239,7 @@ function formatCSV(data: Array<Solution>, startLevel: number) {
         const solution = data[i];
         let row = `${startLevel + i},${solution.solved},`;
         for (const run of solution.runs) {
-            row += `${run.firstSolutionTime},${run.numberOfSolutions},${run.shortestPathLength},${run.steps},`
+            row += `${run.firstSolutionTime},${run.shortestPathLength},,`
         }
         rows.push(row);
     }
