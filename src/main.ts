@@ -150,9 +150,10 @@ async function start() {
         runAnimations(app.ticker.elapsedMS / 1000);
     });
 
+    currentLevel = Number(window.localStorage.getItem('level')) || 0;
 
-    let gameboard = getLevel(0); //TODO: Clean up
-    gameboard = await reset(getLevel(0));
+    let gameboard = getLevel(currentLevel); //TODO: Clean up
+    gameboard = await reset(getLevel(currentLevel));
 
     events.onLetterClick = (entity: LetterEntity) => {
         if (resolving) return;
@@ -194,6 +195,7 @@ async function start() {
     }
 
     async function changeLevel(level: number) {
+        window.localStorage.setItem('level', '' + level);
         gameboard = await reset(winScreen());
         bonusSound();
         await wait(0.7);
