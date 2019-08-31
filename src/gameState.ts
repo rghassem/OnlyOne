@@ -11,6 +11,10 @@ export function checkWin(gameboard: Gameboard) {
         && gameboard.thirdLetterScored;
 }
 
+export function checkLose(gameboard: Gameboard) {
+    return gameboard.lost;
+}
+
 export function resetScore(gameboard: Gameboard) {
     gameboard.firstLetterScored = false;
     gameboard.secondLetterScored = false;
@@ -29,6 +33,13 @@ export function updateState(gameboard: Gameboard, changes: Array<BoardEffect>) {
         const effect = changes[i];
         switch (effect.effect) {
             case BoardEffectType.Destroy:
+                //Check lose condition before destroying
+                const letter = effect.entity.letter;
+                if (letter === Letter.First ||
+                    letter === Letter.Second ||
+                    letter === Letter.Third) {
+                    gameboard.lost = true;
+                }
             case BoardEffectType.ScoreDestroy:
                 gaps.push(new Gap(effect.entity.x, effect.entity.y));
                 destroy(effect.entity);
@@ -72,7 +83,6 @@ export function updateState(gameboard: Gameboard, changes: Array<BoardEffect>) {
     }
 
     function destroy(entity: LetterEntity) {
-        //Destroy the letter
         gameboard.removeLetterEntity(entity);
     }
 
