@@ -1,16 +1,16 @@
 import { onLetterPressed } from "./letters";
 import { drawEffects, events, resetScreen, CellHeight, CellWidth } from "./render";
-import { updateState, checkWin, resetScore } from "./gameState";
+import { updateState, checkWin, resetScore, checkLose } from "./gameState";
 import { runAnimations, wait, clearAnimations } from "./animation";
 import { maxY, maxX, Gameboard } from "./board";
 import { makeButton } from "./button";
-import { shootSound, bonusSound, bgmusic } from "./sounds";
-import { winScreen, getLevel } from "./levels";
+import { shootSound, bonusSound, bgmusic, blockSound } from "./sounds";
+import { winScreen, getLevel, loseScreen } from "./levels";
 import { BoardEffectType, BoardEffect } from "./boardEffect";
 import { LetterEntity } from "./letterEntity";
 import { solve } from "./solver";
 
-const EnableSolver = true;
+const EnableSolver = false;
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
@@ -170,7 +170,28 @@ async function start() {
 
         if (checkWin(gameboard)) {
             changeLevel(++currentLevel);
+        } else if (checkLose(gameboard)) {
+            restartLevel();
         }
+    }
+
+    async function restartLevel() {
+        gameboard = await reset(loseScreen());
+        blockSound();
+        await wait(0.1);
+        blockSound();
+        await wait(0.2);
+        blockSound();
+        await wait(0.7);
+        const destroyWinLetters = gameboard.entities
+            .map(entity => {
+                if (entity.letter !== undefined)
+                    return { entity, effect: BoardEffectType.Destroy }
+                else return null;
+            })
+            .filter(effect => effect !== null) as BoardEffect[];
+        await drawEffects(letterStage, gameboard, destroyWinLetters);
+        gameboard = await reset(getLevel(currentLevel));
     }
 
     async function changeLevel(level: number) {
@@ -191,7 +212,6 @@ async function start() {
         await drawEffects(letterStage, gameboard, destroyWinLetters);
         gameboard = await reset(getLevel(level));
     }
-
 
     async function reset(newBoard: Gameboard) {
         await resetting;

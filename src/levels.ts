@@ -21,6 +21,14 @@ export function winScreen() {
         ' '.repeat(maxX * Math.floor(maxY / 2)));
 }
 
+export function loseScreen() {
+    return Gameboard.fromString(
+        ' '.repeat(maxX * Math.floor(maxY / 2))
+        + 'TRYAGAIN' + 
+        ' '.repeat(maxX * Math.floor(maxY / 2))
+    );
+}
+
 function levelOne() {
     return ' '
         .repeat(maxX * (maxY - 2))
