@@ -6,7 +6,7 @@ import { TypedPriorityQueue } from "../libs/TypedPriorityQueue";
 import { getLevel } from "./levels";
 import { Strategy, strategyList } from "./strategy";
 
-const BudgetPerRunMS = 100;
+const StepsPerRun = 250;
 
 type Move = { x: number, y: number };
 type Path = { moves: Array<Move>, score: number, state: Gameboard };
@@ -16,6 +16,7 @@ interface Run {
     steps: number,
     numberOfSolutions: number,
     firstSolutionTime: number,
+    firstSolutionSteps: number,
     bestPath: Path,
     bestScore: number,
     shortestPathLength: number
@@ -72,10 +73,11 @@ export function solve(board: Gameboard): Solution {
         const runStart = performance.now();
         let runTime = 0;
         let steps = 0;
+        let firstSolutionSteps = -1;
         let firstSolutionTime = 0;
         let runSolved = false;
 
-        while (runTime < BudgetPerRunMS && !pathQueue.isEmpty()) {
+        while (steps < StepsPerRun && !pathQueue.isEmpty()) {
             step(pathQueue.poll()!, strategyList[currentRun], runWins);
             ++steps;
 
@@ -86,6 +88,7 @@ export function solve(board: Gameboard): Solution {
                 solved = true;
                 runSolved = true;
                 firstSolutionTime = runTime;
+                firstSolutionSteps = steps;
             }
         }
 
@@ -107,7 +110,8 @@ export function solve(board: Gameboard): Solution {
 
         runs.push({
             strategy: strategyList[currentRun].name,
-            steps, numberOfSolutions, firstSolutionTime,
+            steps, numberOfSolutions,
+            firstSolutionTime, firstSolutionSteps,
             bestPath, shortestPathLength, bestScore
         });
         currentRun++;
@@ -231,15 +235,15 @@ function formatCSV(data: Array<Solution>, startLevel: number) {
     strategyList
         .map(set => set.name)
         .forEach(name => {
-            headers += `${name}FirstSolveTime,${name}Shortest,,`;
+            headers += `${name}-First Solve Step,${name}-Shortest,${name}-Total Steps,,`;
         })
 
     const rows = new Array<string>();
     for (let i = 0; i < data.length; ++i) {
         const solution = data[i];
-        let row = `${startLevel + i},${solution.solved},`;
+        let row = `${startLevel + i},${solution.solved},,`;
         for (const run of solution.runs) {
-            row += `${run.firstSolutionTime},${run.shortestPathLength},,`
+            row += `${run.firstSolutionSteps},${run.shortestPathLength},${run.steps},,`
         }
         rows.push(row);
     }
