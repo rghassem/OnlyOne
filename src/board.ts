@@ -7,6 +7,7 @@ export const maxY = 13;
 export const maxX = 8;
 
 export class Gameboard {
+    level: number;
     firstLetterScored: boolean = false;
     secondLetterScored: boolean = false;
     thirdLetterScored: boolean = false;
@@ -22,7 +23,7 @@ export class Gameboard {
         }
     }
 
-    static fromString(preset: string) {
+    static fromString(preset: string, levelNum: number) {
         const result = new Gameboard();
         const rng = new RandomNumberGenerator(13);
 
@@ -44,7 +45,7 @@ export class Gameboard {
 
             }
         }
-
+        result.level = levelNum;
         return result;
     }
 
@@ -71,6 +72,7 @@ export class Gameboard {
         result.entities[used[0]].letter = Letter.First;
         result.entities[used[1]].letter = Letter.Second;
         result.entities[used[2]].letter = Letter.Third;
+        result.level = seed;
 
         return result;
     }

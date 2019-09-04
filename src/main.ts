@@ -8,7 +8,7 @@ import { shootSound, bonusSound, bgmusic } from "./sounds";
 import { winScreen, getLevel } from "./levels";
 import { BoardEffectType, BoardEffect } from "./boardEffect";
 import { LetterEntity } from "./letterEntity";
-import { solve, solveMany, printSolution } from "./solver";
+import { solveMany, printSolution, solve } from "./solver";
 
 const EnableSolver = true;
 
@@ -130,7 +130,7 @@ async function start() {
     if (EnableSolver) {
         solveButton = makeButton(app.stage, 80, 28, "Solve", async () => {
             resolving = true;
-            const solution = solve(gameboard);
+            const solution = await solve(gameboard);
             printSolution(solution);
             while (solution.solved && solution.bestPath.moves.length > 0 && !checkWin(gameboard)) {
                 const turn = solution.bestPath.moves.shift()!;
@@ -152,7 +152,7 @@ async function start() {
     });
 
     //TEMP: Solve all the things:
-    //solveMany(10, 110);
+    await solveMany(10, 110);
 
     let gameboard = getLevel(0); //TODO: Clean up
     gameboard = await reset(getLevel(0));
