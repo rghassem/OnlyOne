@@ -3,11 +3,13 @@ import { strategyList } from "./strategy";
 import { Solution } from "./solverWorker";
 import { Gameboard } from "./board";
 
+const NumberOfThreads = 24;
+
 export async function solveMany(start: number, end: number) {
     const begin = performance.now();
     //Init worker queue
     const workerQueue = new Array<Worker>();
-    for (let i = 0; i < 1; ++i) {
+    for (let i = 0; i < NumberOfThreads; ++i) {
         workerQueue.push(new Worker('solverWorker.js'));
     }
 
@@ -19,7 +21,7 @@ export async function solveMany(start: number, end: number) {
     const data = await Promise.all(working);
 
     const finish = performance.now();
-    data.sort((a, b) => b.level - a.level);
+    data.sort((a, b) => a.level - b.level);
     console.log(`Finished, at: ${finish - begin}`);
 
     const csv = formatCSV(data, start);
@@ -86,15 +88,15 @@ function formatCSV(data: Array<Solution>, startLevel: number) {
     strategyList
         .map(set => set.name)
         .forEach(name => {
-            headers += `${name}FirstSolveTime,${name}Shortest,,`;
+            headers += `${name}-First Solve Step,${name}-Shortest,${name}-Total Steps,,`;
         })
 
     const rows = new Array<string>();
     for (let i = 0; i < data.length; ++i) {
         const solution = data[i];
-        let row = `${startLevel + i},${solution.solved},`;
+        let row = `${startLevel + i},${solution.solved},,`;
         for (const run of solution.runs) {
-            row += `${run.firstSolutionTime},${run.shortestPathLength},,`
+            row += `${run.firstSolutionSteps},${run.shortestPathLength},${run.steps},,`
         }
         rows.push(row);
     }

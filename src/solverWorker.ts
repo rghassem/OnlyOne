@@ -5,7 +5,7 @@ import { LetterEntity, Letter } from "./letterEntity";
 import { onLetterPressed } from "./letters";
 import { updateState } from "./gameState";
 
-const BudgetPerRunMS = 100;
+const StepsPerRun = 100;
 
 type Move = { x: number, y: number };
 type Path = { moves: Array<Move>, score: number, state: Gameboard };
@@ -15,6 +15,7 @@ interface Run {
     steps: number,
     numberOfSolutions: number,
     firstSolutionTime: number,
+    firstSolutionSteps: number,
     bestPath: Path,
     bestScore: number,
     shortestPathLength: number
@@ -51,10 +52,11 @@ function solve(board: Gameboard): Solution {
         const runStart = performance.now();
         let runTime = 0;
         let steps = 0;
+        let firstSolutionSteps = -1;
         let firstSolutionTime = 0;
         let runSolved = false;
 
-        while (runTime < BudgetPerRunMS && !pathQueue.isEmpty()) {
+        while (steps < StepsPerRun && !pathQueue.isEmpty()) {
             step(pathQueue.poll()!, strategyList[currentRun], runWins);
             ++steps;
 
@@ -65,6 +67,7 @@ function solve(board: Gameboard): Solution {
                 solved = true;
                 runSolved = true;
                 firstSolutionTime = runTime;
+                firstSolutionSteps = steps;
             }
         }
 
@@ -86,7 +89,8 @@ function solve(board: Gameboard): Solution {
 
         runs.push({
             strategy: strategyList[currentRun].name,
-            steps, numberOfSolutions, firstSolutionTime,
+            steps, numberOfSolutions,
+            firstSolutionTime, firstSolutionSteps,
             bestPath, shortestPathLength, bestScore
         });
         currentRun++;
