@@ -14,6 +14,17 @@
 			"smartStep": true,
 			"url": "http://localhost:8080",
 			"webRoot": "${workspaceRoot}"
+		},
+		{
+			"name": "Launch Past Tutorial",
+			"type": "chrome",
+			"request": "launch",
+			"runtimeArgs": [
+				"--incognito"
+			],
+			"smartStep": true,
+			"url": "http://localhost:8080/?level=10",
+			"webRoot": "${workspaceRoot}"
 		}
 	]
 }
