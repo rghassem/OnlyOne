@@ -56,13 +56,13 @@ function filterValidLetters(board: Gameboard, positions: Array<Position>, preven
     return letters;
 }
 
-function destroyLetters(board: Gameboard, letters: Array<LetterEntity>, effects: Array<BoardEffect>) {
+export function destroyLetters(board: Gameboard, letters: Array<LetterEntity>, effects: Array<BoardEffect> = []) {
     for (let letter of letters) {
         const outcome = attemptDestroy(letter);
         if (outcome === EffectOutcome.Prevent) {
             effects.push({
                 entity: letter,
-                effect: BoardEffectType.BlockDestruction
+                effect: BoardEffectType.BlockDestruction,
             });
         } else if (outcome === EffectOutcome.Destroy) {
             effects.push({
@@ -81,6 +81,7 @@ function destroyLetters(board: Gameboard, letters: Array<LetterEntity>, effects:
             });
         }
     }
+    return effects;
 }
 
 export function doLetterEffect(board: Gameboard, entity: LetterEntity | undefined, effects: Array<BoardEffect>) {
@@ -295,17 +296,10 @@ export function doLetterEffect(board: Gameboard, entity: LetterEntity | undefine
             }
         }
 
-        //Do not work if there were offboard moves
-        const valid = movements.every(
-            result => result.x >= 0 && result.x < maxX
-                && result.y >= 0 && result.y < maxY
-                && result.toX >= 0 && result.toX < maxX
-                && result.toY >= 0 && result.toY < maxY
-        );
+        movements = movements.filter(move => !isOutOfBounds(move));
 
-        if (!valid) return []
+        const results: BoardEffect[] = [];
 
-        const results: MoveEffect[] = [];
         for (const move of movements) {
             const entity = board.getLetterEntity(move.x, move.y);
             if (entity) {
@@ -324,5 +318,9 @@ export function doLetterEffect(board: Gameboard, entity: LetterEntity | undefine
             toY: toY
         }
     }
+}
 
+export function isOutOfBounds(pos: Position) {
+    return pos.x < 0 || pos.x >= maxX
+        || pos.y < 0 || pos.y >= maxY
 }

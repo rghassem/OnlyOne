@@ -150,7 +150,11 @@ async function start() {
         runAnimations(app.ticker.elapsedMS / 1000);
     });
 
-    currentLevel = Number(window.localStorage.getItem('level')) || 0;
+    const queryParams = new URLSearchParams(new URL(document.URL).search);
+    const paramLevel = queryParams.get("level");
+    const forceLevel = paramLevel && parseInt(paramLevel) ? parseInt(paramLevel) : null;
+
+    currentLevel = forceLevel || Number(window.localStorage.getItem('level')) || 0;
 
     let gameboard = getLevel(currentLevel); //TODO: Clean up
     gameboard = await reset(getLevel(currentLevel));
