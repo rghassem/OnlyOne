@@ -1,5 +1,6 @@
 import { MoveEffect, BoardEffectType } from "./boardEffect";
 import { Gameboard } from "./board";
+import { isOutOfBounds } from "./letters";
 
 export class Gap {
     constructor(
@@ -16,8 +17,13 @@ export function fillGaps(board: Gameboard, gaps: Array<Gap>): Array<MoveEffect> 
         //For each gap, three options
         const gap = gaps.pop()!;
 
+
         //1. Above us is the top of the level. Do nothing
         if (gap.y === 0) continue;
+
+        //..also do nothing if an out of bounds destroy
+        if (isOutOfBounds(gap)) continue;
+
 
         //2. Above is a block. It should fall.
         const above = board.getLetterEntity(gap.x, gap.y - 1);

@@ -39,7 +39,7 @@ export class Gameboard {
                     result.addLetter(letter, x, y);
                 }
                 else {
-                    result.addLetter(getRandomLetter(rng.get()), x, y);
+                    result.addLetter(getRandomLetter(rng.get(), x, y), x, y);
                 }
 
             }
@@ -54,7 +54,7 @@ export class Gameboard {
 
         for (let y = 0; y < maxY; ++y) {
             for (let x = 0; x < maxX; ++x) {
-                result.addLetter(getRandomLetter(rng.get()), x, y);
+                result.addLetter(getRandomLetter(rng.get(), x, y), x, y);
             }
         }
 

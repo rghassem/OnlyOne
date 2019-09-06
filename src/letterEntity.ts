@@ -1,3 +1,4 @@
+import { maxY, maxX } from "./board";
 
 export enum Letter {
     First,
@@ -74,16 +75,25 @@ letterFrequency.set(Letter.Y, 10);
 letterFrequency.set(Letter.X, 9);
 letterFrequency.set(Letter.T, 10);
 
-export function getRandomLetter(rand01: number) {
+export function getRandomLetter(rand01: number, posX: number, posY: number) {
     let rand = rand01 * 100;
     let sum = 0;
     for (let key of letterFrequency.keys()) {
         sum += letterFrequency.get(key)!;
-        if (rand <= sum) {
+        if (rand <= sum && isAllowedAtPos(key)) {
             return key;
         }
     }
     return Letter.I;
+
+    function isAllowedAtPos(letter: Letter) {
+        return !(
+            letter === Letter.T && (
+                posX === 0 || posX === maxX - 1 ||
+                posY === 0 || posY === maxY - 1
+            )
+        );
+    }
 }
 
 export class LetterEntity {

@@ -6,8 +6,9 @@ MVP:
 * Go to Level (Mark)
 * Game Over (Mark)
 * Nuke (Mark)
-* Twist Edges Fix (Reza)
-* Levels (Reza/Mark)
+* Levels + Solver (Reza)
+* Fix skip inbetween levels (Reza)
+* Fix scaling issue on comically tiny phones (Reza)
 
 After:
 * Screen Shake
