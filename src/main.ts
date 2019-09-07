@@ -112,19 +112,23 @@ async function start() {
 
     //Iniitalize letter stage
     let resolving = false;
-    let resetting = Promise.resolve();
+    let specialScreen = false;
 
-    button = makeButton(app.stage, 80, 28, "Reset", () => {
+    button = makeButton(app.stage, 80, 28, "Reset", async () => {
         shootSound();
-        reset(getLevel(currentLevel))
-            .then(board => gameboard = board);
+        specialScreen = false;
+        const board = await reset(getLevel(currentLevel));
+        gameboard = board;
+        resolving = false;
     });
 
-    skipButton = makeButton(app.stage, 80, 28, "Skip", () => {
+    skipButton = makeButton(app.stage, 80, 28, "Skip", async () => {
+        specialScreen = false;
         shootSound();
-        currentLevel = currentLevel + 1;
-        reset(getLevel(currentLevel))
-            .then(board => gameboard = board);
+        ++currentLevel;
+        const board = await reset(getLevel(currentLevel));
+        gameboard = board;
+        resolving = false;
     });
 
     if (EnableSolver) {
@@ -173,13 +177,14 @@ async function start() {
         }
 
         if (checkWin(gameboard)) {
-            changeLevel(++currentLevel);
+            changeLevel(currentLevel + 1);
         } else if (checkLose(gameboard)) {
-            restartLevel();
+            playLoseScreen();
         }
     }
 
-    async function restartLevel() {
+    async function playLoseScreen() {
+        specialScreen = true;
         gameboard = await reset(loseScreen());
         blockSound();
         await wait(0.1);
@@ -194,12 +199,16 @@ async function start() {
                 else return null;
             })
             .filter(effect => effect !== null) as BoardEffect[];
-        await drawEffects(letterStage, gameboard, destroyWinLetters);
-        gameboard = await reset(getLevel(currentLevel));
+        if (specialScreen) await drawEffects(letterStage, gameboard, destroyWinLetters);
+        if (specialScreen) {
+            gameboard = await reset(getLevel(currentLevel));
+            specialScreen = false;
+        }
     }
 
     async function changeLevel(level: number) {
         window.localStorage.setItem('level', '' + level);
+        specialScreen = true;
         gameboard = await reset(winScreen());
         bonusSound();
         await wait(0.7);
@@ -213,16 +222,20 @@ async function start() {
             })
             .filter(effect => effect !== null) as BoardEffect[];
         if (level === 1) bgmusic();
-        await drawEffects(letterStage, gameboard, destroyWinLetters);
-        gameboard = await reset(getLevel(level));
+        if (specialScreen) {
+            if (specialScreen) await drawEffects(letterStage, gameboard, destroyWinLetters);
+            if (specialScreen && currentLevel !== level) { //in case skip during win anim
+                currentLevel = level;
+                gameboard = await reset(getLevel(level));
+            }
+            specialScreen = false;
+        }
     }
 
     async function reset(newBoard: Gameboard) {
-        await resetting;
         clearAnimations();
         resetScore(gameboard);
-        resetting = resetScreen(newBoard, letterStage);
-        await resetting;
+        await resetScreen(newBoard, letterStage);
         return newBoard;
     }
 }
