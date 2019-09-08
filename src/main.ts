@@ -1,5 +1,5 @@
 import { onLetterPressed } from "./letters";
-import { drawEffects, events, resetScreen, CellHeight, CellWidth } from "./render";
+import { drawEffects, events, resetScreen, CellHeight, CellWidth, FontFamily } from "./render";
 import { updateState, checkWin, resetScore, checkLose } from "./gameState";
 import { runAnimations, wait, clearAnimations } from "./animation";
 import { maxY, maxX, Gameboard } from "./board";
@@ -9,6 +9,8 @@ import { winScreen, getLevel, loseScreen } from "./levels";
 import { BoardEffectType, BoardEffect } from "./boardEffect";
 import { LetterEntity } from "./letterEntity";
 import { solve } from "./solver";
+
+declare var FontFaceObserver: any;
 
 const EnableSolver = false;
 
@@ -78,33 +80,18 @@ window.onresize = () => {
 // can then insert into the DOM.
 document.body.appendChild(app.view);
 
+var font = new FontFaceObserver(FontFamily);
+font.load(null, 5000).then(function () {
+    console.log('Font is available');
+    start();
+}, function () {
+    console.log('Font is not available after waiting 5 seconds');
+});
 
-// // Load them google fonts before starting...!
-(<any>window).WebFontConfig = {
-    google: {
-        families: ['VT323'],
-    },
 
-    active() {
-        console.log(".active");
-        start();
-    },
-};
-
-/* eslint-disable */
-// include the web-font loader script
-(function () {
-    const wf = document.createElement('script');
-    wf.src = `${document.location !== null && document.location.protocol === 'https:' ? 'https' : 'http'
-        }://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js`;
-    wf.type = 'text/javascript';
-    wf.async = true;
-    const s = document.getElementsByTagName('script')[0];
-    if (s.parentNode) {
-        s.parentNode.insertBefore(wf, s);
-    }
-}());
-/* eslint-enabled */
+window.onload = () => {
+    start();
+}
 
 export let currentLevel = 0;
 

@@ -19,6 +19,8 @@ const firstScoreLetter = new PIXI.Text('0');
 const secondScoreLetter = new PIXI.Text('1');
 const thirdScoreLetter = new PIXI.Text('2');
 
+export const FontFamily = "vt323regular";
+const LetterMoveDuration = 0.4;
 
 export async function resetScreen(gameboard: Gameboard, stage: PIXI.Container) {
     if (pixiLetters) {
@@ -75,12 +77,12 @@ export async function drawEffects(stage: PIXI.Container, gameboard: Gameboard, e
                 break;
             case BoardEffectType.Fall:
                 playBounce = true;
-                const anim = animate(letter, 'y', boardEffect.toY * CellHeight, 0.4, TweeningFunctions.easeOutBounce);
+                const anim = animate(letter, 'y', boardEffect.toY * CellHeight, LetterMoveDuration, TweeningFunctions.easeOutBounce);
                 promises.push(anim);
                 break;
             case BoardEffectType.Move:
-                const moveY = animate(letter, 'y', boardEffect.toY * CellHeight, 0.4, TweeningFunctions.easeInCubic)
-                const moveX = animate(letter, 'x', boardEffect.toX * CellWidth, 0.4, TweeningFunctions.easeInCubic)
+                const moveY = animate(letter, 'y', boardEffect.toY * CellHeight, LetterMoveDuration, TweeningFunctions.easeInCubic)
+                const moveX = animate(letter, 'x', boardEffect.toX * CellWidth, LetterMoveDuration, TweeningFunctions.easeInCubic)
                 promises.push(moveX, moveY);
                 break;
 
@@ -131,7 +133,7 @@ function drawScore(stage: PIXI.Container) {
     thirdScoreLetter.x = (maxX * CellWidth) / 2 - 32 + 64;
     thirdScoreLetter.y = maxY * CellHeight + yPadding;
     firstScoreLetter.style = new PIXI.TextStyle({
-        fontFamily: 'VT323',
+        fontFamily: FontFamily,
         fontSize: 64,
         fill: '#000000',
         stroke: '#ffffff',
@@ -142,7 +144,7 @@ function drawScore(stage: PIXI.Container) {
     });
 
     secondScoreLetter.style = new PIXI.TextStyle({
-        fontFamily: 'VT323',
+        fontFamily: FontFamily,
         fontSize: 64,
         fill: '#000000',
         stroke: '#ffffff',
@@ -153,7 +155,7 @@ function drawScore(stage: PIXI.Container) {
     });
 
     thirdScoreLetter.style = new PIXI.TextStyle({
-        fontFamily: 'VT323',
+        fontFamily: FontFamily,
         fontSize: 64,
         fill: '#000000',
         stroke: '#ffffff',
@@ -187,7 +189,7 @@ export const description = new PIXI.Text("* Press a letter\n* Score ONE point \n
 
 function drawDescription(stage: PIXI.Container) {
     description.style = new PIXI.TextStyle({
-        fontFamily: 'VT323',
+        fontFamily: FontFamily,
         fontSize: 24,
         fill: '#ffffff',
         stroke: '#4a1850',
@@ -207,7 +209,7 @@ export const tooltip = new PIXI.Text('');
 
 function drawTooltip(stage: PIXI.Container) {
     tooltip.style = new PIXI.TextStyle({
-        fontFamily: 'VT323',
+        fontFamily: FontFamily,
         fontSize: 24,
         fill: '#ffffff',
         stroke: '#4a1850',
@@ -236,7 +238,7 @@ function drawLetter(entity: LetterEntity, stage: PIXI.Container) {
 
     const text = new PIXI.Text();
     const style = new PIXI.TextStyle({
-        fontFamily: 'VT323',
+        fontFamily: FontFamily,
         fontSize: 52,
         stroke: '#4a1850',
         strokeThickness: 5,

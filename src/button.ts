@@ -1,3 +1,5 @@
+import { FontFamily } from "./render";
+
 export function makeButton(stage: PIXI.Container, width: number, height: number, buttonText: string, onClick: () => void) {
     const button = new PIXI.Graphics();
     //Border
@@ -6,7 +8,7 @@ export function makeButton(stage: PIXI.Container, width: number, height: number,
 
     const text = new PIXI.Text(buttonText);
     text.style = new PIXI.TextStyle({
-        fontFamily: 'VT323',
+        fontFamily: FontFamily,
         fontSize: 32,
         fill: '#ffffff',
         stroke: '#4a1850',
