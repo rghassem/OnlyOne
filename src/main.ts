@@ -24,11 +24,19 @@ console.log(`window.devicePixelRatio: ${window.devicePixelRatio}`);
 const letterStage = new PIXI.Container();
 app.stage.addChild(letterStage);
 
-
 //Reset button
-let button: PIXI.Graphics;
 let solveButton: PIXI.Graphics;
-let skipButton: PIXI.Graphics;
+
+let muteTexture: PIXI.Texture;
+let unmuteTexture: PIXI.Texture;
+let resetTexture: PIXI.Texture;
+let leftTexture: PIXI.Texture;
+let rightTexture: PIXI.Texture;
+
+let muteButton: PIXI.Sprite;
+let resetButton: PIXI.Sprite;
+let leftButton: PIXI.Sprite;
+let rightButton: PIXI.Sprite;
 
 //Initialize renderer stuff
 app.renderer.view.style.position = "absolute";
@@ -47,19 +55,31 @@ function resize(resizeRenderer: boolean = false) {
     letterStage.x = app.screen.width / 2 - letterStageWidth / 2;
     letterStage.y = app.screen.height / 2 - letterStageHeight / 2;
 
-    if (button) {
-        button.x = letterStage.x + 70;
-        button.y = letterStage.y + letterStageHeight + 75;
-    }
-
-    if (skipButton) {
-        skipButton.x = letterStage.x + 170;
-        skipButton.y = letterStage.y + letterStageHeight + 75;
-    }
+    const scoreCenterLine = 608;
 
     if (solveButton) {
         solveButton.x = letterStage.x + 400;
         solveButton.y = letterStage.y + 300;
+    }
+
+    if (muteButton) {
+        muteButton.x = letterStage.x;
+        muteButton.y = letterStage.y + scoreCenterLine;
+    }
+
+    if (resetButton) {
+        resetButton.x = letterStage.x + 325;
+        resetButton.y = letterStage.y + scoreCenterLine;
+    }
+
+    if (leftButton) {
+        leftButton.x = letterStage.x + 50;
+        leftButton.y = letterStage.y + scoreCenterLine;
+    }
+
+    if (rightButton) {
+        rightButton.x = letterStage.x + 260;
+        rightButton.y = letterStage.y + scoreCenterLine;
     }
 
     const actualWidth = letterStageWidth + 0.15 * letterStageWidth;
@@ -83,21 +103,40 @@ document.body.appendChild(app.view);
 var font = new FontFaceObserver(FontFamily);
 font.load(null, 5000).then(function () {
     console.log('Font is available');
+    createButtons();
     start();
 }, function () {
     console.log('Font is not available after waiting 5 seconds');
 });
 
-
 export let currentLevel = 0;
 
-async function start() {
+function createButtons() {
+    muteTexture = PIXI.Texture.from('assets/volume-mute-solid.svg');
+    unmuteTexture = PIXI.Texture.from('assets/volume-up-solid.svg');
+    resetTexture = PIXI.Texture.from('assets/undo-alt-solid.svg');
+    rightTexture = PIXI.Texture.from('assets/caret-right-solid.svg');
+    leftTexture = PIXI.Texture.from('assets/caret-left-solid.svg');
+    
+    muteButton = new PIXI.Sprite(muteTexture);
+    resetButton = new PIXI.Sprite(resetTexture);
+    rightButton = new PIXI.Sprite(rightTexture);
+    leftButton = new PIXI.Sprite(leftTexture);
+    
+    app.stage.addChild(muteButton);
+    app.stage.addChild(resetButton);
+    app.stage.addChild(leftButton);
+    app.stage.addChild(rightButton);
+}
 
+async function start() {
     //Iniitalize letter stage
     let resolving = false;
     let specialScreen = false;
 
-    button = makeButton(app.stage, 80, 28, "Reset", async () => {
+    muteButton.interactive = true;
+    muteButton.on("pointerdown", async () => {
+        muteButton.texture = unmuteTexture;
         shootSound();
         specialScreen = false;
         const board = await reset(getLevel(currentLevel));
@@ -105,7 +144,8 @@ async function start() {
         resolving = false;
     });
 
-    skipButton = makeButton(app.stage, 80, 28, "Skip", async () => {
+    resetButton.interactive = true;
+    resetButton.on("pointerdown", async () => {
         specialScreen = false;
         shootSound();
         ++currentLevel;
