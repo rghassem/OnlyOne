@@ -44,7 +44,7 @@ function drawGameboard(gameboard: Gameboard, stage: PIXI.Container, entrances: P
     for (const entity of gameboard.entities) {
         const newLetter = drawLetter(entity, stage);
         newLetter.y -= maxY * CellHeight;
-        const duration = 1.5 + ((entity.x / maxX) * 0.2);
+        const duration = 1.2 + ((entity.x / maxX) * 0.2);
         entrances.push(animate(newLetter, 'y', entity.y * CellHeight, duration, TweeningFunctions.easeOutBounce));
         pixiLetters.set(entity, newLetter);
     }

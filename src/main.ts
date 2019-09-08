@@ -89,10 +89,6 @@ font.load(null, 5000).then(function () {
 });
 
 
-window.onload = () => {
-    start();
-}
-
 export let currentLevel = 0;
 
 async function start() {
