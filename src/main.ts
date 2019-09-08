@@ -4,7 +4,7 @@ import { updateState, checkWin, resetScore, checkLose } from "./gameState";
 import { runAnimations, wait, clearAnimations } from "./animation";
 import { maxY, maxX, Gameboard } from "./board";
 import { makeButton } from "./button";
-import { shootSound, bonusSound, bgmusic, blockSound } from "./sounds";
+import { shootSound, bonusSound, bgmusic, blockSound, toggleSound } from "./sounds";
 import { winScreen, getLevel, loseScreen } from "./levels";
 import { BoardEffectType, BoardEffect } from "./boardEffect";
 import { LetterEntity } from "./letterEntity";
@@ -68,7 +68,7 @@ function resize(resizeRenderer: boolean = false) {
     }
 
     if (resetButton) {
-        resetButton.x = letterStage.x + 325;
+        resetButton.x = letterStage.x + 320;
         resetButton.y = letterStage.y + scoreCenterLine;
     }
 
@@ -110,6 +110,36 @@ font.load(null, 5000).then(function () {
 });
 
 export let currentLevel = 0;
+export let maxLevel = 0;
+
+function initLevel() {
+    const queryParams = new URLSearchParams(new URL(document.URL).search);
+    const paramLevel = queryParams.get("level");
+    const forceLevel = paramLevel && parseInt(paramLevel) ? parseInt(paramLevel) : null;
+
+    currentLevel = forceLevel || Number(window.localStorage.getItem('level')) || 0;
+    maxLevel = Number(window.localStorage.getItem('maxLevel')) || 0;
+    leftButton.visible = currentLevel > 0;
+    rightButton.visible = currentLevel < maxLevel;
+}
+
+function decreaseLevel() {
+    currentLevel -= 1;
+    window.localStorage.setItem('level', '' + currentLevel);
+    leftButton.visible = currentLevel > 0;
+    rightButton.visible = currentLevel < maxLevel;
+}
+
+function advanceLevel() {
+    currentLevel += 1;
+    window.localStorage.setItem('level', '' + currentLevel);
+    leftButton.visible = currentLevel > 0;
+    rightButton.visible = currentLevel < maxLevel;
+    if (currentLevel > maxLevel) {
+        maxLevel = currentLevel;
+        window.localStorage.setItem('maxLevel', '' + maxLevel);
+    }
+}
 
 function createButtons() {
     muteTexture = PIXI.Texture.from('assets/volume-mute-solid.svg');
@@ -118,11 +148,11 @@ function createButtons() {
     rightTexture = PIXI.Texture.from('assets/caret-right-solid.svg');
     leftTexture = PIXI.Texture.from('assets/caret-left-solid.svg');
     
-    muteButton = new PIXI.Sprite(muteTexture);
+    muteButton = new PIXI.Sprite(unmuteTexture);
     resetButton = new PIXI.Sprite(resetTexture);
     rightButton = new PIXI.Sprite(rightTexture);
     leftButton = new PIXI.Sprite(leftTexture);
-    
+
     app.stage.addChild(muteButton);
     app.stage.addChild(resetButton);
     app.stage.addChild(leftButton);
@@ -136,19 +166,33 @@ async function start() {
 
     muteButton.interactive = true;
     muteButton.on("pointerdown", async () => {
-        muteButton.texture = unmuteTexture;
-        shootSound();
-        specialScreen = false;
-        const board = await reset(getLevel(currentLevel));
-        gameboard = board;
-        resolving = false;
+        muteButton.texture = toggleSound() ? muteTexture : unmuteTexture;
     });
 
     resetButton.interactive = true;
     resetButton.on("pointerdown", async () => {
         specialScreen = false;
         shootSound();
-        ++currentLevel;
+        const board = await reset(getLevel(currentLevel));
+        gameboard = board;
+        resolving = false;
+    });
+
+    leftButton.interactive = true;
+    leftButton.on("pointerdown", async () => {
+        specialScreen = false;
+        shootSound();
+        decreaseLevel();
+        const board = await reset(getLevel(currentLevel));
+        gameboard = board;
+        resolving = false;
+    });
+    
+    rightButton.interactive = true;
+    rightButton.on("pointerdown", async () => {
+        specialScreen = false;
+        shootSound();
+        advanceLevel();
         const board = await reset(getLevel(currentLevel));
         gameboard = board;
         resolving = false;
@@ -177,11 +221,7 @@ async function start() {
         runAnimations(app.ticker.elapsedMS / 1000);
     });
 
-    const queryParams = new URLSearchParams(new URL(document.URL).search);
-    const paramLevel = queryParams.get("level");
-    const forceLevel = paramLevel && parseInt(paramLevel) ? parseInt(paramLevel) : null;
-
-    currentLevel = forceLevel || Number(window.localStorage.getItem('level')) || 0;
+    initLevel();
 
     let gameboard = getLevel(currentLevel); //TODO: Clean up
     gameboard = await reset(getLevel(currentLevel));
@@ -200,7 +240,8 @@ async function start() {
         }
 
         if (checkWin(gameboard)) {
-            changeLevel(currentLevel + 1);
+            advanceLevel();
+            changeLevel(currentLevel);
         } else if (checkLose(gameboard)) {
             playLoseScreen();
         }
@@ -230,7 +271,7 @@ async function start() {
     }
 
     async function changeLevel(level: number) {
-        window.localStorage.setItem('level', '' + level);
+        window.localStorage.setItem('currentlevel', '' + level);
         specialScreen = true;
         gameboard = await reset(winScreen());
         bonusSound();
@@ -247,10 +288,7 @@ async function start() {
         if (level === 1) bgmusic();
         if (specialScreen) {
             if (specialScreen) await drawEffects(letterStage, gameboard, destroyWinLetters);
-            if (specialScreen && currentLevel !== level) { //in case skip during win anim
-                currentLevel = level;
-                gameboard = await reset(getLevel(level));
-            }
+            gameboard = await reset(getLevel(currentLevel));
             specialScreen = false;
         }
     }

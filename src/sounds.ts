@@ -3,7 +3,8 @@ declare var sounds: any;
 declare var soundEffect: any;
 declare var makeSound: any;
 
-const volume = 0.5;
+let volume = 0.5;
+let muted = false;
 
 const explosion = "assets/explosion.wav";
 const bounce = "assets/bounce.wav";
@@ -16,6 +17,12 @@ const allSoundsLoaded = new Promise<void>((resolve, reject) => {
         resolve();
     }
 });
+
+export function toggleSound() {
+    muted = !muted;
+    volume = muted ? 0 : 0.5;
+    return muted;
+}
 
 export function shootSound() {
     soundEffect(
@@ -36,10 +43,12 @@ export function shootSound() {
 }
 
 export function explosionSound() {
+    sounds[explosion].volume = volume;
     sounds[explosion].play();
 }
 
 export function blockSound() {
+    sounds[block].volume = volume;
     sounds[block].play();
 }
 

@@ -1,16 +1,13 @@
 Todo:
 
 MVP:
-* Persistence (Mark)
-* UI Volume (Mark)
 * Go to Level (Mark)
-* Game Over (Mark)
-* Nuke (Mark)
 * Levels + Solver (Reza)
 * Fix skip inbetween levels (Reza)
 * Fix scaling issue on comically tiny phones (Reza)
 
 After:
+* Nuke (Mark)
 * Screen Shake
 * Letter Expand
 * Simultaneous Explosion
