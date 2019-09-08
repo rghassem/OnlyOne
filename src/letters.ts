@@ -97,9 +97,9 @@ export function doLetterEffect(board: Gameboard, entity: LetterEntity | undefine
             return down(entity, effects);
         case Letter.I:
             return prevent(entity, effects);
-        case Letter.O:
-        case Letter.N:
-        case Letter.E:
+        case Letter.First:
+        case Letter.Second:
+        case Letter.Third:
             return [];
         case Letter.C:
             return cross(entity, effects);
