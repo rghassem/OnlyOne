@@ -73,9 +73,13 @@ async function solveWithWorkerQueue(level: Gameboard, workerQueue: Array<Worker>
     }
     const worker = await getWorker();
     return new Promise<Solution>((resolve, reject) => {
+        let processedCount = 0;
         worker.onmessage = (message: any) => {
             const solution = message.data as Solution;
-            console.count(`Processed ${level}`);
+            ++processedCount
+            if (processedCount % 10 === 0) {
+                console.count(`Processed ${processedCount}`);
+            }
             onWorkerDone(worker);
             resolve(solution);
         }
@@ -88,7 +92,8 @@ function formatCSV(data: Array<Solution>, startLevel: number) {
     strategyList
         .map(set => set.name)
         .forEach(name => {
-            headers += `${name}-First Solve Step,${name}-Shortest,${name}-Total Steps,,`;
+            //headers += `${name}-First Solve Step,${name}-Shortest,${name}-Total Steps,,`;
+            headers += `${name},`;
         })
 
     const rows = new Array<string>();
@@ -96,7 +101,8 @@ function formatCSV(data: Array<Solution>, startLevel: number) {
         const solution = data[i];
         let row = `${startLevel + i},${solution.solved},,`;
         for (const run of solution.runs) {
-            row += `${run.firstSolutionSteps},${run.shortestPathLength},${run.steps},,`
+            row += `${run.shortestPathLength},`
+            //row += `${run.firstSolutionSteps},${run.shortestPathLength},${run.steps},,`
         }
         rows.push(row);
     }

@@ -19,6 +19,10 @@ const chainingLetters = [
     Letter.Y
 ];
 
+export function isBomb(letter: Letter) {
+    return letter === Letter.C || letter === Letter.X || letter === Letter.Y;
+}
+
 const processedLetters = new Set<string>();
 
 export function onLetterPressed(gameboard: Gameboard, entity: LetterEntity): Array<BoardEffect> {

@@ -2,7 +2,7 @@ import { Gameboard, maxY, maxX } from "./board";
 import { TypedPriorityQueue } from "../libs/TypedPriorityQueue";
 import { strategyList, Strategy } from "./strategy";
 import { LetterEntity, Letter } from "./letterEntity";
-import { onLetterPressed } from "./letters";
+import { onLetterPressed, isBomb } from "./letters";
 import { updateState } from "./gameState";
 
 const StepsPerRun = 100;
@@ -25,6 +25,7 @@ export interface Solution {
     level: number,
     solved: boolean,
     runs: Run[],
+    sucessfulStrategies: string[],
     shortestPathLength: number,
     bestPath: Path
 }
@@ -106,10 +107,13 @@ function solve(board: Gameboard): Solution {
         bestRun = runs.reduce((a, b) => a.bestScore > b.bestScore ? a : b);
     }
 
+    const sucessfulStrategies = solvedRuns.map(run => run.strategy);
+
     return {
         level: board.level,
         solved,
         runs,
+        sucessfulStrategies,
         shortestPathLength: bestRun.shortestPathLength,
         bestPath: bestRun.bestPath
     };
@@ -171,6 +175,16 @@ function evaluate(board: Gameboard, moveCount: number, weights: Strategy): numbe
     const secondHeight = !second ? 0 : normalizedDistanceFromTop010(second.y);
     const thirdHeight = !third ? 0 : normalizedDistanceFromTop010(third.y);
 
+    const scorers = [first, second, third].filter(letter => letter !== undefined);
+    let bombsBeneathScore = 0;
+    for (const scorer of scorers) {
+        const beneath = board.getLetterEntity(scorer!.x, scorer!.y + 1);
+        if (beneath && isBomb(beneath.letter)) {
+            ++bombsBeneathScore;
+        }
+    }
+    bombsBeneathScore = 1 - (bombsBeneathScore / scorers.length);
+
     const invisibles = board.entities.filter(state => state.letter === Letter.I).length;
     const invisiblesRemoved = (maxY * maxX) - invisibles;
 
@@ -181,11 +195,12 @@ function evaluate(board: Gameboard, moveCount: number, weights: Strategy): numbe
     const thirdHeightComponent = weights.thirdLetter * thirdHeight;
     const invisComponent = weights.invisibles * invisiblesRemoved;
     const letterCountComponent = weights.letterCount * board.entities.length;
+    const bombsBeneathComponent = bombsBeneathScore * weights.bombsBeneath;
 
     const pathLengthComponent = -0.01 * moveCount; //between two equal paths, the one with fewer steps is better
 
     return heightComponent + firstHeightComponent + secondHeightComponent + thirdHeightComponent +
-        scoreComponent + invisComponent + pathLengthComponent + letterCountComponent;
+        scoreComponent + invisComponent + pathLengthComponent + letterCountComponent + bombsBeneathComponent;
 
     //distance from top (y) normalized and multiplied to 1-10 range
     function normalizedDistanceFromTop010(y: number) {
