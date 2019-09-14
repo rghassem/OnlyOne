@@ -59,6 +59,7 @@ export function runAnimations(delta: number) {
 }
 
 export function clearAnimations() {
+    animations.forEach(anim => anim.onDone());
     animations = [];
 }
 

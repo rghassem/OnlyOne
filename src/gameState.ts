@@ -1,7 +1,8 @@
 import { BoardEffect, BoardEffectType, MoveEffect, TransformEffect, BasicBoardEffect } from "./boardEffect";
-import { maxX, maxY, Gameboard } from "./board";
+import { maxY, Gameboard } from "./board";
 import { fillGaps, Gap } from "./gapFill";
 import { LetterEntity, Letter } from "./letterEntity";
+import { isOutOfBounds } from "./letters";
 
 type QueuedMove = { entity: LetterEntity, x: number, y: number };
 
@@ -9,6 +10,10 @@ export function checkWin(gameboard: Gameboard) {
     return gameboard.firstLetterScored
         && gameboard.secondLetterScored
         && gameboard.thirdLetterScored;
+}
+
+export function checkLose(gameboard: Gameboard) {
+    return gameboard.lost;
 }
 
 export function resetScore(gameboard: Gameboard) {
@@ -29,6 +34,13 @@ export function updateState(gameboard: Gameboard, changes: Array<BoardEffect>) {
         const effect = changes[i];
         switch (effect.effect) {
             case BoardEffectType.Destroy:
+                //Check lose condition before destroying
+                const letter = effect.entity.letter;
+                if (letter === Letter.First ||
+                    letter === Letter.Second ||
+                    letter === Letter.Third) {
+                    gameboard.lost = true;
+                }
             case BoardEffectType.ScoreDestroy:
                 gaps.push(new Gap(effect.entity.x, effect.entity.y));
                 destroy(effect.entity);
@@ -39,11 +51,9 @@ export function updateState(gameboard: Gameboard, changes: Array<BoardEffect>) {
                 break;
 
             case BoardEffectType.Move:
-                if (effect.toX >= 0 && effect.toX < maxX && effect.toY >= 0 && effect.toY < maxY) {
-                    queuedMoves.push({ entity: effect.entity, x: effect.toX, y: effect.toY });
-                    //Mark places moved from as possibly now being a gap
-                    possibleGaps.push(new Gap(effect.entity.x, effect.entity.y));
-                }
+                queuedMoves.push({ entity: effect.entity, x: effect.toX, y: effect.toY });
+                //Mark places moved from as possibly now being a gap
+                possibleGaps.push(new Gap(effect.entity.x, effect.entity.y));
                 break;
 
             case BoardEffectType.Transform:
@@ -57,22 +67,27 @@ export function updateState(gameboard: Gameboard, changes: Array<BoardEffect>) {
     }
 
     //Finalize all moves
-    queuedMoves.forEach(qm => move(qm));
+    const outOfBoundsDestroys = new Array<BoardEffect>();
+    queuedMoves.forEach(qm => move(qm, outOfBoundsDestroys));
 
     //Process fall effects
     gaps = gaps.concat(possibleGaps.filter(gap => !gameboard.getLetterEntity(gap.x, gap.y)));
     const fallEffects = fillGaps(gameboard, gaps);
-    result = result.concat(fallEffects);
+    result = result.concat(fallEffects).concat(outOfBoundsDestroys);
 
     return result;
 
-    function move(queuedMove: QueuedMove) {
-        queuedMove.entity.x = queuedMove.x;
-        queuedMove.entity.y = queuedMove.y;
+    function move(queuedMove: QueuedMove, results: BoardEffect[] = []) {
+        const entity = queuedMove.entity;
+        entity.x = queuedMove.x;
+        entity.y = queuedMove.y;
+        if (isOutOfBounds(entity)) {
+            results.push({ effect: BoardEffectType.Destroy, entity })
+        }
+        return results;
     }
 
     function destroy(entity: LetterEntity) {
-        //Destroy the letter
         gameboard.removeLetterEntity(entity);
     }
 

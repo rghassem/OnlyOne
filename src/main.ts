@@ -1,16 +1,18 @@
 import { onLetterPressed } from "./letters";
-import { drawEffects, events, resetScreen, CellHeight, CellWidth } from "./render";
-import { updateState, checkWin, resetScore } from "./gameState";
+import { drawEffects, events, resetScreen, CellHeight, CellWidth, FontFamily } from "./render";
+import { updateState, checkWin, resetScore, checkLose } from "./gameState";
 import { runAnimations, wait, clearAnimations } from "./animation";
 import { maxY, maxX, Gameboard } from "./board";
 import { makeButton } from "./button";
-import { shootSound, bonusSound, bgmusic } from "./sounds";
-import { winScreen, getLevel } from "./levels";
+import { shootSound, bonusSound, bgmusic, blockSound, toggleSound } from "./sounds";
+import { winScreen, getLevel, loseScreen } from "./levels";
 import { BoardEffectType, BoardEffect } from "./boardEffect";
 import { LetterEntity } from "./letterEntity";
 import { solve } from "./solver";
 
-const EnableSolver = true;
+declare var FontFaceObserver: any;
+
+const EnableSolver = false;
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
@@ -22,11 +24,19 @@ console.log(`window.devicePixelRatio: ${window.devicePixelRatio}`);
 const letterStage = new PIXI.Container();
 app.stage.addChild(letterStage);
 
-
 //Reset button
-let button: PIXI.Graphics;
 let solveButton: PIXI.Graphics;
-let skipButton: PIXI.Graphics;
+
+let muteTexture: PIXI.Texture;
+let unmuteTexture: PIXI.Texture;
+let resetTexture: PIXI.Texture;
+let leftTexture: PIXI.Texture;
+let rightTexture: PIXI.Texture;
+
+let muteButton: PIXI.Sprite;
+let resetButton: PIXI.Sprite;
+let leftButton: PIXI.Sprite;
+let rightButton: PIXI.Sprite;
 
 //Initialize renderer stuff
 app.renderer.view.style.position = "absolute";
@@ -45,19 +55,31 @@ function resize(resizeRenderer: boolean = false) {
     letterStage.x = app.screen.width / 2 - letterStageWidth / 2;
     letterStage.y = app.screen.height / 2 - letterStageHeight / 2;
 
-    if (button) {
-        button.x = letterStage.x + 70;
-        button.y = letterStage.y + letterStageHeight + 75;
-    }
-
-    if (skipButton) {
-        skipButton.x = letterStage.x + 170;
-        skipButton.y = letterStage.y + letterStageHeight + 75;
-    }
+    const scoreCenterLine = 608;
 
     if (solveButton) {
         solveButton.x = letterStage.x + 400;
         solveButton.y = letterStage.y + 300;
+    }
+
+    if (muteButton) {
+        muteButton.x = letterStage.x;
+        muteButton.y = letterStage.y + scoreCenterLine;
+    }
+
+    if (resetButton) {
+        resetButton.x = letterStage.x + 320;
+        resetButton.y = letterStage.y + scoreCenterLine;
+    }
+
+    if (leftButton) {
+        leftButton.x = letterStage.x + 50;
+        leftButton.y = letterStage.y + scoreCenterLine;
+    }
+
+    if (rightButton) {
+        rightButton.x = letterStage.x + 260;
+        rightButton.y = letterStage.y + scoreCenterLine;
     }
 
     const actualWidth = letterStageWidth + 0.15 * letterStageWidth;
@@ -78,53 +100,102 @@ window.onresize = () => {
 // can then insert into the DOM.
 document.body.appendChild(app.view);
 
-
-// // Load them google fonts before starting...!
-(<any>window).WebFontConfig = {
-    google: {
-        families: ['VT323'],
-    },
-
-    active() {
-        console.log(".active");
-        start();
-    },
-};
-
-/* eslint-disable */
-// include the web-font loader script
-(function () {
-    const wf = document.createElement('script');
-    wf.src = `${document.location !== null && document.location.protocol === 'https:' ? 'https' : 'http'
-        }://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js`;
-    wf.type = 'text/javascript';
-    wf.async = true;
-    const s = document.getElementsByTagName('script')[0];
-    if (s.parentNode) {
-        s.parentNode.insertBefore(wf, s);
-    }
-}());
-/* eslint-enabled */
+var font = new FontFaceObserver(FontFamily);
+font.load(null, 5000).then(function () {
+    console.log('Font is available');
+    createButtons();
+    start();
+}, function () {
+    console.log('Font is not available after waiting 5 seconds');
+});
 
 export let currentLevel = 0;
+export let maxLevel = 0;
+
+function initLevel() {
+    const queryParams = new URLSearchParams(new URL(document.URL).search);
+    const paramLevel = queryParams.get("level");
+    const forceLevel = paramLevel && parseInt(paramLevel) ? parseInt(paramLevel) : null;
+
+    currentLevel = forceLevel || Number(window.localStorage.getItem('level')) || 0;
+    maxLevel = Number(window.localStorage.getItem('maxLevel')) || 0;
+    leftButton.visible = currentLevel > 0;
+    rightButton.visible = currentLevel < maxLevel;
+}
+
+function decreaseLevel() {
+    currentLevel -= 1;
+    window.localStorage.setItem('level', '' + currentLevel);
+    leftButton.visible = currentLevel > 0;
+    rightButton.visible = currentLevel < maxLevel;
+}
+
+function advanceLevel() {
+    currentLevel += 1;
+    window.localStorage.setItem('level', '' + currentLevel);
+    leftButton.visible = currentLevel > 0;
+    rightButton.visible = currentLevel < maxLevel;
+    if (currentLevel > maxLevel) {
+        maxLevel = currentLevel;
+        window.localStorage.setItem('maxLevel', '' + maxLevel);
+    }
+}
+
+function createButtons() {
+    muteTexture = PIXI.Texture.from('assets/volume-mute-solid.svg');
+    unmuteTexture = PIXI.Texture.from('assets/volume-up-solid.svg');
+    resetTexture = PIXI.Texture.from('assets/undo-alt-solid.svg');
+    rightTexture = PIXI.Texture.from('assets/caret-right-solid.svg');
+    leftTexture = PIXI.Texture.from('assets/caret-left-solid.svg');
+
+    muteButton = new PIXI.Sprite(unmuteTexture);
+    resetButton = new PIXI.Sprite(resetTexture);
+    rightButton = new PIXI.Sprite(rightTexture);
+    leftButton = new PIXI.Sprite(leftTexture);
+
+    app.stage.addChild(muteButton);
+    app.stage.addChild(resetButton);
+    app.stage.addChild(leftButton);
+    app.stage.addChild(rightButton);
+}
 
 async function start() {
-
     //Iniitalize letter stage
     let resolving = false;
-    let resetting = Promise.resolve();
+    let specialScreen = false;
 
-    button = makeButton(app.stage, 80, 28, "Reset", () => {
-        shootSound();
-        reset(getLevel(currentLevel))
-            .then(board => gameboard = board);
+    muteButton.interactive = true;
+    muteButton.on("pointerdown", async () => {
+        muteButton.texture = toggleSound() ? muteTexture : unmuteTexture;
     });
 
-    skipButton = makeButton(app.stage, 80, 28, "Skip", () => {
+    resetButton.interactive = true;
+    resetButton.on("pointerdown", async () => {
+        specialScreen = false;
         shootSound();
-        currentLevel = currentLevel + 1;
-        reset(getLevel(currentLevel))
-            .then(board => gameboard = board);
+        const board = await reset(getLevel(currentLevel));
+        gameboard = board;
+        resolving = false;
+    });
+
+    leftButton.interactive = true;
+    leftButton.on("pointerdown", async () => {
+        specialScreen = false;
+        shootSound();
+        decreaseLevel();
+        const board = await reset(getLevel(currentLevel));
+        gameboard = board;
+        resolving = false;
+    });
+
+    rightButton.interactive = true;
+    rightButton.on("pointerdown", async () => {
+        specialScreen = false;
+        shootSound();
+        advanceLevel();
+        const board = await reset(getLevel(currentLevel));
+        gameboard = board;
+        resolving = false;
     });
 
     if (EnableSolver) {
@@ -150,8 +221,10 @@ async function start() {
         runAnimations(app.ticker.elapsedMS / 1000);
     });
 
-    let gameboard = getLevel(0); //TODO: Clean up
-    gameboard = await reset(getLevel(0));
+    initLevel();
+
+    let gameboard = getLevel(currentLevel); //TODO: Clean up
+    gameboard = await reset(getLevel(currentLevel));
 
     events.onLetterClick = (entity: LetterEntity) => {
         if (resolving) return;
@@ -167,11 +240,39 @@ async function start() {
         }
 
         if (checkWin(gameboard)) {
-            changeLevel(++currentLevel);
+            advanceLevel();
+            changeLevel(currentLevel);
+        } else if (checkLose(gameboard)) {
+            playLoseScreen();
+        }
+    }
+
+    async function playLoseScreen() {
+        specialScreen = true;
+        gameboard = await reset(loseScreen());
+        blockSound();
+        await wait(0.1);
+        blockSound();
+        await wait(0.2);
+        blockSound();
+        await wait(0.7);
+        const destroyWinLetters = gameboard.entities
+            .map(entity => {
+                if (entity.letter !== undefined)
+                    return { entity, effect: BoardEffectType.Destroy }
+                else return null;
+            })
+            .filter(effect => effect !== null) as BoardEffect[];
+        if (specialScreen) await drawEffects(letterStage, gameboard, destroyWinLetters);
+        if (specialScreen) {
+            gameboard = await reset(getLevel(currentLevel));
+            specialScreen = false;
         }
     }
 
     async function changeLevel(level: number) {
+        window.localStorage.setItem('currentlevel', '' + level);
+        specialScreen = true;
         gameboard = await reset(winScreen());
         bonusSound();
         await wait(0.7);
@@ -185,17 +286,17 @@ async function start() {
             })
             .filter(effect => effect !== null) as BoardEffect[];
         if (level === 1) bgmusic();
-        await drawEffects(letterStage, gameboard, destroyWinLetters);
-        gameboard = await reset(getLevel(level));
+        if (specialScreen) {
+            if (specialScreen) await drawEffects(letterStage, gameboard, destroyWinLetters);
+            gameboard = await reset(getLevel(currentLevel));
+            specialScreen = false;
+        }
     }
 
-
     async function reset(newBoard: Gameboard) {
-        await resetting;
         clearAnimations();
         resetScore(gameboard);
-        resetting = resetScreen(newBoard, letterStage);
-        await resetting;
+        await resetScreen(newBoard, letterStage);
         return newBoard;
     }
 }
