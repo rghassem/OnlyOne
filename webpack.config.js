@@ -2,8 +2,7 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    bundle: './src/main.ts',
-    solverWorker: './src/solverWorker.ts'
+    bundle: './src/main.ts'
   },
   watch: true,
   mode: 'development',
