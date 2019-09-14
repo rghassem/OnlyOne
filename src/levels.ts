@@ -24,9 +24,8 @@ export function winScreen() {
 export function loseScreen() {
     return Gameboard.fromString(
         ' '.repeat(maxX * Math.floor(maxY / 2))
-        + 'TRYAGAIN' + 
-        ' '.repeat(maxX * Math.floor(maxY / 2))
-    );
+        + 'TRYAGAIN' +
+        ' '.repeat(maxX * Math.floor(maxY / 2)), 0);
 }
 
 function levelOne() {
