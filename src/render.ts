@@ -101,7 +101,22 @@ export async function drawEffects(stage: PIXI.Container, gameboard: Gameboard, e
     if (pauseForEffect) await wait(0.4);
 }
 
-
+export async function tellUserWhatLetterToClick(board: Gameboard, x: number, y: number) {
+    const letter = board.getLetterEntity(x, y);
+    if (!letter) return;
+    let target: PIXI.Text | undefined;
+    target = pixiLetters.get(letter);
+    while (target) {
+        try {
+            await pulse(target);
+        }
+        catch (e) {
+            console.log("First letter destroyed during pulse (this is fine)");
+        }
+        await wait(1);
+        target = pixiLetters.get(letter);
+    }
+}
 
 function drawScore(stage: PIXI.Container) {
 

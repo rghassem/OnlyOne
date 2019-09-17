@@ -1,5 +1,5 @@
 import { onLetterPressed } from "./letters";
-import { drawEffects, events, resetScreen, CellHeight, CellWidth, FontFamily } from "./render";
+import { drawEffects, events, resetScreen, CellHeight, CellWidth, FontFamily, tellUserWhatLetterToClick } from "./render";
 import { updateState, checkWin, resetScore, checkLose } from "./gameState";
 import { runAnimations, wait, clearAnimations } from "./animation";
 import { maxY, maxX, Gameboard } from "./board";
@@ -147,7 +147,7 @@ function createButtons() {
     resetTexture = PIXI.Texture.from('assets/undo-alt-solid.svg');
     rightTexture = PIXI.Texture.from('assets/caret-right-solid.svg');
     leftTexture = PIXI.Texture.from('assets/caret-left-solid.svg');
-    
+
     muteButton = new PIXI.Sprite(unmuteTexture);
     resetButton = new PIXI.Sprite(resetTexture);
     rightButton = new PIXI.Sprite(rightTexture);
@@ -187,7 +187,7 @@ async function start() {
         gameboard = board;
         resolving = false;
     });
-    
+
     rightButton.interactive = true;
     rightButton.on("pointerdown", async () => {
         specialScreen = false;
@@ -225,6 +225,11 @@ async function start() {
 
     let gameboard = getLevel(currentLevel); //TODO: Clean up
     gameboard = await reset(getLevel(currentLevel));
+
+    //For the first level, pulse the letter you should click first
+    if (currentLevel === 0) {
+        tellUserWhatLetterToClick(gameboard, 7, 12);
+    }
 
     events.onLetterClick = (entity: LetterEntity) => {
         if (resolving) return;
