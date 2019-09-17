@@ -63,23 +63,14 @@ letterVisuals.set(Letter.P, new LetterVisual('P', 'P'));
 letterVisuals.set(Letter.T, new LetterVisual('T', 'Twist', "Rotate all letters clockwise", '#07a32b'));
 letterVisuals.set(Letter.G, new LetterVisual('G', 'G'));
 
-export const letterFrequency = new Map<Letter, number>();
-letterFrequency.set(Letter.L, 10);
-letterFrequency.set(Letter.R, 10);
-letterFrequency.set(Letter.U, 10);
-letterFrequency.set(Letter.D, 5);
-letterFrequency.set(Letter.W, 12);
-letterFrequency.set(Letter.I, 14);
-letterFrequency.set(Letter.C, 10);
-letterFrequency.set(Letter.Y, 10);
-letterFrequency.set(Letter.X, 9);
-letterFrequency.set(Letter.T, 10);
+export type LetterFrequencyMap = Map<Letter, number>;
 
-export function getRandomLetter(rand01: number, posX: number, posY: number) {
+
+export function getRandomLetter(rand01: number, posX: number, posY: number, frequencyMap: LetterFrequencyMap) {
     let rand = rand01 * 100;
     let sum = 0;
-    for (let key of letterFrequency.keys()) {
-        sum += letterFrequency.get(key)!;
+    for (let key of frequencyMap.keys()) {
+        sum += frequencyMap.get(key)!;
         if (rand <= sum && isAllowedAtPos(key)) {
             return key;
         }
