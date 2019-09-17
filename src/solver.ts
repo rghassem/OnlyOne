@@ -14,7 +14,6 @@ export interface Run {
     strategy: string,
     steps: number,
     numberOfSolutions: number,
-    firstSolutionTime: number,
     firstSolutionSteps: number,
     bestPath: Path,
     bestScore: number,
@@ -45,12 +44,6 @@ export function printSolution(solution: Solution) {
     }
 }
 
-onmessage = (message) => {
-    const board = message.data as Gameboard;
-    Object.setPrototypeOf(board, Gameboard.prototype);
-    const solution = solve(board);
-    (<any>postMessage)(solution);
-}
 
 export function solve(board: Gameboard): Solution {
 
@@ -65,24 +58,18 @@ export function solve(board: Gameboard): Solution {
         pathQueue = new TypedPriorityQueue<Path>(comparePathByScore);
         pathQueue.add({ moves: [], score: 0, state: board });
         const runWins = new Array<Path>();
-        const runStart = performance.now();
-        let runTime = 0;
         let steps = 0;
         let firstSolutionSteps = -1;
-        let firstSolutionTime = 0;
         let runSolved = false;
 
         while (steps < StepsPerRun && !pathQueue.isEmpty()) {
             step(pathQueue.poll()!, strategyList[currentRun], runWins);
             ++steps;
 
-            const end = performance.now();
-            runTime = end - runStart;
 
             if (!runSolved && runWins.length > 0) {
                 solved = true;
                 runSolved = true;
-                firstSolutionTime = runTime;
                 firstSolutionSteps = steps;
             }
         }
@@ -106,7 +93,7 @@ export function solve(board: Gameboard): Solution {
         runs.push({
             strategy: strategyList[currentRun].name,
             steps, numberOfSolutions,
-            firstSolutionTime, firstSolutionSteps,
+            firstSolutionSteps,
             bestPath, shortestPathLength, bestScore
         });
         currentRun++;

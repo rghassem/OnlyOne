@@ -1,0 +1,19 @@
+{
+  "name": "levelgenerator",
+  "version": "1.0.0",
+  "description": "Generate levels for OnlyOne",
+  "main": "main.ts",
+  "scripts": {
+    "start": "tsc; node out/src/levelGenerator/main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Reza",
+  "license": "ISC",
+  "dependencies": {
+    "@types/progress": "^2.0.3",
+    "progress": "^2.0.3"
+  },
+  "devDependencies": {
+    "typescript": "^3.6.3"
+  }
+}
