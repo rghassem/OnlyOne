@@ -5,7 +5,7 @@ import { strategyList } from "../strategy";
 import * as ProgressBar from 'progress'
 
 const RangeStart = 0;
-const RangeEnd = 100;
+const RangeEnd = 200;
 
 bulkSolve({ start: RangeStart, end: RangeEnd });
 
@@ -19,7 +19,7 @@ async function bulkSolve(config: { start: number, end: number }) {
         progressBar.tick();
     });
 
-    console.log(`Writing results to ${levels.csv}`);
+    console.log(`Writing results to levels.csv`);
     const csv = formatCSVLevels(data, 0);
     writeFileSync('levels.csv', csv);
 }
