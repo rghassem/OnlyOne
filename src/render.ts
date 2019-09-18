@@ -7,6 +7,7 @@ import { LetterEntity, letterVisuals, Letter } from "./letterEntity";
 
 export const CellWidth = 45;
 export const CellHeight = CellWidth;
+export const ScoringAreaOffset = 15;
 
 export let events: {
     onLetterClick: ((entity: LetterEntity) => void) | null
@@ -128,7 +129,7 @@ function drawScore(stage: PIXI.Container) {
     scoringLine.y = maxY * CellHeight;
     stage.addChild(scoringLine);
 
-    const yPadding = 15;
+    const scoringY = maxY * CellHeight + ScoringAreaOffset;
 
     const level = currentLevel + 1;
     const hundreds = Math.floor(level / 100) % 10;
@@ -140,13 +141,13 @@ function drawScore(stage: PIXI.Container) {
     thirdScoreLetter.text = ones.toString();
 
     firstScoreLetter.x = (maxX * CellWidth) / 2 - 32 - 64;
-    firstScoreLetter.y = maxY * CellHeight + yPadding;
+    firstScoreLetter.y = scoringY;
 
     secondScoreLetter.x = (maxX * CellWidth) / 2 - 32;
-    secondScoreLetter.y = maxY * CellHeight + yPadding;
+    secondScoreLetter.y = scoringY;
 
     thirdScoreLetter.x = (maxX * CellWidth) / 2 - 32 + 64;
-    thirdScoreLetter.y = maxY * CellHeight + yPadding;
+    thirdScoreLetter.y = scoringY;
     firstScoreLetter.style = new PIXI.TextStyle({
         fontFamily: FontFamily,
         fontSize: 64,

@@ -1,5 +1,5 @@
 import { onLetterPressed } from "./letters";
-import { drawEffects, events, resetScreen, CellHeight, CellWidth, FontFamily, tellUserWhatLetterToClick } from "./render";
+import { drawEffects, events, resetScreen, CellHeight, CellWidth, FontFamily, tellUserWhatLetterToClick, ScoringAreaOffset } from "./render";
 import { updateState, checkWin, resetScore, checkLose } from "./gameState";
 import { runAnimations, wait, clearAnimations } from "./animation";
 import { maxY, maxX, Gameboard } from "./board";
@@ -56,6 +56,7 @@ function resize(resizeRenderer: boolean = false) {
     letterStage.y = app.screen.height / 2 - letterStageHeight / 2;
 
     const scoreCenterLine = 608;
+    const scoringAreaHeight = 200; //guess
 
     if (solveButton) {
         solveButton.x = letterStage.x + 400;
@@ -82,8 +83,11 @@ function resize(resizeRenderer: boolean = false) {
         rightButton.y = letterStage.y + scoreCenterLine;
     }
 
-    const actualWidth = letterStageWidth + 0.15 * letterStageWidth;
-    const scaleFactor = app.screen.width / actualWidth;
+    const actualWidth = letterStageWidth * 1.15;
+    const actualHeight = letterStageHeight + ScoringAreaOffset + scoringAreaHeight;
+    const scaleFactorW = app.screen.width / actualWidth;
+    const scaleFactorH = app.screen.height / actualHeight;
+    const scaleFactor = Math.min(scaleFactorH, scaleFactorW);
     if (scaleFactor < 1) {
         const scaleAdjustment = (1 - scaleFactor) / 2;
         app.stage.x = app.screen.width * scaleAdjustment;
