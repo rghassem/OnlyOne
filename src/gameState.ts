@@ -52,8 +52,14 @@ export function updateState(gameboard: Gameboard, changes: Array<BoardEffect>) {
 
             case BoardEffectType.Move:
                 queuedMoves.push({ entity: effect.entity, x: effect.toX, y: effect.toY });
-                //Mark places moved from as possibly now being a gap
+                //Mark places moved from as possibly now being a gap.
                 possibleGaps.push(new Gap(effect.entity.x, effect.entity.y));
+                //Also everything below destinations, because you could move over an empty column
+                let y = effect.toY;
+                const test = maxY;
+                for (let i = y; i <= test; ++i) {
+                    possibleGaps.push(new Gap(effect.toX, i));
+                }
                 break;
 
             case BoardEffectType.Transform:
@@ -70,7 +76,7 @@ export function updateState(gameboard: Gameboard, changes: Array<BoardEffect>) {
     const outOfBoundsDestroys = new Array<BoardEffect>();
     queuedMoves.forEach(qm => move(qm, outOfBoundsDestroys));
 
-    //Process fall effects
+    //Process fall effects (starting by removing non-gaps from the possible gap list)
     gaps = gaps.concat(possibleGaps.filter(gap => !gameboard.getLetterEntity(gap.x, gap.y)));
     const fallEffects = fillGaps(gameboard, gaps);
     result = result.concat(fallEffects).concat(outOfBoundsDestroys);
