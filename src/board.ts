@@ -1,4 +1,5 @@
-import { LetterEntity, Letter, getRandomLetter } from "./letterEntity";
+import { LetterEntity, Letter, getRandomLetter, LetterFrequencyMap } from "./letterEntity";
+import { RandomNumberGenerator } from "./randomNumberGenerator";
 
 type LetterChar = 'O' | 'N' | 'E' | 'L' | 'R' | 'U' | 'D' | 'W' | 'I' | 'C' | 'X' | 'Y' | '0' | '1' | '2' | 'First' | 'Second' | 'Third' | ' ';
 
@@ -6,6 +7,7 @@ export const maxY = 13;
 export const maxX = 8;
 
 export class Gameboard {
+    level: number;
     firstLetterScored: boolean = false;
     secondLetterScored: boolean = false;
     thirdLetterScored: boolean = false;
@@ -22,9 +24,9 @@ export class Gameboard {
         }
     }
 
-    static fromString(preset: string) {
+    static fromString(preset: string, levelNum: number, frequencies: LetterFrequencyMap) {
         const result = new Gameboard();
-        const rng = new RandomGenerator(13);
+        const rng = new RandomNumberGenerator(13);
 
         for (let y = 0; y < maxY; ++y) {
             for (let x = 0; x < maxX; ++x) {
@@ -39,22 +41,24 @@ export class Gameboard {
                     result.addLetter(letter, x, y);
                 }
                 else {
-                    result.addLetter(getRandomLetter(rng.get(), x, y), x, y);
+                    const randomLetter = getRandomLetter(rng.get(), x, y, frequencies);
+                    result.addLetter(randomLetter, x, y);
                 }
 
             }
         }
-
+        result.level = levelNum;
         return result;
     }
 
-    static fromSeed(seed: number) {
+    static fromSeed(seed: number, frequencies: LetterFrequencyMap) {
         const result = new Gameboard();
-        const rng = new RandomGenerator(seed);
+        const rng = new RandomNumberGenerator(seed);
 
         for (let y = 0; y < maxY; ++y) {
             for (let x = 0; x < maxX; ++x) {
-                result.addLetter(getRandomLetter(rng.get(), x, y), x, y);
+                const randomLetter = getRandomLetter(rng.get(), x, y, frequencies);
+                result.addLetter(randomLetter, x, y);
             }
         }
 
@@ -71,6 +75,7 @@ export class Gameboard {
         result.entities[used[0]].letter = Letter.First;
         result.entities[used[1]].letter = Letter.Second;
         result.entities[used[2]].letter = Letter.Third;
+        result.level = seed;
 
         return result;
     }
@@ -95,14 +100,5 @@ export class Gameboard {
         copy.secondLetterScored = this.secondLetterScored;
         copy.thirdLetterScored = this.thirdLetterScored;
         return copy;
-    }
-}
-
-class RandomGenerator {
-    constructor(public seed: number) { }
-    get = function () {
-        this.seed = (this.seed * 9301 + 49297) % 233280;
-        var rnd = this.seed / 233280;
-        return rnd;
     }
 }

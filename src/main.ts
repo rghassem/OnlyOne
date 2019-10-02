@@ -205,9 +205,9 @@ async function start() {
     if (EnableSolver) {
         solveButton = makeButton(app.stage, 80, 28, "Solve", async () => {
             resolving = true;
-            const result = solve(gameboard);
-            while (result.solved && result.solution.moves.length > 0 && !checkWin(gameboard)) {
-                const turn = result.solution.moves.shift()!;
+            const solution = await solve(gameboard);
+            while (solution.solved && solution.bestPath.moves.length > 0 && !checkWin(gameboard)) {
+                const turn = solution.bestPath.moves.shift()!;
                 const move = gameboard.getLetterEntity(turn.x, turn.y)
                 if (!move) {
                     throw new Error(`Invalid move from AI (${turn.x}, ${turn.y})`);
