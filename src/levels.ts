@@ -1,31 +1,9 @@
 import { maxX, maxY, Gameboard } from "./board";
-import { Letter, LetterFrequencyMap } from "./letterEntity";
+import { LetterFrequencyMap } from "./letterEntity";
+import { LevelTypes } from "./levelTypes";
 
-const DefaultLetterFrequency = new Map<Letter, number>([
-    [Letter.L, 10],
-    [Letter.R, 10],
-    [Letter.U, 10],
-    [Letter.D, 5],
-    [Letter.W, 12],
-    [Letter.I, 14],
-    [Letter.C, 10],
-    [Letter.Y, 10],
-    [Letter.X, 9],
-    [Letter.T, 10],
-]);
-
-const InvisibleHeavy = new Map<Letter, number>([
-    [Letter.L, 10],
-    [Letter.R, 10],
-    [Letter.U, 8],
-    [Letter.D, 5],
-    [Letter.W, 6],
-    [Letter.I, 40],
-    [Letter.C, 5],
-    [Letter.Y, 4],
-    [Letter.X, 4],
-    [Letter.T, 8],
-]);
+export const MaxLevels = 999;
+export const LevelSequenceLength = 10;
 
 const levels = new Map<number, string>();
 levels.set(0, levelOne());
@@ -34,21 +12,44 @@ levels.set(2, levelThree());
 levels.set(3, levelFour());
 levels.set(4, levelFive());
 
-export const frequencyChanges: Array<[number, LetterFrequencyMap]> = [
-    [0, DefaultLetterFrequency],
-    [20, InvisibleHeavy]
-]
+export interface LevelSequence {
+    frequencies: keyof typeof LevelTypes,
+    levels: Array<number>
+}
 
-export function getLevel(level: number) {
-    if (levels.has(level)) {
-        return Gameboard.fromString(levels.get(level)!, level, DefaultLetterFrequency);
+//Assume this is declared globally from generated script loaded in index.js
+declare var levelSequences: Array<LevelSequence>;
+
+
+export function getLevel(level: number, forceFrequencyMap?: LetterFrequencyMap) {
+    if (forceFrequencyMap) {
+        return Gameboard.fromSeed(level, forceFrequencyMap);
+    }
+    else if (levels.has(level)) {
+        return Gameboard.fromString(levels.get(level)!, level, LevelTypes.DefaultLetterFrequency);
     }
     else {
-        let currentRange = frequencyChanges.findIndex(freqPair => freqPair[0] > level) - 1;
-        if (currentRange < 0) currentRange = frequencyChanges.length - 1;
-        const frequencies = frequencyChanges[currentRange][1];
-        return Gameboard.fromSeed(level, frequencies);
+        const sequenceIndex = Math.floor(level / 10);
+        const levelInSequence = level - (sequenceIndex * LevelSequenceLength);
+        if (sequenceIndex > levelSequences.length) {
+            return endScreen();
+        }
+        const sequence = levelSequences[sequenceIndex];
+        if (levelInSequence > sequence.levels.length) {
+            return endScreen();
+        }
+        const seed = sequence.levels[levelInSequence];
+        const frequencies = LevelTypes[sequence.frequencies];
+        return Gameboard.fromSeed(seed, frequencies);
     }
+}
+
+export function endScreen() {
+    return Gameboard.fromString(' '
+        .repeat(maxX * Math.floor(maxY / 2))
+        + ' THE END' +
+        ' '.repeat(maxX * Math.floor(maxY / 2)),
+        0, LevelTypes.DefaultLetterFrequency);
 }
 
 export function winScreen() {
@@ -56,7 +57,7 @@ export function winScreen() {
         .repeat(maxX * Math.floor(maxY / 2))
         + ' WINNER ' +
         ' '.repeat(maxX * Math.floor(maxY / 2)),
-        0, DefaultLetterFrequency);
+        0, LevelTypes.DefaultLetterFrequency);
 }
 
 export function loseScreen() {
@@ -64,7 +65,7 @@ export function loseScreen() {
         ' '.repeat(maxX * Math.floor(maxY / 2))
         + 'TRYAGAIN' +
         ' '.repeat(maxX * Math.floor(maxY / 2)),
-        0, DefaultLetterFrequency);
+        0, LevelTypes.DefaultLetterFrequency);
 }
 
 function levelOne() {

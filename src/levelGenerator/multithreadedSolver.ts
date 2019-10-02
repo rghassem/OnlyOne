@@ -2,6 +2,7 @@ import { getLevel } from "../levels";
 import { Solution } from "../solver";
 import { Gameboard } from "../board";
 import { Worker } from 'worker_threads';
+import { LevelTypes } from "../levelTypes";
 
 type ProgressCallback = (levelsCompleted: number) => void
 
@@ -10,7 +11,7 @@ const NumberOfThreads = 16;
 let processedCount: number = 0;
 let data: Array<Solution> = [];
 
-export async function solveRange(start: number, end: number, onProgress: ProgressCallback) {
+export async function solveRange(start: number, end: number, levelType: keyof typeof LevelTypes, onProgress: ProgressCallback) {
     data = new Array<Solution>();
     processedCount = 0;
     const begin = process.hrtime();
@@ -22,7 +23,7 @@ export async function solveRange(start: number, end: number, onProgress: Progres
 
     const working = new Array<Promise<Solution>>();
     for (let i = start; i < end; ++i) {
-        const level = getLevel(i);
+        const level = getLevel(i, LevelTypes[levelType]);
         working.push(solveWithWorkerQueue(level, workerQueue, onProgress));
     }
     await Promise.all(working);
