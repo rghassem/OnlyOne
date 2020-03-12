@@ -20,11 +20,14 @@ const allSoundsLoaded = new Promise<void>((resolve, reject) => {
 
 export function toggleSound() {
     muted = !muted;
-    volume = muted ? 0 : 0.5;
+    for (let sound of [explosion, bounce, block, music]) {
+        sounds[sound].pause();
+    }
     return muted;
 }
 
 export function shootSound() {
+    !muted &&
     soundEffect(
         1046.5,           //frequency
         0,                //attack
@@ -43,16 +46,19 @@ export function shootSound() {
 }
 
 export function explosionSound() {
+    if (muted) return;
     sounds[explosion].volume = volume;
     sounds[explosion].play();
 }
 
 export function blockSound() {
+    if (muted) return;
     sounds[block].volume = volume;
     sounds[block].play();
 }
 
 export function bounceSound(delay = 0) {
+    if (muted) return;
     const sound = sounds[bounce];
     sound.volume = volume;
     sound.setEcho(0.1, 0.1, 500);
@@ -65,6 +71,7 @@ export function bounceSound(delay = 0) {
 }
 
 export function bonusSound() {
+    if (muted) return;
     //D
     soundEffect(587.33, 0, 0.2, "square", volume, 0, 0);
     //A
@@ -74,9 +81,10 @@ export function bonusSound() {
 }
 
 export async function bgmusic() {
+    if (muted) return;
     await allSoundsLoaded;
     const song = sounds[music];
-    if (!song.playing) {
+    if (!song.playing && !muted) {
         console.log("beginning song playback");
         song.volume = 0;
         song.playbackRate = 0.8;
