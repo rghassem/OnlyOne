@@ -1,0 +1,8 @@
+* Issues
+** Sound
+   - Sound only plays after clearing the first level
+     - You can reproduce this by closing the app on the second level, opening it and clearing that level
+   - Sound plays when putting the app in the background
+   - The mute button currently does nothing
+** Visual
+   - Instructions should be removed
