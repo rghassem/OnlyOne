@@ -1,0 +1,25 @@
+{
+	"compilerOptions": {
+		"module": "es2015",
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"removeComments": true,
+		"preserveConstEnums": true,
+		"outDir": "./out",
+		"sourceMap": true,
+		"target": "es6",
+		"skipLibCheck": true,
+		"noEmitOnError": true,
+		"lib": [
+			"es6",
+			"es2016.array.include",
+			"es2017.object",
+			"dom"
+		]
+	},
+	"include": [
+		"src/*.ts",
+		"src/**/*.ts",
+		"libs/*.ts"
+	]
+}
