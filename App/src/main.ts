@@ -168,6 +168,10 @@ function advanceLevel() {
     maxLevel = currentLevel;
     window.localStorage.setItem('maxLevel', '' + maxLevel);
   }
+    if (!clearedALevel) {
+        bgmusic();
+        clearedALevel = true;
+    }
 }
 
 function createButtons() {
@@ -324,7 +328,6 @@ async function start() {
         else return null;
       })
       .filter(effect => effect !== null) as BoardEffect[];
-    if (level === 1) bgmusic();
     if (specialScreen) {
       if (specialScreen)
         await drawEffects(letterStage, gameboard, destroyWinLetters);
