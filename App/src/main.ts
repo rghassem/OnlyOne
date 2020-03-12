@@ -28,7 +28,7 @@ import {solve} from './solver';
 declare var FontFaceObserver: any;
 
 const EnableSolver = false;
-const clearedALevel = false;
+let clearedALevel = false;
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
