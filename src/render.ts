@@ -109,13 +109,32 @@ export async function tellUserWhatLetterToClick(board: Gameboard, x: number, y: 
     target = pixiLetters.get(letter);
     while (target) {
         try {
-            await pulse(target);
+            await drawArrow(target)
         }
         catch (e) {
             console.log("First letter destroyed during pulse (this is fine)");
         }
         await wait(1);
         target = pixiLetters.get(letter);
+    }
+
+    async function drawArrow(targetText: PIXI.Text) {
+        const arrow = new PIXI.Text();
+        const style = new PIXI.TextStyle({
+            fontFamily: FontFamily,
+            fontSize: 52,
+            stroke: '#fa1850',
+            strokeThickness: 5,
+            dropShadow: true
+        });
+        arrow.style = style;
+        arrow.text = '<';
+        arrow.y = -20;
+        arrow.x = -5;
+        arrow.anchor.set(0, 0)
+        arrow.rotation = -1.5708; //90 deg in radians
+        targetText.addChild(arrow);
+        await pulse(arrow);
     }
 }
 
